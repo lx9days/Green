@@ -3,7 +3,7 @@ export default class EventController {
         this.events = new Map();
         this.eventSubId = -1;
     }
-
+    //触发事件
     fire(eventName,args){
         // setTimeout(()=>{
             if(!this.events.has(eventName)){
@@ -17,7 +17,7 @@ export default class EventController {
         // },100);
         return this;
     }
-
+    //订阅事件
     subscribe(eventName, func) {
         if (!this.events.has(eventName)) {
             this.events.set(eventName, new Array());
@@ -30,7 +30,7 @@ export default class EventController {
         });
         return token;
     }
-
+    //通过事件token 取消订阅事件
     unSubscribe(token){
         for(const key of this.events.keys()){
             const evs=this.events.get(key);
@@ -43,7 +43,7 @@ export default class EventController {
         }
         return this;
     }
-
+    //通过事件name 取消订阅
     unSubscribeByName(eventName){
         if(this.events.has(eventName)){
             this.events.delete(eventName);

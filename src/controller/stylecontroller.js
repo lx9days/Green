@@ -21,13 +21,18 @@ export default class StyleController{
     getStyles(){
         return this.styles;
     }
-
+    /**
+     * 将styles 根据selecter挂载到对应的 node link 上
+     * @param {*} nodes 
+     * @param {*} links 
+     */
     mountStyleToElement(nodes,links){
+        //初始化选择器
         const selector=new Selection(nodes,links);
         if(this.styles&&this.styles.length>0){
             this.styles.forEach((style)=>{
                  const selectStr=style.selector;
-
+                //使用选择器进行匹配
                  const selectResult=selector.select(selectStr);
 
 

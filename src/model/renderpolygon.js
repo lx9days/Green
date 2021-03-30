@@ -1,6 +1,6 @@
 import hexRgb from 'hex-rgb';
 import { isFunction, computePolygon } from '../helper/util';
-
+//渲染polygon对应deck中的polygon
 export default class RenderPolygon {
     constructor(element, type,offset) {
         this.offset=offset;
@@ -20,15 +20,24 @@ export default class RenderPolygon {
         this._generatePolygon();
     }
 
+    /**
+     * 重构style and position
+     */
     rebuild(){
         this._generateStyle();
         this._generatePolygon();
     }
 
+    /**
+     * 重构位置
+     */
     reLocation(){
         this._generatePolygon(this.origionElement,this.style.polygonShape,this.polygonType,this.offset);
     }
 
+    /**
+     * 更新状态
+     */
     updateStatus(){
         this.status=this.origionElement.getStatus();
     }

@@ -21,6 +21,7 @@ export default class Selection {
             return null;
         }
         const parseObj = this.selecterParser.parse(selectStr);
+        console.log(parseObj);
         const result = {
             links: new Array(),
             nodes: new Array()
@@ -535,7 +536,7 @@ function test() {
     });
 
     const selection = new Selection(nodes, links, nodeMap, linkMap);
-    // console.log(selection.select('link.aa[type2=a2]'));
+     console.log(selection.select('link.aa[type2=a2]'));
 
 }
 //test();

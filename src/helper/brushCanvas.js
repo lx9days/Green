@@ -1,7 +1,7 @@
 import { Deck, COORDINATE_SYSTEM, OrthographicView } from '@deck.gl/core';
 import { PolygonLayer } from '@deck.gl/layers';
 
-
+//用于Brush状态下在原始Canvas 上创建一层新的canvas用户进行brush交互
 export default class BrushCanvas {
     constructor(props) {
         this.props = {};
@@ -26,7 +26,9 @@ export default class BrushCanvas {
         y2 = (y2 + this.offY)
         return [{ polygon: [[x1, y1], [x2, y1], [x2, y2], [x1, y2]] }];
     }
-
+    /**
+     * init 用于brush的Canvas
+     */
     _initDeck() {
         const container = document.getElementById(this.props.container);
         this.canvas = document.createElement('canvas');

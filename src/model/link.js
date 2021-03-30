@@ -1,4 +1,4 @@
-
+//link定义了系统中使用的link的结构
 export default class Link {
     constructor(id, data) {
         this.id = id;

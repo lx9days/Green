@@ -2,7 +2,7 @@ import  hexRgb from 'hex-rgb';
 import { isFunction } from '../helper/util';
 import Link from './link';
 import Node from './node';
-
+//
 export default class RenderText {
     constructor(element,offset) {
         this.id = element.getId();

@@ -1,4 +1,4 @@
-
+//计算箭头的形状
 function computeArrow(link, offset, type) {
     let sourceX;
     let sourceY;
@@ -76,6 +76,12 @@ function reLocationLinks(link, r = 11) {
     link.sourceLoc.y = targetY;
 
 }
+/**
+ * 计算位置
+ * @param {link} link 
+ * @param {偏移} offset 
+ * @param {*} renderLink 
+ */
 function generateLinkLocation(link, offset,renderLink) {
     let r=offset.targetOffset.y
     let sourceX = link.source.x+offset.sourceOffset.x;

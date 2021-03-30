@@ -7,7 +7,7 @@ export default class DataController {
         };
         this.newData=data
     }
-
+    //替换数据
     replaceData(data){
         this.data={
             nodes:new Array(),
@@ -31,7 +31,7 @@ export default class DataController {
             
     //     }
     // }
-
+    //只获取最新的数据
     getNewData(){
         if(this.newData){
             const newNodes=this.newData.nodes;
@@ -54,7 +54,7 @@ export default class DataController {
         }
         return returnData;
     }
-
+    //获取所有的数据
     getAllData(){
         if(this.newData.nodes.length>0||this.newData.links.length>0){
             const newNodes=this.newData.nodes;
@@ -70,7 +70,7 @@ export default class DataController {
         }
         return this.data;
     }
-    
+    //添加数据
     addData(data){
         if(data){
             const {nodes,links}=data;

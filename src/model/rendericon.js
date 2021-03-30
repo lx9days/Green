@@ -1,6 +1,6 @@
 //import { hexRgb } from 'hex-rgb';
 import {isFunction} from '../helper/util';
-
+//渲染icon,对应deck中的IconLayer
 export default class RenderIcon{
     constructor(element){
         this.id=element.getId();
@@ -25,10 +25,15 @@ export default class RenderIcon{
         this._generateStyle();
         this._generatePosition();
     }
+    /**
+     * 计算位置
+     */
     reLocation(){
         this._generatePosition();
     }
-
+    /**
+     * 更新状态
+     */
     updateStatus(){
         this.status=this.origionElement.getStatus();
     }
@@ -38,6 +43,9 @@ export default class RenderIcon{
         this.position[1]=elementPosition.y+this.style.borderWidth/2;
     }
 
+    /**
+     * 将css样式解析为当前组件可用样式
+     */
     _generateStyle(){
         const styles=this.origionElement.getStyles();
 

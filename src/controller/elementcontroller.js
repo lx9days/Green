@@ -5,7 +5,12 @@ import RenderIcon from '../model/rendericon';
 import RenderLine from '../model/renderline';
 import RenderPolygon from '../model/renderpolygon';
 import RenderText from '../model/rendertext';
-
+/**
+ * ElementController 主要用于创建Node Link并将style 挂载到 Node Link 上，然后计算 Node Link 的位置
+ * 之后将Node Link 解析成为 RenderObject(canvas controller用来选的的对象);
+ * 此外，ElementController 还维护 Node Link 与对应的 RenderObject 之间的映射，这样在 Node Link 发生变化
+ * 后会将变化及时的作用到 RenderObject 上，并根据改变的种类来选择用何种方式对Canvas进行更新
+ */
 export default class ElementController {
 
     constructor(controller) {
@@ -23,6 +28,9 @@ export default class ElementController {
 
     }
 
+    /**
+     * 解析 Node Link
+     */
     parseNewData() {
         this._parseParams('new');
     }
@@ -50,16 +58,18 @@ export default class ElementController {
         }
 
     }
+    //初始化数据结构
     _init(controller) {
         this.nodes = new Array();
         this.links = new Array();
         this.controller = controller;
-        this.idMapNode = new Map();
-        this.idMapLink = new Map();
-        this.nodeIdMapLinks = new Map();
-        this.nodeRenderMap = new Map();
-        this.linkRenderMap = new Map();
-        this.characterSet = new Set();
+        this.idMapNode = new Map();//id Node 映射
+        this.idMapLink = new Map();//id Link 映射
+        this.nodeIdMapLinks = new Map();//node Id 映射与该node发生关联的所有的link
+        this.nodeRenderMap = new Map();// node id 映射该node 对应的所有的 renderobj
+        this.linkRenderMap = new Map();// link id 映射该link 对应的所有的 renderobj
+        this.characterSet = new Set();//保存textlayer的字符
+
         this.renderObject = {
             renderBorders: new Array(),
             renderIcons: new Array(),
@@ -140,7 +150,9 @@ export default class ElementController {
                 borderWidth: targetRenderBorder.style.borderWidth
             }
             const offset = { sourceOffset, targetOffset }
+
             const renderLine = new RenderLine(link, offset);
+            
             linkRenders.lineObjs.push(renderLine);
             if (renderLine.style.sourceArrowShape !== 'none') {
                 linkRenders.polygonObjs.push(new RenderPolygon(link, 'source', offset));
@@ -198,6 +210,11 @@ export default class ElementController {
         this.controller.canvasController.updateRenderObject(this.renderObject);
     }
 
+    /**
+     * 根据data生成 node link
+     * @param {用户传入的data} newData 
+     * @returns 
+     */
     _generateInternalEntity(newData) {
         const newLinkArray = new Array();
         const newNodeArray = new Array();
@@ -233,6 +250,10 @@ export default class ElementController {
         }
 
     }
+
+    /**
+     * 生成node id 到与该node 关联的link 的map
+     */
     _generateNodeIdMapLinks() {
         this.links.forEach((link) => {
             const sourceNodeId = link.source.id;
@@ -266,6 +287,10 @@ export default class ElementController {
             }
         });
     }
+    /**
+     * 将最新的link 添加到map 中
+     * @param {最新的link} newLinks 
+     */
     _addLinksToNodeIdMapLinks(newLinks) {
         if (newLinks) {
             newLinks.forEach((link) => {
@@ -301,6 +326,10 @@ export default class ElementController {
         }
     }
 
+    /**
+     * 从map 中删除link
+     * @param {删除的link}} deletedLinks 
+     */
     _removeLinksFromNodeIdMapLinks(deletedLinks) {
         if (deletedLinks && deletedLinks.length > 0) {
             deletedLinks.forEach((link) => {
@@ -317,6 +346,10 @@ export default class ElementController {
             });
         }
     }
+    /**
+     * 从map 中删除node
+     * @param {id} nodeIds 
+     */
     _removeNodesFromNodeIdMapLinks(nodeIds) {
         if (nodeIds && nodeIds.length > 0) {
             nodeIds.forEach((id) => {
@@ -326,7 +359,9 @@ export default class ElementController {
             })
         }
     }
-
+    /**
+     * 根据node 位置生成link 的起始位置
+     */
     _generateLinkLocation() {
         const nodeLocationMap = new Map();
         this.nodes.forEach((v) => {
@@ -349,7 +384,9 @@ export default class ElementController {
             }
         }
     }
-
+    /**
+     * 更新style
+     */
     updateStyle() {
         const newNodeArray = this.nodes;
         const newLinkArray = this.links;
@@ -357,6 +394,11 @@ export default class ElementController {
         this._parseElements(newNodeArray, newLinkArray, "all");
     }
 
+    /**
+     * 对位置发生变化的node 更新其对应的 link 的位置
+     * @param {id} nodeIds 
+     * @returns 
+     */
     updateLinkPosition(nodeIds = null) {
         let linkIdSet = new Set();
         if (nodeIds) {
@@ -383,7 +425,9 @@ export default class ElementController {
         }
         return null;
     }
-
+    /**
+     * 更新renderObj的位置
+     */
     updateRenderObjLocation() {
         const renderObjects = this.nodeRenderMap.get(nodeId);
         renderObjects.iconObjs.forEach((icon) => {
@@ -406,7 +450,11 @@ export default class ElementController {
         });
         this._updateRenderLinkObjLocation(Array.from(idsSet));
     }
-
+    /**
+     * 根据id 获取 node
+     * @param {id} nodeIds 
+     * @returns 
+     */
     getNodes(nodeIds = null) {
         if (nodeIds && nodeIds.length > 0) {
             const nodesArray = new Array();
@@ -475,7 +523,10 @@ export default class ElementController {
         this.updateNodeStatus(nodeIds, 2);
         this.controller.canvasController.updateRenderObject();
     }
-
+    /**
+     * 根据node id 删除 node
+     * @param {id} nodeIds 
+     */
     removeNodes(nodeIds) {
         
         if (nodeIds && nodeIds.length > 0) {
@@ -505,7 +556,10 @@ export default class ElementController {
 
         }
     }
-
+    /**
+     * 删除对应于node 的 renderobj
+     * @param {id} nodeIds 
+     */
     _removeRenderObjectForNode(nodeIds) {
         if (nodeIds && nodeIds.length > 0) {
             nodeIds.forEach((id) => {
@@ -532,7 +586,10 @@ export default class ElementController {
             });
         }
     }
-
+    /**
+     * 删除对应于link 的 renderobj
+     * @param {id} linkIds 
+     */
     _removeRenderObjectForLink(linkIds) {
         if (linkIds && linkIds.length > 0) {
             linkIds.forEach((id) => {
@@ -560,13 +617,18 @@ export default class ElementController {
         }
     }
 
+    /**
+     * 根据范围获取node
+     * @param {filed} pickField 
+     * @returns 
+     */
     pickObject(pickField) {
         if (pickField) {
             return this.controller.canvasController.pickObject(pickField);
         }
         return null;
     }
-
+    //删除 link
     removeLinks(linkIds) {
         if (linkIds && linkIds.length > 0) {
             const deletedLinks = new Array();
@@ -583,7 +645,7 @@ export default class ElementController {
         this.controller.canvasController.updateRenderObject(this.renderObject);
         
     }
-
+    //隐藏node
     hideNodes(nodeIds) {
         if (nodeIds && nodeIds.length > 0) {
             nodeIds.forEach((id) => {
@@ -605,7 +667,11 @@ export default class ElementController {
             })
         }
     }
-
+    /**
+     * 更新指定node 的状态
+     * @param {id} nodeIds 
+     * @param {状态} status 
+     */
     updateNodeStatus(nodeIds, status) {
         if (nodeIds && nodeIds.length > 0) {
             const idsSet = new Set();
@@ -651,7 +717,11 @@ export default class ElementController {
         }
 
     }
-
+    /**
+     * 更新指定link状态
+     * @param {id} linkIds 
+     * @param {状态} status 
+     */
     updateLinkStatus(linkIds, status) {
         if (linkIds && linkIds.length > 0) {
             linkIds.forEach((id) => {
@@ -671,7 +741,10 @@ export default class ElementController {
             })
         }
     }
-
+    /**
+     * 更新nodeid 对应的renderobj 的状态
+     * @param {id} nodeIds 
+     */
     _updateNodeRenderObjStatus(nodeIds = null) {
         if (nodeIds && nodeIds.length < 0) {
             nodeIds.forEach((id) => {
@@ -701,7 +774,10 @@ export default class ElementController {
             }
         }
     }
-
+    /**
+     * 更新link 对应的renderobj 的位置
+     * @param {id} linkIds 
+     */
     _updateRenderLinkObjLocation(linkIds = null) {
         if (linkIds && linkIds.length > 0) {
             linkIds.forEach((id) => {
@@ -727,6 +803,10 @@ export default class ElementController {
             });
         }
     }
+    /**
+     * 更新node 对应的renderobj的位置
+     * @param {id} nodeIds 
+     */
     _updateRenderNodeObjLocation(nodeIds = null) {
         if (nodeIds && nodeIds.length > 0) {
             nodeIds.forEach((id) => {
@@ -754,7 +834,11 @@ export default class ElementController {
             })
         }
     }
-
+    /**
+     * 更新node 的位置
+     * @param {id} nodeIds 
+     * @param {增量} delta 
+     */
     updateNodeLocationDelta(nodeIds, delta) {
         if (nodeIds && nodeIds.length > 0) {
             nodeIds.forEach((id) => {
@@ -772,7 +856,13 @@ export default class ElementController {
         }
 
     }
-
+    /**
+     * 更新node 位置
+     * @param {id} nodeIds 
+     * @param {位置} position 
+     * @param {是否群组移动} isGroup 
+     * @returns 
+     */
     updateNodeLocation(nodeIds, position, isGroup) {
         if (!isGroup) {
             if (this.idMapNode.has(nodeIds[0])) {
@@ -802,7 +892,10 @@ export default class ElementController {
         this._updateRenderLinkObjLocation(linkIdArray);
         this.controller.canvasController.updateRenderObject();
     }
-
+    /**
+     * 由于布局更新，更新renderobj 的位置
+     * @param {id} nodeIds 
+     */
     updateLayout(nodeIds) {
         if (nodeIds) {
             const newNodeArray = this.getNodes(nodeIds);

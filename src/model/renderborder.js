@@ -1,7 +1,7 @@
 import hexRgb from 'hex-rgb';
 import { isFunction } from '../helper/util';
 
-
+//渲染border元素，对应着deck中的border
 export default class RenderBorder {
     constructor(element) {
         this.id = element.getId();
@@ -24,26 +24,40 @@ export default class RenderBorder {
         this._generatePosition();
         
     }
-
+    /**
+     * 重新挂载样式和计算位置
+     */
     rebuild() {
         this._generateStyle();
         this._generatePosition();
     }
 
+    /**
+     * 重新计算位置
+     */
     reLocation(){
         this._generatePosition();
     }
 
+    /**
+     * 更新状态
+     */
     updateStatus(){
         this.status=this.origionElement.getStatus();
     }
 
+    /**
+     * 计算位置
+     */
     _generatePosition() {
         const elementPosition=this.origionElement.getLocation();
         this.position[0] =elementPosition.x+ this.style.backgroundHeight / 2;
         this.position[1] =elementPosition.y+ this.style.backgroundHeight / 2;
     }
 
+    /**
+     * 解析样式，将css样式规则解析为，当前组件可以的样式
+     */
     _generateStyle() {
         const styles = this.origionElement.getStyles();
 

@@ -2,7 +2,7 @@ import hexRgb from 'hex-rgb';
 import { isFunction,generateLinkLocation} from '../helper/util';
 
 
-
+//渲染line 对应deck中的linelayer
 export default class RenderLine {
     constructor(element,offset) {
         this.id = element.getId();
@@ -29,15 +29,24 @@ export default class RenderLine {
         this._generatePosition();
     }
 
+    /**
+     * 重构style和position
+     */
     rebuild(){
         this._generateStyle();
         this._generatePosition();
     }
 
+    /**
+     * 重构position
+     */
     reLocation(){
         this._generatePosition();
     }
-
+    
+    /**
+     * 更新状态
+     */
     updateStatus(){
         this.status=this.origionElement.getStatus();
     }

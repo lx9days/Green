@@ -44,6 +44,7 @@ export default class CanvasController {
         if (this.deck) {
             this.deck = null;
         }
+        
         this.deck = new Deck({
             views: new OrthographicView({
                 id: 'globalView',
