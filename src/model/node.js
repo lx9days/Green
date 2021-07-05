@@ -1,6 +1,7 @@
 import Link from "./link";
 //组件中使用的Node数据结构
 export default class Node {
+    
     constructor(id, data) {
         this.id = id;
         this.data = data;

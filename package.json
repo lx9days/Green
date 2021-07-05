@@ -21,9 +21,7 @@
     "canvas": "^2.6.1",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^5.0.1",
-    "d3": "^6.3.1",
     "express": "^4.17.1",
-    "hex-rgb": "^4.2.0",
     "html-webpack-plugin": "^4.5.0",
     "react": "^17.0.1",
     "webpack": "^5.11.0",
@@ -40,6 +38,8 @@
     "@deck.gl/layers": "^8.3.8",
     "axios": "^0.21.1",
     "deck.gl": "^8.3.11",
-    "jQuery": "^1.7.4"
+    "jQuery": "^1.7.4",
+    "d3": "^6.3.1",
+    "hex-rgb": "^4.2.0"
   }
 }

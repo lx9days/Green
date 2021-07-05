@@ -29,6 +29,7 @@ export default class ElementController {
     }
 
     /**
+     * 
      * 解析 Node Link
      */
     parseNewData() {
@@ -150,16 +151,17 @@ export default class ElementController {
                 borderWidth: targetRenderBorder.style.borderWidth
             }
             const offset = { sourceOffset, targetOffset }
-
-            const renderLine = new RenderLine(link, offset);
             
+            const renderLine = new RenderLine(link, offset);
             linkRenders.lineObjs.push(renderLine);
+
             if (renderLine.style.sourceArrowShape !== 'none') {
                 linkRenders.polygonObjs.push(new RenderPolygon(link, 'source', offset));
             }
             if (renderLine.style.targetArrowShape !== 'none') {
                 linkRenders.polygonObjs.push(new RenderPolygon(link, 'target', offset));
             }
+
             const renderText = new RenderText(link, offset);
             this._generateCharSet(renderText.text);
             linkRenders.textObjs.push(renderText);

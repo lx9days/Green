@@ -1,2 +1,3 @@
-example/src
+example/src/img1
+example/src/*.json
 node_modules

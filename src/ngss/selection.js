@@ -1,16 +1,17 @@
 
 import SelecterParser from './selecterparse';
+
 //const SelecterParser = require('./selecterparse');
 export default class Selection {
-    constructor(nodes, links, nodesMap=null, linksMap=null) {
+    constructor(nodes, links, nodesMap = null, linksMap = null) {
         this.nodes = nodes;
         this.links = links;
-        if(nodesMap&&linksMap){
-            this.nodesMap=nodesMap;
-            this.linksMap=linksMap;
-        }else{
-            this.nodesMap=this._generateNodesMap();
-            this.linksMap=this._generateLinksMap();
+        if (nodesMap && linksMap) {
+            this.nodesMap = nodesMap;
+            this.linksMap = linksMap;
+        } else {
+            this.nodesMap = this._generateNodesMap();
+            this.linksMap = this._generateLinksMap();
         }
         this.selecterParser = new SelecterParser();
     }
@@ -21,7 +22,6 @@ export default class Selection {
             return null;
         }
         const parseObj = this.selecterParser.parse(selectStr);
-        console.log(parseObj);
         const result = {
             links: new Array(),
             nodes: new Array()
@@ -76,18 +76,18 @@ export default class Selection {
 
     analyzeNode(tempNodeResult, rules) {
         if (rules.hasOwnProperty('id')) {
-            const node=this.selectNodeById(rules.id);
-            if(node){
+            const node = this.selectNodeById(rules.id);
+            if (node) {
                 tempNodeResult = [this.selectNodeById(rules.id)];
-            }else{
-                tempNodeResult=[];
+            } else {
+                tempNodeResult = [];
             }
-            
+
         }
         if (rules.hasOwnProperty('classNames')) {
-            const classNames=rules.classNames;
-            classNames.forEach((className)=>{
-                tempNodeResult=this.selectNodeByClass(tempNodeResult,className);
+            const classNames = rules.classNames;
+            classNames.forEach((className) => {
+                tempNodeResult = this.selectNodeByClass(tempNodeResult, className);
             });
         }
         if (rules.attrs) {
@@ -129,18 +129,18 @@ export default class Selection {
 
     analyzeLink(tempLinkResult, rules) {
         if (rules.hasOwnProperty('id')) {
-            const link=this.selectLinkById(rules.id);
-            if(link){
+            const link = this.selectLinkById(rules.id);
+            if (link) {
                 tempLinkResult = [link];
-            }else{
-                tempLinkResult=[];
+            } else {
+                tempLinkResult = [];
             }
-            
+
         }
         if (rules.hasOwnProperty('classNames')) {
-            const classNames=rules.classNames;
-            classNames.forEach((className)=>{
-                tempLinkResult=this.selectNodeByClass(tempLinkResult,className);
+            const classNames = rules.classNames;
+            classNames.forEach((className) => {
+                tempLinkResult = this.selectLinkByClass(tempLinkResult, className);
             });
         }
         if (rules.attrs) {
@@ -190,14 +190,15 @@ export default class Selection {
         return null;
     }
 
-    selectNodeByClass(nodes,className){
-        const tempNodeArray=new Array();
-        if(nodes&&nodes.length>0){
-            nodes.forEach((node)=>{
-                const nodeClasses=node.getClasses();
-                if(nodeClasses&&nodeClasses.length>0){
-                    for(let i=0;i<nodeClasses.length;i++){
-                        if(nodeClasses[i].toLowerCase()===className.toLowerCase()){
+    selectNodeByClass(nodes, className) {
+        const tempNodeArray = new Array();
+        if (nodes && nodes.length > 0) {
+            nodes.forEach((node) => {
+                const nodeClasses = node.classes
+                
+                if (nodeClasses && nodeClasses.length > 0) {
+                    for (let i = 0; i < nodeClasses.length; i++) {
+                        if (nodeClasses[i].toLowerCase() === className.toLowerCase()) {
                             tempNodeArray.push(node);
                             break;
                         }
@@ -208,14 +209,14 @@ export default class Selection {
         return tempNodeArray;
     }
 
-    selectLinkByClass(links,className){
-        const tempLinkArray=new Array();
-        if(links&&links.length>0){
-            links.forEach((link)=>{
-                const linkClasses=link.getClasses();
-                if(linkClasses&&linkClasses.length>0){
-                    for(let i=0;i<linkClasses.length;i++){
-                        if(linkClasses[i].toLowerCase()===className.toLowerCase()){
+    selectLinkByClass(links, className) {
+        const tempLinkArray = new Array();
+        if (links && links.length > 0) {
+            links.forEach((link) => {
+                const linkClasses = link.getClasses();
+                if (linkClasses && linkClasses.length > 0) {
+                    for (let i = 0; i < linkClasses.length; i++) {
+                        if (linkClasses[i].toLowerCase() === className.toLowerCase()) {
                             tempLinkArray.push(link);
                             break;
                         }
@@ -377,6 +378,7 @@ export default class Selection {
     }
 
     selectLinksByExpression(links, attr, val, operator) {
+       
         const linksArray = new Array();
         if (!links) {
             links = this.links;
@@ -462,18 +464,18 @@ export default class Selection {
         return linksArray;
     }
 
-    _generateNodesMap(){
-        const nodesMap=new Map();
-        this.nodes.forEach((node)=>{
-            nodesMap.set(node.getId(),node);
+    _generateNodesMap() {
+        const nodesMap = new Map();
+        this.nodes.forEach((node) => {
+            nodesMap.set(node.getId(), node);
         });
         return nodesMap;
     }
 
-    _generateLinksMap(){
-        const linksMap=new Map();
-        this.links.forEach((link)=>{
-            linksMap.set(link.getId(),link);
+    _generateLinksMap() {
+        const linksMap = new Map();
+        this.links.forEach((link) => {
+            linksMap.set(link.getId(), link);
         });
         return linksMap;
     }
@@ -495,7 +497,7 @@ function test() {
                 type2: 'a' + i,
                 type3: i
             },
-            classes:['aa','bb']
+            classes: ['aa', 'bb'],
         }
         const link = {
             id: 'a' + i,
@@ -505,7 +507,7 @@ function test() {
                 type2: 'a' + i,
                 type3: i
             },
-            classes:['aa','bb']
+            classes: ['aa', 'bb']
         }
         links.push(link);
         nodes.push(node);
@@ -521,7 +523,8 @@ function test() {
             type2: 'a10',
             type3: 10,
             y: 5
-        }
+        },
+        classes: ['aa', 'cc'],
     });
     links.push({
         id: 'a10',
@@ -536,7 +539,7 @@ function test() {
     });
 
     const selection = new Selection(nodes, links, nodeMap, linkMap);
-     console.log(selection.select('link.aa[type2=a2]'));
+    console.log(selection.select('link#a0'));
 
 }
 //test();
