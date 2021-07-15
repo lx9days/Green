@@ -18,6 +18,7 @@ export default class CanvasController {
         this.nodeDragStartHandler = this._nodeDragStartHandler.bind(this);
         this.nodeDragingHandler = this._nodeDragingHandler.bind(this);
         this.nodeDragEndHandler = this._nodeDragEndHandler.bind(this);
+        this.lineClickHandler=this._lineClickHandler.bind(this);
         this.deckClickHandler = this._deckClickHandler.bind(this);
         this.deckDragStartHandler = this._deckDragStartHandler.bind(this);
         this.deckDragingHandler = this._deckDragingHandler.bind(this);
@@ -84,12 +85,14 @@ export default class CanvasController {
     }
 
     _deckClickHandler(info, e) {
-        if (!e.leftButton) {
-            if (this.props.backgroundRightClick) {
-                this.props.backgroundRightClick(info, e);
-            }
-            return;
-        }
+        this.eventController.fire('emptyClick',info,e);
+        return true;
+        // if (!e.leftButton) {
+        //     if (this.props.backgroundRightClick) {
+        //         this.props.backgroundRightClick(info, e);
+        //     }
+        //     return;
+        // }
 
     }
 
@@ -112,15 +115,18 @@ export default class CanvasController {
         const lineLayer = new LineLayer({
             id: 'line-layer',
             data: renderLines,
-            autoHightlight: true,
-            getWidth: d => d.style.lineWidth || 1,
+            autoHighlight: true,
+            pickable: true,
+            //autoHightlightColor: [0, 0, 0],
+            getWidth: d => d.style.lineWidth || 2,
             getSourcePosition: d => d.sourcePosition,
             getTargetPosition: d => d.targetPosition,
             getColor: d => d.style.lineColor || [255, 255, 255, 255],
             updateTriggers:{
                 getSourcePosition:d => d.sourcePosition,
                 getTargetPosition: d => d.targetPosition,
-            }
+            },
+            onClick:this.lineClickHandler,
         });
         const iconLayer = new IconLayer({
             id: 'icon-layer',
@@ -128,7 +134,7 @@ export default class CanvasController {
             pickable: true,
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
-            autoHighlight: false,
+            autoHighlight: true,
             autoHightlightColor: [255, 0, 0],
             getIcon: d => ({
                 url: d.url,
@@ -159,7 +165,7 @@ export default class CanvasController {
             opacity: 1,
             stroked: true,
             filled: true,
-            autoHighlight: true,
+            autoHighlight: false,
             getFillColor: (d) => {
                 return d.style.backgroundColor || [255, 255, 255, 255];
             },
@@ -283,15 +289,17 @@ export default class CanvasController {
         const lineLayer = new LineLayer({
             id: 'line-layer',
             data: renderLines.filter(()=>true),
-            autoHightlight: true,
-            getWidth: d => d.style.lineWidth || 1,
+            autoHighlight: true,
+            pickable: true,
+            getWidth: d => d.style.lineWidth || 2,
             getSourcePosition: d => d.sourcePosition,
             getTargetPosition: d => d.targetPosition,
             getColor: d => d.style.lineColor || [255, 255, 255, 255],
             updateTriggers:{
                 getSourcePosition:d => d.sourcePosition,
                 getTargetPosition: d => d.targetPosition,
-            }
+            },
+            onClick:this.lineClickHandler,
         });
         const iconLayer = new IconLayer({
             id: 'icon-layer',
@@ -329,7 +337,7 @@ export default class CanvasController {
             opacity: 1,
             stroked: true,
             filled: true,
-            autoHighlight: true,
+            autoHighlight: false,
             getFillColor: (d) => {
                 return d.style.backgroundColor || [255, 255, 255, 255];
             },
@@ -448,11 +456,16 @@ export default class CanvasController {
     }
 
     _nodeClickHandler(info, e) {
+      
         if (!e.leftButton) {
             this.eventController.fire('nodeLeftClick', info, e);
             if (this.props.nodeRightClick) {
                 this.props.nodeRightClick(info, e);
             }
+            return true;
+        }
+        if(e.srcEvent.ctrlKey){
+            this.eventController.fire('nodeClickWithCtrl',info,e);
             return true;
         }
         this.eventController.fire('nodeClick', info, e);
@@ -485,10 +498,16 @@ export default class CanvasController {
     }
 
 
-    _linkClickHandler(info, e) {
+    _lineClickHandler(info, e) {
+        console.log('lineC')
+        if(e.srcEvent.ctrlKey){
+            this.eventController.fire('lineClickWithCtrl',info,e);
+            return true;
+        }
+        this.eventController.fire('lineClick', info, e);
         return true;
     }
-    _linkHoverHandler(info, e) {
+    _lineHoverHandler(info, e) {
         return true;
     }
 

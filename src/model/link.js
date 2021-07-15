@@ -68,30 +68,39 @@ export default class Link {
         return this.items;
     }
 
-    addClasses(classes){
-        if(classes&&classes.length>0){
-            classes.forEach((cl)=>{
-                this.classes.push(cl);
-            })
+    addClasses(classes) {
+        if (classes) {
+            if (Array.isArray(classes)) {
+                classes.forEach((cl) => {
+                    this.classes.push(cl);
+                })
+            } else {
+                this.classes.push(classes);
+            }
         }
     }
 
-    removeClasses(ids){
-        if (ids && ids.length > 0) {
-            ids.forEach(id => {
-                for (let i = 0; i < this.classes.length; i++) {
-                    if (this.classes[i].id === id) {
-                        this.classes.splice(i, 1);
-                        break;
+    removeClasses(classes) {
+        if (classes) {
+            if (Array.isArray(classes)) {
+                classes.forEach((cl) => {
+                    const index = this.classes.indexOf(cl);
+                    if (index > -1) {
+                        this.classes.splice(index, 1);
                     }
+                })
+            } else {
+                const index = this.classes.indexOf(classes);
+                if (index > -1) {
+                    this.classes.splice(index, 1);
                 }
-            });
-        } else {
-            this.classes = new Array();
+            }
+        }else{
+            this.classes=[];
         }
     }
 
-    getClasses(){
+    getClasses() {
         return this.classes;
     }
 

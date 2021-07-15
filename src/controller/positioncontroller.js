@@ -27,14 +27,14 @@ export default class PositionController {
         }
     }
 
-    square(nodes, elementController) {
+    square(nodes, elementController,offset=null) {
         if (nodes.length > 0) {
             let nodeIds = [];
             let rowNum = Math.ceil(Math.sqrt(nodes.length));
             let node1 = nodes[0];
             if (!node1.x) {
-                node1.x = 0;
-                node1.y = 0;
+                node1.x = offset.maxX||0;
+                node1.y = offset.maxY||0;
             }
             let col = 0;
             let row = 0;

@@ -1,30 +1,30 @@
 import Link from "./link";
 //组件中使用的Node数据结构
 export default class Node {
-    
+
     constructor(id, data) {
         this.id = id;
         this.data = data;
         this.classes = new Array();
         this.items = new Array();
-        this.styles=new Array();
+        this.styles = new Array();
         this.draggable = true;
-        this.x=0;
-        this.y=0;
+        this.x = 0;
+        this.y = 0;
         this.status = 2;//1未选中，2选中，3隐藏
         this.styles
     }
 
-    getId(){
+    getId() {
         return this.id;
     }
 
-    getStatus(){
+    getStatus() {
         return this.status;
     }
 
-    setStatus(status){
-        this.status=status;
+    setStatus(status) {
+        this.status = status;
     }
 
     isNode() {
@@ -41,7 +41,7 @@ export default class Node {
         return this.draggable;
     }
 
-    addStyle(style){
+    addStyle(style) {
         this.styles.push(style);
     }
     addItems(items) {
@@ -71,40 +71,49 @@ export default class Node {
         return this.items;
     }
 
-    addClasses(classes){
-        if(classes&&classes.length>0){
-            classes.forEach((cl)=>{
-                this.classes.push(cl);
-            })
+    addClasses(classes) {
+        if (classes) {
+            if (Array.isArray(classes)) {
+                classes.forEach((cl) => {
+                    this.classes.push(cl);
+                })
+            } else {
+                this.classes.push(classes);
+            }
         }
     }
 
-    removeClasses(ids){
-        if (ids && ids.length > 0) {
-            ids.forEach(id => {
-                for (let i = 0; i < this.classes.length; i++) {
-                    if (this.classes[i].id === id) {
-                        this.classes.splice(i, 1);
-                        break;
+    removeClasses(classes) {
+        if (classes) {
+            if (Array.isArray(classes)) {
+                classes.forEach((cl) => {
+                    const index = this.classes.indexOf(cl);
+                    if (index > -1) {
+                        this.classes.splice(index, 1);
                     }
+                })
+            } else {
+                const index = this.classes.indexOf(classes);
+                if (index > -1) {
+                    this.classes.splice(index, 1);
                 }
-            });
-        } else {
-            this.classes = new Array();
+            }
+        }else{
+            this.classes=[];
         }
     }
 
-    getClasses(){
+    getClasses() {
         return this.classes;
     }
 
-    getLocation(){
-        return{
-            x:this.x,
-            y:this.y
+    getLocation() {
+        return {
+            x: this.x,
+            y: this.y
         }
     }
-    getStyles(){
+    getStyles() {
         return this.styles;
     }
 

@@ -40,7 +40,27 @@ export default class ElementController {
         if (flag === 'new') {
             const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData());
             this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
-            this.controller.positionController.layout()(newNodeArray, this);
+            let maxX=0;
+            let maxY=0;
+            let offset={
+                maxX,
+                maxY
+            }
+            if(this.nodes[0]){
+                maxX=this.nodes[0].x;
+                maxY=this.nodes[0].y;
+                this.nodes.forEach((node,i)=>{
+                    if(node.x>maxX){
+                        maxX=node.x;
+                    }
+                    if(node.y>maxY){
+                        maxY=node.y;
+                    }
+                });
+                offset.maxX=maxX;
+                offset.maxY=maxY;
+            }
+            this.controller.positionController.layout()(newNodeArray, this,offset);
             this._parseElements(newNodeArray, newLinkArray, 'part');
         } else {
             if (!nodeIds) {

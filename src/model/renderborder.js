@@ -130,14 +130,25 @@ export default class RenderBorder {
                             this.style.backgroundHeight = backgroundHeightObj;
                         }
                         break;
+                    case 'shape':
+                        const backgroundShape=style[item];
+                        if(isFunction(backgroundShape)){
+                            if(backgroundShape(this.origionElement)==='rect'){
+                                this.shapeType=1;
+                            }else {
+                                this.shapeType=0;
+                            }
+                        }else{
+                            if(backgroundShape==='rect'){
+                                this.shapeType=1;
+                            }else{
+                                this.shapeType=0;
+                            }
+                        }
+                        break;
                     default:
                         //console.error(`存在无法识别结点样式${item}`);
 
-                }
-                if(this.style.backgroundWidth>0){
-                    this.shapeType=1;
-                }else{
-                    this.shapeType=0;
                 }
             }
 

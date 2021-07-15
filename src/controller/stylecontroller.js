@@ -1,4 +1,5 @@
-import Selection from '../ngss/selection';
+//import Selection from '../ngss/selection';
+import Selector from "../nges"
 
 export default class StyleController{
 
@@ -28,7 +29,8 @@ export default class StyleController{
      */
     mountStyleToElement(nodes,links){
         //初始化选择器
-        const selector=new Selection(nodes,links);
+        const selector=new Selector(nodes,links);
+        //const selector=new Selection(nodes,links);
         if(this.styles&&this.styles.length>0){
             this.styles.forEach((style)=>{
                  const selectStr=style.selector;
