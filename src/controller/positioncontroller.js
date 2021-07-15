@@ -55,7 +55,7 @@ export default class PositionController {
         return null;
     }
 
-    star(selectedNodes, elementController) {
+    star(selectedNodes, elementController,offset=null) {
         if (selectedNodes.length > 0) {
             let nodeIds = [];
             let linkIds = [];
@@ -121,7 +121,7 @@ export default class PositionController {
         return null;
     }
 
-    circleShape(nodes, elementController) {
+    circleShape(nodes, elementController,offset=null) {
         if (nodes.length > 0) {
             let nodeIds = [];
             let radius = (nodes.length * 150) / (2 * Math.PI);
@@ -141,7 +141,7 @@ export default class PositionController {
         return null;
     }
 
-    multSquare(nodes, elementController) {
+    multSquare(nodes, elementController,offset=null) {
         let no1x = 0;
         let no1y = 0;
         if (nodes.length > 0) {
@@ -184,7 +184,7 @@ export default class PositionController {
         
     }
 
-    oneRow(nodes, elementController) {
+    oneRow(nodes, elementController,offset=null) {
         if (nodes.length > 0) {
             let nodeIds = [];
             let no1 = nodes[0];
@@ -200,7 +200,7 @@ export default class PositionController {
         return null;
     }
 
-    oneColumn(nodes, elementController) {
+    oneColumn(nodes, elementController,offset=null) {
         if (nodes.length > 0) {
             let nodeIds = [];
             let no1 = nodes[0];

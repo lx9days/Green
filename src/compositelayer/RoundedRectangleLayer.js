@@ -1,4 +1,4 @@
-import { CompositeLayer } from 'deck.gl';
+import { CompositeLayer } from '@deck.gl/core';
 import { ScatterplotLayer, PolygonLayer, PathLayer } from '@deck.gl/layers';
 //组合layer,通过组合多种layer来获取想要的形状或者样式
 //该类组合了圆角矩形

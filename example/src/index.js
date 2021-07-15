@@ -160,11 +160,7 @@ function draw(rawData) {
 
     netGraph.addEventListener('brush', (nodeIds) => {
         console.log(nodeIds);
-    })
-
-
-
-
+    });
     document.getElementById('remove').addEventListener('click', (e) => {
         //console.log(e);
         const selectedNodes = netGraph.getSelectedNodes();
@@ -205,8 +201,6 @@ function draw(rawData) {
         selectedNodes.map((v, i) => {
             selectedNodeIds.push(v.getId());
         });
-
-
         netGraph.setNodeLayout('multSquare');
     });
 
