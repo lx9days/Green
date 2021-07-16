@@ -56,8 +56,9 @@ export default class CanvasController {
                 maxZoom: this.props.maxZoom,
                 minZoom: this.props.minZoom,
                 controller: true,
-
             }),
+            width:this.props.containerWidth,
+            height:this.props.containerHeight,
             initialViewState: initViewState,
             onViewStateChange: this.onViewStateChange,
             gl: this.gl,
