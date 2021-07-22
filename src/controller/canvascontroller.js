@@ -38,9 +38,13 @@ export default class CanvasController {
         this.props.viewState = initViewState;
         this.props.initTarget = initViewState.target;
         const container = document.getElementById(this.props.container);
+        if(!this.props.containerWidth||!this.props.containerHeight){
+            
+            throw Error('please setup container dimension');
+            
+        }
         this.canvas = document.createElement('canvas');
         container.appendChild(this.canvas);
-
         this.gl = this.canvas.getContext('webgl2');
         if (this.deck) {
             this.deck = null;
@@ -51,8 +55,8 @@ export default class CanvasController {
                 id: 'globalView',
                 x: 0,
                 y: 0,
-                width: this.props.containerWidth,
-                height: this.props.containerHeight,
+                width: '100%',
+                height: '100%',
                 maxZoom: this.props.maxZoom,
                 minZoom: this.props.minZoom,
                 controller: true,
@@ -65,7 +69,8 @@ export default class CanvasController {
             controller: true,
             onClick: this.deckClickHandler,
             onDragStart: this.deckDragStartHandler,
-            onDragEnd: this.deckDragEndHandler
+            onDragEnd: this.deckDragEndHandler,
+            //getCursor:({isDragging,isHovering}) => isHovering ? 'grabbing' : 'grab'
         });
     }
 

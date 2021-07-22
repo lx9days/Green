@@ -4,21 +4,21 @@ import NetGraph from '../../src/index';
 const debug = true;
 
 
-axios.get('/src/2472_data.json').then((res) => {
-    const nodes = res.data.data.nodes;
-    const links = res.data.data.links;
+// axios.get('/src/2472_data.json').then((res) => {
+//     const nodes = res.data.data.nodes;
+//     const links = res.data.data.links;
 
-    nodes.forEach((node, i) => {
-        node.img = '/src/img1/a' + 0 + '.png';
-    });
-    console.log(nodes.length);
+//     nodes.forEach((node, i) => {
+//         node.img = '/src/img1/a' + 0 + '.png';
+//     });
+//     console.log(nodes.length);
 
-    const data = {
-        nodes,
-        links
-    }
-    draw(data);
-})
+//     const data = {
+//         nodes,
+//         links
+//     }
+//     draw(data);
+// })
 function draw(rawData) {
     let data=null;
     if(!debug){
@@ -163,12 +163,12 @@ function draw(rawData) {
     });
     document.getElementById('remove').addEventListener('click', (e) => {
         //console.log(e);
-        const selectedNodes = netGraph.getSelectedNodes();
-        const selectedNodeIds = new Array();
-        selectedNodes.map((v, i) => {
-            selectedNodeIds.push(v.getId());
-        })
-        netGraph.removeNodes(selectedNodeIds);
+        // const selectedNodes = netGraph.getSelectedNodes();
+        // const selectedNodeIds = new Array();
+        // selectedNodes.map((v, i) => {
+        //     selectedNodeIds.push(v.getId());
+        // })
+        netGraph.removeNodes();
     });
 
 
@@ -263,6 +263,7 @@ function draw(rawData) {
         })
     });
 }
+draw();
 
 
 
