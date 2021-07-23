@@ -44,6 +44,10 @@ export default class CanvasController {
             
         }
         this.canvas = document.createElement('canvas');
+        this.canvas.addEventListener('contextmenu',(e)=>{
+            e.preventDefault();
+            this.eventController.fire("canvasRightClick",e);
+        })
         container.appendChild(this.canvas);
         this.gl = this.canvas.getContext('webgl2');
         if (this.deck) {
@@ -91,7 +95,7 @@ export default class CanvasController {
     }
 
     _deckClickHandler(info, e) {
-        this.eventController.fire('emptyClick',info,e);
+        this.eventController.fire('emptyClick',[info,e]);
         return true;
         // if (!e.leftButton) {
         //     if (this.props.backgroundRightClick) {
@@ -464,17 +468,17 @@ export default class CanvasController {
     _nodeClickHandler(info, e) {
       
         if (!e.leftButton) {
-            this.eventController.fire('nodeLeftClick', info, e);
+            this.eventController.fire('nodeLeftClick', [info, e]);
             if (this.props.nodeRightClick) {
                 this.props.nodeRightClick(info, e);
             }
             return true;
         }
         if(e.srcEvent.ctrlKey){
-            this.eventController.fire('nodeClickWithCtrl',info,e);
+            this.eventController.fire('nodeClickWithCtrl',[info,e]);
             return true;
         }
-        this.eventController.fire('nodeClick', info, e);
+        this.eventController.fire('nodeClick', [info, e]);
         if (info.object.status === 1) {
             this.elementController.updateNodeStatus([info.object.id], 2);
         } else if (info.object.status === 2) {
@@ -484,19 +488,19 @@ export default class CanvasController {
     }
 
     _nodeDragStartHandler(info, e) {
-        this.eventController.fire('nodeDragStart', info, e);
+        this.eventController.fire('nodeDragStart', [info, e]);
         return true;
     }
 
     _nodeDragingHandler(info, e) {
         this.elementController.updateNodeLocation([info.object.id], { x: parseFloat(e.offsetCenter.x* (2 ** -this.props.zoom) + (this.props.viewState.target[0] - this.props.initTarget[0]* (2 ** -this.props.zoom))) , y: parseFloat(e.offsetCenter.y * (2 ** -this.props.zoom) + (this.props.viewState.target[1] - this.props.initTarget[1] * (2 ** -this.props.zoom))) }, this.groupDrag);
-        this.eventController.fire('nodeDraging', info, e);
+        this.eventController.fire('nodeDraging', [info, e]);
         return true;
     }
 
     _nodeDragEndHandler(info, e) {
         //this.elementController.updateNodeLocation([info.object.id], { x: parseInt(e.deltaX) * (2 ** -this.props.zoom), y: parseInt(e.deltaY) * (2 ** -this.props.zoom) });
-        this.eventController.fire('nodeDragEnd', info, e);
+        this.eventController.fire('nodeDragEnd', [info, e]);
         return true;
     }
     _nodeHoverHandler(info, e) {
@@ -505,12 +509,11 @@ export default class CanvasController {
 
 
     _lineClickHandler(info, e) {
-        console.log('lineC')
         if(e.srcEvent.ctrlKey){
-            this.eventController.fire('lineClickWithCtrl',info,e);
+            this.eventController.fire('lineClickWithCtrl',[info,e]);
             return true;
         }
-        this.eventController.fire('lineClick', info, e);
+        this.eventController.fire('lineClick', [info, e]);
         return true;
     }
     _lineHoverHandler(info, e) {
@@ -583,7 +586,7 @@ export default class CanvasController {
         let nodeIds = this.pickObject(brushInfo);
         this.elementController.updateNodeStatus(nodeIds, 2);
         
-        this.eventController.fire('brush', nodeIds);
+        this.eventController.fire('brush', [nodeIds]);
         this.eventController.unSubscribeByName('_brushend');
     }
 

@@ -1,8 +1,17 @@
 import * as d3 from 'd3';
 
 export default class PositionController {
-    constructor(netGraph) {
+    constructor(netGraph,{width,height}) {
         this.netGraph = netGraph;
+        this.canvasCenter={
+            x:width/2,
+            y:height/2
+        }
+        this.offset={
+            x:0,
+            y:0
+        }
+       
         this.useLayout = 'square';
         this._mapType = {
             square: this.square,
@@ -27,14 +36,17 @@ export default class PositionController {
         }
     }
 
-    square(nodes, elementController,offset=null) {
+    square(nodes, elementController) {
         if (nodes.length > 0) {
             let nodeIds = [];
             let rowNum = Math.ceil(Math.sqrt(nodes.length));
             let node1 = nodes[0];
-            if (!node1.x) {
-                node1.x = offset.maxX||0;
-                node1.y = offset.maxY||0;
+            if (node1) {
+                this.offset.x+=(Math.random()-0.5)*200;
+                this.offset.y+=(Math.random()-0.5)*200;
+               
+                node1.x = ((this.canvasCenter.x-rowNum*150)||0)+this.offset.x;
+                node1.y = ((this.canvasCenter.y-rowNum*150)||0)+this.offset.y;
             }
             let col = 0;
             let row = 0;
@@ -50,6 +62,7 @@ export default class PositionController {
                     row++;
                 }
             }
+            console.log(node1);
             return elementController.updateLinkPosition(nodeIds);
         }
         return null;

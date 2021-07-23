@@ -7,7 +7,7 @@ export default class RenderPolygon {
         this.polygon = [];
         this.polygonType = type;
         this.origionElement = element;
-        this.status=2;
+        this.status=element.getStatus();
         this.style = {
             polygonColor: [255, 255, 255, 255],
             polygonShape: 'none',

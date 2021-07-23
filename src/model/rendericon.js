@@ -7,7 +7,7 @@ export default class RenderIcon{
         this.position=[0,0];
         this.origionElement=element;
         this.url='';
-        this.status=2;
+        this.status=element.getStatus();
         this.style={
             iconWidth:5,
             iconHeight:5,

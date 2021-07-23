@@ -17,7 +17,7 @@ export default class NetGraph {
 
         const eventController=new EventController();
         const dataController = new DataController(props.data);
-        const positionController = new PositionController(this);
+        const positionController = new PositionController(this,{width:props.canvasProps.containerWidth,height:props.canvasProps.containerHeight});
         const styleController = new StyleController(props.style, this.dataController);
         this.controller = {
             dataController,
@@ -40,7 +40,7 @@ export default class NetGraph {
      */
     addData(data) {
         this.controller.dataController.addData(data);
-        this.controller.elementController.parseNewData();
+        this.controller.elementController.parseNewData('add');
 
     }
 
@@ -50,7 +50,7 @@ export default class NetGraph {
      */
     replaceData(data) {
         this.controller.dataController.replaceData(data);
-        this.controller.elementController.reParse();
+        this.controller.elementController.parseNewData('replace');
     }
 
    
@@ -120,6 +120,51 @@ export default class NetGraph {
         this.controller.styleController.addStyle(styles);
         this.controller.elementController.updateStyle();
     }
+
+    /**
+     * 刷新所有样式
+     */
+    updateStyle(){
+        this.controller.elementController.updateStyle();
+    }
+
+    /**
+     * 为指定id node 添加class
+     * @param {nodeId Array} nodeIds 
+     * @param {class Array} classes 
+     */
+    addClassForNode(nodeIds,classes){
+        this.controller.elementController.addClassForNode(nodeIds,classes);
+    }
+
+    /**
+     * 为指定id node 删除class
+     * @param {nodeId Array} nodeIds 
+     * @param {class Array} classes 
+     */
+    removeClassForNode(nodeIds,classes){
+        this.controller.elementController.removeClassForNode(nodeIds,classes);
+    }
+
+    /**
+     * 为指定 id link 添加 class
+     * @param {linkId Array} linkIds 
+     * @param {class Array} classed 
+     */
+    addClassForLink(linkIds,classes){
+        this.controller.elementController.addClassForLink(linkIds,classes)
+    }
+
+    /**
+     * 为指定 id link 删除 class
+     * @param {linkId Array} linkIds linkId
+     * @param {class Array} classes classed
+     */
+    removeClassForLink(linkIds,classes){
+        this.controller.elementController.removeClassForLink(linkIds,classes);
+    }
+
+
     /**
      * 将已有的所有styles经行替换
      * @param {*} styles 

@@ -9,7 +9,7 @@ export default class RenderText {
         this.position = [0, 0];
         this.origionElement = element;
         this.text = '';
-        this.status=2;
+        this.status=element.getStatus();
         if(element instanceof Link){
             this.offset=offset;
         }

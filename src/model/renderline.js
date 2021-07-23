@@ -10,7 +10,7 @@ export default class RenderLine {
         this.targetPosition = [0, 0];
         this.origionElement = element;
         this.offset=offset;
-        this.status=2;
+        this.status=element.getStatus();
         this.style = {
             lineWidth: 1,
             lineColor: [255, 255, 255, 255],

@@ -7,7 +7,7 @@ export default class RenderBorder {
         this.id = element.getId();
         this.position = [0,0];
         this.origionElement = element;
-        this.status=2;
+        this.status=element.getStatus();
         this.shapeType=0;//0 圆形 1圆角矩形
         this.style = {
             backgroundWidth: 10,

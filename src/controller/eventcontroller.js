@@ -12,7 +12,7 @@ export default class EventController {
             const evs=this.events.get(eventName);
 
             evs.forEach((ev)=>{
-                ev.func(args);
+                ev.func(...args);
             });
         // },100);
         return this;

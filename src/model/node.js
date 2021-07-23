@@ -1,4 +1,3 @@
-import Link from "./link";
 //组件中使用的Node数据结构
 export default class Node {
 
@@ -13,6 +12,8 @@ export default class Node {
         this.y = 0;
         this.status = 2;//1未选中，2选中，3隐藏
         this.styles
+        this.sourceLinks = new Array();
+        this.targetLinks = new Array();
     }
 
     getId() {
@@ -98,8 +99,8 @@ export default class Node {
                     this.classes.splice(index, 1);
                 }
             }
-        }else{
-            this.classes=[];
+        } else {
+            this.classes = [];
         }
     }
 
@@ -115,6 +116,45 @@ export default class Node {
     }
     getStyles() {
         return this.styles;
+    }
+
+    addSourceLink(link) {
+        if (link) {
+            this.sourceLinks.push(link);
+        }
+
+    }
+    getSourceLinks() {
+        return this.sourceLinks;
+    }
+
+    removeSourceLink(link){
+        if(link){
+            const index=this.sourceLinks.indexOf(link);
+            if(index>-1){
+                this.sourceLinks.splice(index,1);
+            }
+        }
+    }
+
+
+    addTargetLink(link) {
+        if (link) {
+            this.targetLinks.push(link)
+        }
+
+    }
+    getTargetLinks() {
+        return this.targetLinks;
+    }
+
+    removeTargetLink(link){
+        if(link){
+            const index=this.targetLinks.indexOf(link);
+            if(index>-1){
+                this.targetLinks.splice(index,1);
+            }
+        }
     }
 
 }

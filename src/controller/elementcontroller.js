@@ -32,35 +32,25 @@ export default class ElementController {
      * 
      * 解析 Node Link
      */
-    parseNewData() {
-        this._parseParams('new');
+    parseNewData(flag=null) {
+        if(!flag||flag==='replace'){
+            this._parseParams('new');
+        }else{
+            this._parseParams('add')
+        }
+        
     }
 
     _parseParams(flag, nodeIds) {
         if (flag === 'new') {
             const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData());
             this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
-            let maxX=0;
-            let maxY=0;
-            let offset={
-                maxX,
-                maxY
-            }
-            if(this.nodes[0]){
-                maxX=this.nodes[0].x;
-                maxY=this.nodes[0].y;
-                this.nodes.forEach((node,i)=>{
-                    if(node.x>maxX){
-                        maxX=node.x;
-                    }
-                    if(node.y>maxY){
-                        maxY=node.y;
-                    }
-                });
-                offset.maxX=maxX;
-                offset.maxY=maxY;
-            }
-            this.controller.positionController.layout()(newNodeArray, this,offset);
+            this.controller.positionController.layout()(newNodeArray, this);
+            this._parseElements(newNodeArray, newLinkArray, 'all');
+        }else if(flag==='add'){
+            const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData());
+            this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
+            this.controller.positionController.layout()(newNodeArray, this);
             this._parseElements(newNodeArray, newLinkArray, 'part');
         } else {
             if (!nodeIds) {
@@ -86,7 +76,7 @@ export default class ElementController {
         this.controller = controller;
         this.idMapNode = new Map();//id Node 映射
         this.idMapLink = new Map();//id Link 映射
-        this.nodeIdMapLinks = new Map();//node Id 映射与该node发生关联的所有的link
+        //this.nodeIdMapLinks = new Map();//node Id 映射与该node发生关联的所有的link
         this.nodeRenderMap = new Map();// node id 映射该node 对应的所有的 renderobj
         this.linkRenderMap = new Map();// link id 映射该link 对应的所有的 renderobj
         this.characterSet = new Set();//保存textlayer的字符
@@ -140,16 +130,13 @@ export default class ElementController {
                 this._generateCharSet(renderText.text);
                 nodeRenders.textObjs.push(renderText);
                 if (this.nodeRenderMap.has(node.getId())) {
-                   
+
                     Object.assign(this.nodeRenderMap.get(node.getId()), nodeRenders);
                 } else {
-
-                    
                     this.nodeRenderMap.set(node.getId(), nodeRenders);
                 }
 
             });
-
         }
 
         linkArray.forEach((link) => {
@@ -171,7 +158,7 @@ export default class ElementController {
                 borderWidth: targetRenderBorder.style.borderWidth
             }
             const offset = { sourceOffset, targetOffset }
-            
+
             const renderLine = new RenderLine(link, offset);
             linkRenders.lineObjs.push(renderLine);
 
@@ -190,10 +177,6 @@ export default class ElementController {
         this._generateRenderObjs();
     }
 
-    _updateRenderObjs(nodeIds) {
-
-
-    }
 
     _generateRenderObjs() {
         this.renderObject = {
@@ -253,19 +236,23 @@ export default class ElementController {
             if (data.links && data.links.length > 0) {
                 data.links.forEach((link) => {
                     const linkEntity = new Link(link.id, link);
-                    newLinkArray.push(linkEntity);
-                    this.links.push(linkEntity);
-                    if (this.idMapLink.has(linkEntity.getId())) {
-                        linkEntity.id = 'a' + linkEntity.id;
-                        this.idMapLink.set(linkEntity.getId(), linkEntity);
+                    if (this.idMapNode.has(linkEntity.source.id) && this.idMapNode.has(linkEntity.target.id)) {
+                        newLinkArray.push(linkEntity);
+                        this.links.push(linkEntity);
+                        this.idMapLink.set(linkEntity.id, linkEntity);
+                        this.idMapNode.get(linkEntity.source.id).addSourceLink(linkEntity);
+                        this.idMapNode.get(linkEntity.target.id).addTargetLink(linkEntity);
                     } else {
-                        this.idMapLink.set(linkEntity.getId(), linkEntity);
+                        throw new Error(`link cannot find soure or target node`);
                     }
                 });
             }
+        }else{
+            this.nodes=[];
+            this.links=[];
         }
 
-        this._addLinksToNodeIdMapLinks(newLinkArray);
+        // this._addLinksToNodeIdMapLinks(newLinkArray);
         return {
             newNodeArray: newNodeArray,
             newLinkArray: newLinkArray
@@ -273,114 +260,6 @@ export default class ElementController {
 
     }
 
-    /**
-     * 生成node id 到与该node 关联的link 的map
-     */
-    _generateNodeIdMapLinks() {
-        this.links.forEach((link) => {
-            const sourceNodeId = link.source.id;
-            const targetNodeId = link.target.id;
-            if (this.nodeIdMapLinks.has(sourceNodeId)) {
-                const sourceLinks = this.nodeIdMapLinks.get(sourceNodeId).sourceLinks;
-                if (sourceLinks && sourceLinks.indexOf(link) === -1) {
-                    sourceLinks.push(link);
-                }
-            } else {
-                let tempObj = {
-                    sourceLinks: new Array(),
-                    targetLinks: new Array(),
-                }
-                tempObj.sourceLinks.push(link);
-                this.nodeIdMapLinks.set(sourceNodeId, tempObj);
-            }
-
-            if (this.nodeIdMapLinks.has(targetNodeId)) {
-                const targetLinks = this.nodeIdMapLinks.get(targetNodeId).targetLinks;
-                if (targetLinks && targetLinks.indexOf(link) === -1) {
-                    targetLinks.push(link);
-                }
-            } else {
-                let tempObj = {
-                    sourceLinks: new Array(),
-                    targetLinks: new Array(),
-                }
-                tempObj.targetLinks.push(link);
-                this.nodeIdMapLinks.set(targetNodeId, tempObj);
-            }
-        });
-    }
-    /**
-     * 将最新的link 添加到map 中
-     * @param {最新的link} newLinks 
-     */
-    _addLinksToNodeIdMapLinks(newLinks) {
-        if (newLinks) {
-            newLinks.forEach((link) => {
-                const sourceNodeId = link.source.id;
-                const targetNodeId = link.target.id;
-                if (this.nodeIdMapLinks.has(sourceNodeId)) {
-                    const sourceLinks = this.nodeIdMapLinks.get(sourceNodeId).sourceLinks;
-                    if (sourceLinks && sourceLinks.indexOf(link) === -1) {
-                        sourceLinks.push(link);
-                    }
-                } else {
-                    let tempObj = {
-                        sourceLinks: new Array(),
-                        targetLinks: new Array(),
-                    }
-                    tempObj.sourceLinks.push(link);
-                    this.nodeIdMapLinks.set(sourceNodeId, tempObj);
-                }
-                if (this.nodeIdMapLinks.has(targetNodeId)) {
-                    const targetLinks = this.nodeIdMapLinks.get(targetNodeId).targetLinks;
-                    if (targetLinks && targetLinks.indexOf(link) === -1) {
-                        targetLinks.push(link);
-                    }
-                } else {
-                    let tempObj = {
-                        sourceLinks: new Array(),
-                        targetLinks: new Array(),
-                    }
-                    tempObj.targetLinks.push(link);
-                    this.nodeIdMapLinks.set(targetNodeId, tempObj);
-                }
-            })
-        }
-    }
-
-    /**
-     * 从map 中删除link
-     * @param {删除的link}} deletedLinks 
-     */
-    _removeLinksFromNodeIdMapLinks(deletedLinks) {
-        if (deletedLinks && deletedLinks.length > 0) {
-            deletedLinks.forEach((link) => {
-                const sourceLinks = this.nodeIdMapLinks.get(link.source.id).sourceLinks;
-                const sourceIndex = sourceLinks.indexOf(link);
-                if (sourceIndex >= 0) {
-                    sourceLinks.splice(sourceIndex, 1);
-                }
-                const targetLinks = this.nodeIdMapLinks.get(link.target.id).targetLinks;
-                const targetIndex = targetLinks.indexOf(link);
-                if (targetIndex >= 0) {
-                    targetLinks.splice(targetIndex, 1);
-                }
-            });
-        }
-    }
-    /**
-     * 从map 中删除node
-     * @param {id} nodeIds 
-     */
-    _removeNodesFromNodeIdMapLinks(nodeIds) {
-        if (nodeIds && nodeIds.length > 0) {
-            nodeIds.forEach((id) => {
-                if (this.nodeIdMapLinks.has(id)) {
-                    this.nodeIdMapLinks.delete(id);
-                }
-            })
-        }
-    }
     /**
      * 根据node 位置生成link 的起始位置
      */
@@ -416,6 +295,53 @@ export default class ElementController {
         this._parseElements(newNodeArray, newLinkArray, "all");
     }
 
+    addClassForNode(nodeIds,classes){
+        if(nodeIds&&classes){
+            nodeIds.forEach(id=>{
+                const node=this.idMapNode.get(id);
+                if(node&&classes.length>0){
+                    node.classes=[...node.classes,...classes];
+                }
+            })
+        }
+        this._parseParams('part',nodeIds);
+    }
+
+    removeClassForNode(nodeIds,classes){
+        if(nodeIds&&nodeIds.length>0&&classes){
+            nodeIds.forEach(id=>{
+                const node=this.idMapNode.get(id);
+                if(node&&classes.length>0){
+                    node.removeClasses(classes);
+                }
+            })
+        }
+        this._parseParams('part',nodeIds);
+    }
+    addClassForLink(linkIds,classes){
+        if(linkIds&&classes){
+            linkIds.forEach(id=>{
+                const link=this.idMapLink.get(id);
+                if(link&&classes.length>0){
+                    link.classes=[...link.classes,...classes];
+                }
+            })
+        }
+        this._parseParams('part',[]);
+    }
+
+    removeClassForLink(linkIds,classes){
+        if(linkIds&&classes){
+            linkIds.forEach(id=>{
+                const link=this.idMapLink.get(id);
+                if(link&&classes.length>0){
+                    link.removeClasses(classes);
+                }
+            })
+        }
+        this._parseParams('part',[]);
+    }
+
     /**
      * 对位置发生变化的node 更新其对应的 link 的位置
      * @param {id} nodeIds 
@@ -426,19 +352,16 @@ export default class ElementController {
         if (nodeIds) {
             nodeIds.forEach((nodeId) => {
                 const node = this.idMapNode.get(nodeId);
-                if (node && this.nodeIdMapLinks.has(nodeId)) {
-                    const links = this.nodeIdMapLinks.get(nodeId);
-                    const sourceLinks = links.sourceLinks;
-                    const targetLinks = links.targetLinks;
-                    sourceLinks.forEach((sourceLink) => {
-                        sourceLink.setSourceLocation(node.getLocation());
-                        linkIdSet.add(sourceLink.getId());
-                    });
-                    targetLinks.forEach((targetLink) => {
-                        targetLink.setTargetLocation(node.getLocation());
-                        linkIdSet.add(targetLink.getId());
-                    });
-                }
+                const sourceLinks = node.sourceLinks;
+                const targetLinks = node.targetLinks;
+                sourceLinks.forEach((link) => {
+                    link.setSourceLocation(node.getLocation());
+                    linkIdSet.add(link.getId());
+                });
+                targetLinks.forEach((link) => {
+                    link.setTargetLocation(node.getLocation());
+                    linkIdSet.add(link.getId());
+                });
             });
             return Array.from(linkIdSet);
 
@@ -446,31 +369,6 @@ export default class ElementController {
             this._generateLinkLocation();
         }
         return null;
-    }
-    /**
-     * 更新renderObj的位置
-     */
-    updateRenderObjLocation() {
-        const renderObjects = this.nodeRenderMap.get(nodeId);
-        renderObjects.iconObjs.forEach((icon) => {
-            icon.reLocation();
-        });
-        renderObjects.textObjs.forEach((text) => {
-            text.reLocation();
-        });
-        renderObjects.borderObjs.forEach((border) => {
-            border.reLocation();
-        });
-        const links = this.nodeIdMapLinks.get(id);
-        const sourceLinks = links.sourceLinks;
-        const targetLinks = links.targetLinks;
-        sourceLinks.forEach((link) => {
-            idsSet.add(link.getId());
-        });
-        targetLinks.forEach((link) => {
-            idsSet.add(link.getId());
-        });
-        this._updateRenderLinkObjLocation(Array.from(idsSet));
     }
     /**
      * 根据id 获取 node
@@ -550,31 +448,37 @@ export default class ElementController {
      * @param {id} nodeIds 
      */
     removeNodes(nodeIds) {
-        
+
         if (nodeIds && nodeIds.length > 0) {
             const linkIds = new Set();
             nodeIds.forEach((id) => {
                 if (this.idMapNode.has(id)) {
                     const node = this.idMapNode.get(id);
                     const index = this.nodes.indexOf(node);
-                   
+
                     this.nodes.splice(index, 1);
-                   
+
                     this.idMapNode.delete(id);
-                    if (this.nodeIdMapLinks.has(id)) {
-                        const links = this.nodeIdMapLinks.get(id);
-                        links.sourceLinks.forEach((link) => {
-                            linkIds.add(link.getId());
-                        });
-                        links.targetLinks.forEach((link) => {
-                            linkIds.add(link.getId());
-                        })
-                    }
+                    const sourceLinks = node.sourceLinks;
+                    const targetLinks = node.targetLinks;
+                    sourceLinks.forEach(link => {
+                        linkIds.add(link.getId());
+                        const targetNode = this.idMapNode.get(link.target.id);
+                        if (targetNode) {
+                            targetNode.removeTargetLink(link);
+                        }
+                    });
+                    targetLinks.forEach(link => {
+                        linkIds.add(link.getId());
+                        const sourceNode = this.idMapNode.get(link.source.id);
+                        if (sourceNode) {
+                            sourceNode.removeSourceLink(link);
+                        }
+                    })
                 }
             });
             this._removeRenderObjectForNode(nodeIds);
             this.removeLinks(Array.from(linkIds));
-            this._removeNodesFromNodeIdMapLinks(nodeIds);
 
         }
     }
@@ -656,16 +560,23 @@ export default class ElementController {
             const deletedLinks = new Array();
             linkIds.forEach((id) => {
                 const link = this.idMapLink.get(id);
+                const sourceNode = this.idMapNode.get(link.source.id);
+                if (sourceNode) {
+                    sourceNode.removeSourceLink(link);
+                }
+                const targetNode = this.idMapNode.get(link.target.id);
+                if (targetNode) {
+                    targetNode.removeTargetLink(link);
+                }
                 const index = this.links.indexOf(link);
                 deletedLinks.push(link);
                 this.links.splice(index, 1);
                 this.idMapLink.delete(id);
             });
             this._removeRenderObjectForLink(linkIds);
-            this._removeLinksFromNodeIdMapLinks(deletedLinks);
         }
         this.controller.canvasController.updateRenderObject(this.renderObject);
-        
+
     }
     //隐藏node
     hideNodes(nodeIds) {
@@ -673,16 +584,14 @@ export default class ElementController {
             nodeIds.forEach((id) => {
                 if (this.idMapNode.has(id)) {
                     //todo
-                    this.idMapNode.get(id).setStatus(3);
-                    if (this.nodeIdMapLinks.has(id)) {
-                        const linkObj = this.nodeIdMapLinks.get(id);
-
-                        linkObj.sourceLinks.forEach((sourceLink) => {
-                            sourceLink.setStatus(3);
+                    const node = this.idMapNode.get(id);
+                    if (node) {
+                        node.setStatus(3);
+                        node.sourceLinks.forEach(link => {
+                            link.setStatus(3);
                         });
-
-                        linkObj.targetLinks.forEach((targetLink) => {
-                            targetLink.setStatus(3);
+                        node.targetLinks.forEach(link => {
+                            link.setStatus(3);
                         })
                     }
                 }
@@ -704,32 +613,31 @@ export default class ElementController {
                 this._updateNodeRenderObjStatus();
             }
             nodeIds.forEach((id) => {
-
-                if (this.idMapNode.has(id)) {
-                    this.idMapNode.get(id).setStatus(status);
+                const node = this.idMapNode.get(id);
+                if (node) {
+                    node.setStatus(status);
+                    if (status === 3) {
+                        const sourceLinks = node.getSourceLinks();
+                        const targetLinks = node.getTargetLinks();
+                        sourceLinks.forEach(link => {
+                            idsSet.set(link.getId());
+                        });
+                        targetLinks.forEach(link => {
+                            idsSet.set(link.getId());
+                        });
+                    }
                 }
-
                 const renderObjects = this.nodeRenderMap.get(id);
-                renderObjects.iconObjs.forEach((icon) => {
-                    icon.updateStatus();
-                });
-                renderObjects.textObjs.forEach((text) => {
-                    text.updateStatus();
-                });
-                renderObjects.borderObjs.forEach((border) => {
-                    border.updateStatus();
-                });
-                if (status === 3) {
-                    const links = this.nodeIdMapLinks.get(id);
-                    const sourceLinks = links.sourceLinks;
-                    const targetLinks = links.targetLinks;
-                    sourceLinks.forEach((link) => {
-                        idsSet.add(link.getId());
+                if (renderObjects) {
+                    renderObjects.iconObjs.forEach((icon) => {
+                        icon.updateStatus();
                     });
-                    targetLinks.forEach((link) => {
-                        idsSet.add(link.getId());
+                    renderObjects.textObjs.forEach((text) => {
+                        text.updateStatus();
                     });
-
+                    renderObjects.borderObjs.forEach((border) => {
+                        border.updateStatus();
+                    });
                 }
             });
             if (status === 3) {
