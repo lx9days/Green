@@ -290,7 +290,7 @@ export default class CanvasController {
                 }
             }
         });
-        this.deck.setProps({width:"100%",height:"100%", layers: [lineLayer, arrowLayer, circleEdge, roundedEdge, iconLayer, textLayer] });
+        this.deck.setProps({width:this.props.containerWidth,height:this.props.containerHeight, layers: [lineLayer, arrowLayer, circleEdge, roundedEdge, iconLayer, textLayer] });
     }
 
     renderGraph() {
@@ -462,7 +462,7 @@ export default class CanvasController {
                 }
             }
         });
-        this.deck.setProps({width:"100%",height:"100%", layers: [lineLayer, arrowLayer, circleEdge, roundedEdge, iconLayer, textLayer] });
+        this.deck.setProps({width:this.props.containerWidth,height:this.props.containerHeight, layers: [lineLayer, arrowLayer, circleEdge, roundedEdge, iconLayer, textLayer] });
     }
 
     _nodeClickHandler(info, e) {
