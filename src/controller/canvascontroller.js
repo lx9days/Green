@@ -100,12 +100,6 @@ export default class CanvasController {
             this.eventController.fire('emptyClick',[info,e]);
         }
         return true;
-        // if (!e.leftButton) {
-        //     if (this.props.backgroundRightClick) {
-        //         this.props.backgroundRightClick(info, e);
-        //     }
-        //     return;
-        // }
 
     }
 

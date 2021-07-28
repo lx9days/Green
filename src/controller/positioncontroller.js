@@ -62,7 +62,6 @@ export default class PositionController {
                     row++;
                 }
             }
-            console.log(node1);
             return elementController.updateLinkPosition(nodeIds);
         }
         return null;
