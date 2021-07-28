@@ -264,4 +264,12 @@ export default class NetGraph {
     exportDataAsString() {
         return JSON.stringify(this.props.data).toString();
     }
+
+    /**
+     * 将canvas 转换为base64 
+     * 
+     */
+    exportCanvasAsBase64(){
+       return this.controller.canvasController.exportCanvasAsBase64()
+    }
 }

@@ -587,6 +587,11 @@ export default class CanvasController {
         this.eventController.unSubscribeByName('_brushend');
     }
 
+    exportCanvasAsBase64(){
+        this.deck.redraw(true);
+        return this.deck.canvas.toDataURL();
+    }
+
 
 
 }
