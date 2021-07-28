@@ -45,8 +45,9 @@ export default class CanvasController {
         }
         this.canvas = document.createElement('canvas');
         this.canvas.addEventListener('contextmenu',(e)=>{
+           
+            this.eventController.fire("canvasRightClick",[e]);
             e.preventDefault();
-            this.eventController.fire("canvasRightClick",e);
         })
         container.appendChild(this.canvas);
         this.gl = this.canvas.getContext('webgl2');
@@ -95,7 +96,9 @@ export default class CanvasController {
     }
 
     _deckClickHandler(info, e) {
-        this.eventController.fire('emptyClick',[info,e]);
+        if(e.leftButton){
+            this.eventController.fire('emptyClick',[info,e]);
+        }
         return true;
         // if (!e.leftButton) {
         //     if (this.props.backgroundRightClick) {

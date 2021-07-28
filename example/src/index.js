@@ -151,10 +151,14 @@ function draw(rawData) {
     netGraph.addEventListener('lineClick',(o,e)=>{
         console.log('lineClick');
     });
+    netGraph.addEventListener('canvasRightClick',(info,e)=>{
+        console.log('canvas right click')
+    })
     netGraph.addEventListener('lineClickWithCtrl',(o,e)=>{
         console.log('lineClickWithCtrl');
     });
     netGraph.addEventListener('emptyClick',(o,e)=>{
+        console.log("emptyClick");
         // console.log('emptyClick');
         // netGraph.getNodes(['a005'])[0].addClasses(['fff']);
         // netGraph.addStyle([{
@@ -181,6 +185,9 @@ function draw(rawData) {
     netGraph.addEventListener('brush', (nodeIds) => {
         console.log(nodeIds);
     });
+    netGraph.addEventListener('rightClick',()=>{
+        console.log("rightClick")
+    })
     document.getElementById('remove').addEventListener('click', (e) => {
         console.log(e);
         const selectedNodes = netGraph.getSelectedNodes();
