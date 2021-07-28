@@ -1,5 +1,7 @@
 import axios from 'axios';
 import NetGraph from '../../src/index';
+import blobTOBase from 'blob-to-base64'
+import { base64ToBlob, blobToBase64 } from 'base64-blob'
 
 const debug = true;
 
@@ -152,6 +154,7 @@ function draw(rawData) {
         console.log('lineClick');
     });
     netGraph.addEventListener('canvasRightClick',(info,e)=>{
+        console.log(netGraph.exportCanvasAsBase64())
         console.log('canvas right click')
     })
     netGraph.addEventListener('lineClickWithCtrl',(o,e)=>{
@@ -186,6 +189,7 @@ function draw(rawData) {
         console.log(nodeIds);
     });
     netGraph.addEventListener('rightClick',()=>{
+        
         console.log("rightClick")
     })
     document.getElementById('remove').addEventListener('click', (e) => {
