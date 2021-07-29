@@ -35,8 +35,6 @@
   "dependencies": {
     "@deck.gl/core": "^8.3.11",
     "@deck.gl/layers": "^8.3.8",
-    "base64-blob": "^1.4.1",
-    "blob-to-base64": "^1.0.2",
     "d3": "^6.3.1",
     "hex-rgb": "^4.2.0"
   }
