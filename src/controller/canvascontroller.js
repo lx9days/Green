@@ -18,7 +18,7 @@ export default class CanvasController {
         this.nodeDragStartHandler = this._nodeDragStartHandler.bind(this);
         this.nodeDragingHandler = this._nodeDragingHandler.bind(this);
         this.nodeDragEndHandler = this._nodeDragEndHandler.bind(this);
-        this.lineClickHandler=this._lineClickHandler.bind(this);
+        this.lineClickHandler = this._lineClickHandler.bind(this);
         this.deckClickHandler = this._deckClickHandler.bind(this);
         this.deckDragStartHandler = this._deckDragStartHandler.bind(this);
         this.deckDragingHandler = this._deckDragingHandler.bind(this);
@@ -38,15 +38,17 @@ export default class CanvasController {
         this.props.viewState = initViewState;
         this.props.initTarget = initViewState.target;
         const container = document.getElementById(this.props.container);
-        if(!this.props.containerWidth||!this.props.containerHeight){
-            
+        if (!this.props.containerWidth || !this.props.containerHeight) {
+
             throw Error('please setup container dimension');
-            
+
         }
         this.canvas = document.createElement('canvas');
-        this.canvas.addEventListener('contextmenu',(e)=>{
-           
-            this.eventController.fire("canvasRightClick",[e]);
+        this.canvas.width=this.props.containerWidth;
+        this.canvas.height=this.props.containerHeight;
+        this.canvas.addEventListener('contextmenu', (e) => {
+
+            this.eventController.fire("canvasRightClick", [e]);
             e.preventDefault();
         })
         container.appendChild(this.canvas);
@@ -54,7 +56,8 @@ export default class CanvasController {
         if (this.deck) {
             this.deck = null;
         }
-        
+        console.log(this.props.containerWidth,this.props.containerHeight);
+
         this.deck = new Deck({
             views: new OrthographicView({
                 id: 'globalView',
@@ -66,8 +69,8 @@ export default class CanvasController {
                 minZoom: this.props.minZoom,
                 controller: true,
             }),
-            width:this.props.containerWidth,
-            height:this.props.containerHeight,
+            width: this.props.containerWidth,
+            height: this.props.containerHeight,
             initialViewState: initViewState,
             onViewStateChange: this.onViewStateChange,
             gl: this.gl,
@@ -96,8 +99,8 @@ export default class CanvasController {
     }
 
     _deckClickHandler(info, e) {
-        if(e.leftButton){
-            this.eventController.fire('emptyClick',[info,e]);
+        if (e.leftButton) {
+            this.eventController.fire('emptyClick', [info, e]);
         }
         return true;
 
@@ -116,7 +119,7 @@ export default class CanvasController {
         this.isAllowCanvasMove = false;
     }
 
-    updateRenderGraph(){
+    updateRenderGraph() {
         const zoom = this.props.zoom;
         const { renderBorders, renderIcons, renderLines, renderText, renderPolygon, charSet } = this.renderObject;
         const lineLayer = new LineLayer({
@@ -129,11 +132,11 @@ export default class CanvasController {
             getSourcePosition: d => d.sourcePosition,
             getTargetPosition: d => d.targetPosition,
             getColor: d => d.style.lineColor || [255, 255, 255, 255],
-            updateTriggers:{
-                getSourcePosition:d => d.sourcePosition,
+            updateTriggers: {
+                getSourcePosition: d => d.sourcePosition,
                 getTargetPosition: d => d.targetPosition,
             },
-            onClick:this.lineClickHandler,
+            onClick: this.lineClickHandler,
         });
         const iconLayer = new IconLayer({
             id: 'icon-layer',
@@ -156,8 +159,8 @@ export default class CanvasController {
             onClick: this.nodeClickHandler,
             onDragStart: this.nodeDragStartHandler,
             onDragEnd: this.nodeDragEndHandler,
-            updateTriggers:{
-                getPosition:d=>{
+            updateTriggers: {
+                getPosition: d => {
                     return d.position;
                 },
                 getSize: d => d.style.iconSize * (2 ** zoom),
@@ -199,7 +202,7 @@ export default class CanvasController {
             onClick: this.nodeClickHandler,
             onDragStart: this.nodeDragStartHandler,
             onDragEnd: this.nodeDragEndHandler,
-            
+
         });
 
 
@@ -261,8 +264,8 @@ export default class CanvasController {
             getAlignmentBaseline: d => d.style.textAlignmentBaseline,
             characterSet: charSet,
             getColor: (d) => d.style.textColor,
-            updateTriggers:{
-                getPosition:d=>{
+            updateTriggers: {
+                getPosition: d => {
                     return d.position;
                 }
             }
@@ -281,13 +284,13 @@ export default class CanvasController {
                 return d.polygon;
             },
             getFillColor: (d) => d.style.polygonFillColor,
-            updateTriggers:{
-                getPolygon:d=>{
+            updateTriggers: {
+                getPolygon: d => {
                     return d.polygon;
                 }
             }
         });
-        this.deck.setProps({width:this.props.containerWidth,height:this.props.containerHeight, layers: [lineLayer, arrowLayer, circleEdge, roundedEdge, iconLayer, textLayer] });
+        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, circleEdge, roundedEdge, iconLayer, textLayer] });
     }
 
     renderGraph() {
@@ -295,22 +298,22 @@ export default class CanvasController {
         const { renderBorders, renderIcons, renderLines, renderText, renderPolygon, charSet } = this.renderObject;
         const lineLayer = new LineLayer({
             id: 'line-layer',
-            data: renderLines.filter(()=>true),
+            data: renderLines.filter(() => true),
             autoHighlight: true,
             pickable: true,
             getWidth: d => d.style.lineWidth || 2,
             getSourcePosition: d => d.sourcePosition,
             getTargetPosition: d => d.targetPosition,
             getColor: d => d.style.lineColor || [255, 255, 255, 255],
-            updateTriggers:{
-                getSourcePosition:d => d.sourcePosition,
+            updateTriggers: {
+                getSourcePosition: d => d.sourcePosition,
                 getTargetPosition: d => d.targetPosition,
             },
-            onClick:this.lineClickHandler,
+            onClick: this.lineClickHandler,
         });
         const iconLayer = new IconLayer({
             id: 'icon-layer',
-            data: renderIcons.filter(()=>true),
+            data: renderIcons.filter(() => true),
             pickable: true,
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
@@ -329,8 +332,8 @@ export default class CanvasController {
             onClick: this.nodeClickHandler,
             onDragStart: this.nodeDragStartHandler,
             onDragEnd: this.nodeDragEndHandler,
-            updateTriggers:{
-                getPosition:d=>{
+            updateTriggers: {
+                getPosition: d => {
                     return d.position;
                 }
             }
@@ -371,7 +374,7 @@ export default class CanvasController {
             onClick: this.nodeClickHandler,
             onDragStart: this.nodeDragStartHandler,
             onDragEnd: this.nodeDragEndHandler,
-            
+
         });
 
 
@@ -420,7 +423,7 @@ export default class CanvasController {
         const textLayer = new TextLayer({
             id: 'text-layer',
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
-            data: renderText.filter(()=>true),
+            data: renderText.filter(() => true),
             pickable: true,
             fontFamily: 'Microsoft YaHei',
             getPosition: d => {
@@ -433,8 +436,8 @@ export default class CanvasController {
             getAlignmentBaseline: d => d.style.textAlignmentBaseline,
             characterSet: charSet,
             getColor: (d) => d.style.textColor,
-            updateTriggers:{
-                getPosition:d=>{
+            updateTriggers: {
+                getPosition: d => {
                     return d.position;
                 }
             }
@@ -443,7 +446,7 @@ export default class CanvasController {
         const arrowLayer = new PolygonLayer({
             id: 'arrow-layer',
             opacity: 1,
-            data: renderPolygon.filter(()=>true),
+            data: renderPolygon.filter(() => true),
             pickable: true,
             filled: true,
             stroked: true,
@@ -453,17 +456,17 @@ export default class CanvasController {
                 return d.polygon;
             },
             getFillColor: (d) => d.style.polygonFillColor,
-            updateTriggers:{
-                getPolygon:d=>{
+            updateTriggers: {
+                getPolygon: d => {
                     return d.polygon;
                 }
             }
         });
-        this.deck.setProps({width:this.props.containerWidth,height:this.props.containerHeight, layers: [lineLayer, arrowLayer, circleEdge, roundedEdge, iconLayer, textLayer] });
+        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, circleEdge, roundedEdge, iconLayer, textLayer] });
     }
 
     _nodeClickHandler(info, e) {
-      
+
         if (!e.leftButton) {
             this.eventController.fire('nodeLeftClick', [info, e]);
             if (this.props.nodeRightClick) {
@@ -471,8 +474,8 @@ export default class CanvasController {
             }
             return true;
         }
-        if(e.srcEvent.ctrlKey){
-            this.eventController.fire('nodeClickWithCtrl',[info,e]);
+        if (e.srcEvent.ctrlKey) {
+            this.eventController.fire('nodeClickWithCtrl', [info, e]);
             return true;
         }
         this.eventController.fire('nodeClick', [info, e]);
@@ -490,7 +493,7 @@ export default class CanvasController {
     }
 
     _nodeDragingHandler(info, e) {
-        this.elementController.updateNodeLocation([info.object.id], { x: parseFloat(e.offsetCenter.x* (2 ** -this.props.zoom) + (this.props.viewState.target[0] - this.props.initTarget[0]* (2 ** -this.props.zoom))) , y: parseFloat(e.offsetCenter.y * (2 ** -this.props.zoom) + (this.props.viewState.target[1] - this.props.initTarget[1] * (2 ** -this.props.zoom))) }, this.groupDrag);
+        this.elementController.updateNodeLocation([info.object.id], { x: parseFloat(e.offsetCenter.x * (2 ** -this.props.zoom) + (this.props.viewState.target[0] - this.props.initTarget[0] * (2 ** -this.props.zoom))), y: parseFloat(e.offsetCenter.y * (2 ** -this.props.zoom) + (this.props.viewState.target[1] - this.props.initTarget[1] * (2 ** -this.props.zoom))) }, this.groupDrag);
         this.eventController.fire('nodeDraging', [info, e]);
         return true;
     }
@@ -506,8 +509,8 @@ export default class CanvasController {
 
 
     _lineClickHandler(info, e) {
-        if(e.srcEvent.ctrlKey){
-            this.eventController.fire('lineClickWithCtrl',[info,e]);
+        if (e.srcEvent.ctrlKey) {
+            this.eventController.fire('lineClickWithCtrl', [info, e]);
             return true;
         }
         this.eventController.fire('lineClick', [info, e]);
@@ -553,10 +556,10 @@ export default class CanvasController {
         if (renderObject) {
             this.renderObject = renderObject;
             this.renderGraph();
-        }else{
+        } else {
             this.updateRenderGraph();
         }
-        
+
 
     }
     mountElementController(elementController) {
@@ -569,7 +572,7 @@ export default class CanvasController {
             height: this.props.containerHeight,
             viewState: this.props.viewState,
             container: this.props.container,
-            zoom:this.props.zoom,
+            zoom: this.props.zoom,
             eventController: this.eventController
         }
 
@@ -578,18 +581,55 @@ export default class CanvasController {
     }
 
     _brushInfoCallBack(brushInfo) {
-       
-       
+
+
         let nodeIds = this.pickObject(brushInfo);
         this.elementController.updateNodeStatus(nodeIds, 2);
-        
+
         this.eventController.fire('brush', [nodeIds]);
         this.eventController.unSubscribeByName('_brushend');
     }
 
-    exportCanvasAsBase64(){
+    exportCanvasAsBase64() {
         this.deck.redraw(true);
         return this.deck.canvas.toDataURL();
+    }
+
+    updateDim({ width, height }) {
+        console.log(this.deck)
+        this.props.containerWidth = width;
+        this.props.containerHeight = height;
+        const initViewState = {
+            target: [this.props.containerWidth / 2, this.props.containerHeight / 2, 0],
+            rotationX: 0,
+            rotationOrbit: 0,
+            zoom: this.props.zoom,
+        }
+        this.props.viewState = initViewState;
+        this.props.initTarget = initViewState.target;
+        this.deck.setProps({
+            width: width, height: height, viewState: this.viewState, views: new OrthographicView({
+                id: 'globalView',
+                x: 0,
+                y: 0,
+                width: '100%',
+                height: '100%',
+                maxZoom: this.props.maxZoom,
+                minZoom: this.props.minZoom,
+                controller: true,
+            }),
+            viewState:this.props.viewState,
+        })
+
+        this.deck.redraw(true);
+        console.log(this.deck)
+
+    }
+    getDim(){
+        return {
+            width: this.props.containerWidth,
+            height:this.props.containerHeight,
+        }
     }
 
 

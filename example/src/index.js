@@ -1,7 +1,5 @@
 import axios from 'axios';
 import NetGraph from '../../src/index';
-import blobTOBase from 'blob-to-base64'
-import { base64ToBlob, blobToBase64 } from 'base64-blob'
 
 const debug = true;
 
@@ -22,11 +20,11 @@ const debug = true;
 //     draw(data);
 // })
 function draw(rawData) {
-    let data=null;
-    if(!debug){
-        data=rawData;
-    }else{
-        data={
+    let data = null;
+    if (!debug) {
+        data = rawData;
+    } else {
+        data = {
             nodes: [
                 {
                     id: 'a001',
@@ -54,27 +52,13 @@ function draw(rawData) {
                     img: '/src/img1/a4.png'
                 }
             ],
-            links: [
-                {
-                    id: 'l01',
-                    type: '但是',
-                    from: 'a001',
-                    to: 'a003',
-                },
-                {
-                    id: 'l02',
-                    type: '阿达',
-                    from: 'a004',
-                    to: 'a002',
-                }
 
-            ]
         }
     }
 
     const netGraph = new NetGraph({
         canvasProps: {
-            containerWidth: 3500,
+            containerWidth: 2500,
             containerHeight: 2000,
             zoom: 0,
             container: 'container',
@@ -119,48 +103,48 @@ function draw(rawData) {
                 }
             },
             {
-                    selector: 'node.fff',
-                    style: {
-                        'width': 60,
-                        'height': 40,
-                        'url': (d) => d.data.img,
-                        'opacity': 1,
-                        'background-color': '#aaa',
-                        'background-opacity': 1,
-                        'border-width': 5,
-                        'border-color': '#fff',
-                        'border-opacity': 1,
-                        'color': '#845624',
-                        'text-opacity': 1,
-                        'font-size': 16,
-                        'text': (d) => d.data.name,
-                        'shape': 'rect',
-                    }
+                selector: 'node.fff',
+                style: {
+                    'width': 60,
+                    'height': 40,
+                    'url': (d) => d.data.img,
+                    'opacity': 1,
+                    'background-color': '#aaa',
+                    'background-opacity': 1,
+                    'border-width': 5,
+                    'border-color': '#fff',
+                    'border-opacity': 1,
+                    'color': '#845624',
+                    'text-opacity': 1,
+                    'font-size': 16,
+                    'text': (d) => d.data.name,
+                    'shape': 'rect',
                 }
+            }
         ]
     });
 
 
-    netGraph.addEventListener('nodeClick', (object,e) => {
+    netGraph.addEventListener('nodeClick', (object, e) => {
         console.log("click")
         //netGraph.replaceData();
     });
-    netGraph.addEventListener('nodeClickWithCtrl',(info,e)=>{
-       // netGraph.getNodes(['a005'])[0].addClasses(['fff']);
+    netGraph.addEventListener('nodeClickWithCtrl', (info, e) => {
+        netGraph.addClassForNode(['a005'],['class1','class2'])
         console.log('nodeClickWithCtrl');
     });
 
-    netGraph.addEventListener('lineClick',(o,e)=>{
+    netGraph.addEventListener('lineClick', (o, e) => {
         console.log('lineClick');
     });
-    netGraph.addEventListener('canvasRightClick',(info,e)=>{
+    netGraph.addEventListener('canvasRightClick', (info, e) => {
         console.log(netGraph.exportCanvasAsBase64())
         console.log('canvas right click')
     })
-    netGraph.addEventListener('lineClickWithCtrl',(o,e)=>{
+    netGraph.addEventListener('lineClickWithCtrl', (o, e) => {
         console.log('lineClickWithCtrl');
     });
-    netGraph.addEventListener('emptyClick',(o,e)=>{
+    netGraph.addEventListener('emptyClick', (o, e) => {
         console.log("emptyClick");
         // console.log('emptyClick');
         // netGraph.getNodes(['a005'])[0].addClasses(['fff']);
@@ -187,9 +171,22 @@ function draw(rawData) {
 
     netGraph.addEventListener('brush', (nodeIds) => {
         console.log(nodeIds);
+        netGraph.replaceStyle([
+            {
+                selector:"node",
+                style:{
+
+                }
+            },{
+                selector:"link",
+                style:{
+                    
+                }
+            }
+        ])
     });
-    netGraph.addEventListener('rightClick',()=>{
-        
+    netGraph.addEventListener('rightClick', () => {
+
         console.log("rightClick")
     })
     document.getElementById('remove').addEventListener('click', (e) => {
@@ -240,12 +237,35 @@ function draw(rawData) {
     });
 
     document.getElementById('groupDrag').addEventListener('click', () => {
-        netGraph.replaceData();
+        // netGraph.replaceData({
+        //     nodes:null,
+        //     links:null
+        // });
+        netGraph.addData({
+            links: [
+                {
+                    id: 'l01',
+                    type: '但是',
+                    from: 'a001',
+                    to: 'a003',
+                },
+                {
+                    id: 'l02',
+                    type: '阿达',
+                    from: 'a004',
+                    to: 'a002',
+                }
+
+            ]
+        })
+        //console.log(netGraph.getNodes())
         //netGraph.setGroupDrag(true);
     });
-    document.getElementById('addClass').addEventListener('click',()=>{
-        netGraph.addClassForNode(['a005'],['fff']);
-        console.log(netGraph.getNodes());
+    document.getElementById('addClass').addEventListener('click', () => {
+        // netGraph.addClassForNode(['a005'], ['fff']);
+        // console.log(netGraph.getNodes());
+        netGraph.updateDim({width:1500,height:1000})
+        console.log(netGraph.getNodes())
     })
 
     document.getElementById('add').addEventListener('click', () => {

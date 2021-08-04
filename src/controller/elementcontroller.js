@@ -32,25 +32,27 @@ export default class ElementController {
      * 
      * 解析 Node Link
      */
-    parseNewData(flag=null) {
-        if(!flag||flag==='replace'){
+    parseNewData(flag = null) {
+        if (!flag || flag === 'replace') {
             this._parseParams('new');
-        }else{
+        } else {
             this._parseParams('add')
         }
-        
+
     }
 
     _parseParams(flag, nodeIds) {
         if (flag === 'new') {
-            const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData());
+            const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData(), 'replace');
             this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
             this.controller.positionController.layout()(newNodeArray, this);
             this._parseElements(newNodeArray, newLinkArray, 'all');
-        }else if(flag==='add'){
-            const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData());
+        } else if (flag === 'add') {
+            const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData(), 'add');
             this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
             this.controller.positionController.layout()(newNodeArray, this);
+
+            this.updateLinkPosition(newLinkArray);
             this._parseElements(newNodeArray, newLinkArray, 'part');
         } else {
             if (!nodeIds) {
@@ -220,7 +222,7 @@ export default class ElementController {
      * @param {用户传入的data} newData 
      * @returns 
      */
-    _generateInternalEntity(newData) {
+    _generateInternalEntity(newData, flag) {
         const newLinkArray = new Array();
         const newNodeArray = new Array();
         if (newData) {
@@ -232,6 +234,11 @@ export default class ElementController {
                     this.nodes.push(nodeEntity);
                     this.idMapNode.set(nodeEntity.getId(), nodeEntity);
                 });
+            } else {
+                if (flag === 'replace') {
+                    this.nodes = [];
+                }
+
             }
             if (data.links && data.links.length > 0) {
                 data.links.forEach((link) => {
@@ -246,13 +253,15 @@ export default class ElementController {
                         throw new Error(`link cannot find soure or target node`);
                     }
                 });
+            } else {
+                if (flag === 'replace') {
+                    this.links = [];
+                }
             }
-        }else{
-            this.nodes=[];
-            this.links=[];
+        } else {
+            this.nodes = [];
+            this.links = [];
         }
-
-        // this._addLinksToNodeIdMapLinks(newLinkArray);
         return {
             newNodeArray: newNodeArray,
             newLinkArray: newLinkArray
@@ -263,19 +272,26 @@ export default class ElementController {
     /**
      * 根据node 位置生成link 的起始位置
      */
-    _generateLinkLocation() {
-        const nodeLocationMap = new Map();
-        this.nodes.forEach((v) => {
-            nodeLocationMap.set(v.id, v);
-        });
-        this.links.forEach((link) => {
-            const sourceNode = nodeLocationMap.get(link.source.id);
-            link.setSourceLocation(sourceNode.getLocation());
-            const targetNode = nodeLocationMap.get(link.target.id);
-            link.setTargetLocation(targetNode.getLocation());
-        });
+    _updateAllLinkLocation() {
 
-
+        if (this.nodes && this.nodes.length > 0) {
+            this.nodes.forEach((node) => {
+                if (node.sourceLinks && node.sourceLinks.length > 0) {
+                    node.sourceLinks.forEach((link) => {
+                        link.setSourceLocation(node.getLocation());
+                    });
+                }
+                if (node.targetLinks && node.targetLinks.length > 0) {
+                    node.targetLinks.forEach(link => {
+                        link.setTargetLocation(node.getLocation());
+                    })
+                }
+            })
+        }
+        if (this.links && this.links.length > 0) {
+            return this.links.map(link => link.getId())
+        }
+        return null;
     }
 
     _generateCharSet(str) {
@@ -295,51 +311,51 @@ export default class ElementController {
         this._parseElements(newNodeArray, newLinkArray, "all");
     }
 
-    addClassForNode(nodeIds,classes){
-        if(nodeIds&&classes){
-            nodeIds.forEach(id=>{
-                const node=this.idMapNode.get(id);
-                if(node&&classes.length>0){
-                    node.classes=[...node.classes,...classes];
+    addClassForNode(nodeIds, classes) {
+        if (nodeIds && classes) {
+            nodeIds.forEach(id => {
+                const node = this.idMapNode.get(id);
+                if (node && classes.length > 0) {
+                    node.classes = [...node.classes, ...classes];
                 }
             })
         }
-        this._parseParams('part',nodeIds);
+        this._parseParams('part', nodeIds);
     }
 
-    removeClassForNode(nodeIds,classes){
-        if(nodeIds&&nodeIds.length>0&&classes){
-            nodeIds.forEach(id=>{
-                const node=this.idMapNode.get(id);
-                if(node&&classes.length>0){
+    removeClassForNode(nodeIds, classes) {
+        if (nodeIds && nodeIds.length > 0 && classes) {
+            nodeIds.forEach(id => {
+                const node = this.idMapNode.get(id);
+                if (node && classes.length > 0) {
                     node.removeClasses(classes);
                 }
             })
         }
-        this._parseParams('part',nodeIds);
+        this._parseParams('part', nodeIds);
     }
-    addClassForLink(linkIds,classes){
-        if(linkIds&&classes){
-            linkIds.forEach(id=>{
-                const link=this.idMapLink.get(id);
-                if(link&&classes.length>0){
-                    link.classes=[...link.classes,...classes];
+    addClassForLink(linkIds, classes) {
+        if (linkIds && classes) {
+            linkIds.forEach(id => {
+                const link = this.idMapLink.get(id);
+                if (link && classes.length > 0) {
+                    link.classes = [...link.classes, ...classes];
                 }
             })
         }
-        this._parseParams('part',[]);
+        this._parseParams('part', []);
     }
 
-    removeClassForLink(linkIds,classes){
-        if(linkIds&&classes){
-            linkIds.forEach(id=>{
-                const link=this.idMapLink.get(id);
-                if(link&&classes.length>0){
+    removeClassForLink(linkIds, classes) {
+        if (linkIds && classes) {
+            linkIds.forEach(id => {
+                const link = this.idMapLink.get(id);
+                if (link && classes.length > 0) {
                     link.removeClasses(classes);
                 }
             })
         }
-        this._parseParams('part',[]);
+        this._parseParams('part', []);
     }
 
     /**
@@ -347,9 +363,9 @@ export default class ElementController {
      * @param {id} nodeIds 
      * @returns 
      */
-    updateLinkPosition(nodeIds = null) {
+    updateLinkPositionForNode(nodeIds = null) {
         let linkIdSet = new Set();
-        if (nodeIds) {
+        if (nodeIds && nodeIds.length > 0) {
             nodeIds.forEach((nodeId) => {
                 const node = this.idMapNode.get(nodeId);
                 const sourceLinks = node.sourceLinks;
@@ -366,9 +382,17 @@ export default class ElementController {
             return Array.from(linkIdSet);
 
         } else {
-            this._generateLinkLocation();
+            return this._updateAllLinkLocation();
         }
-        return null;
+    }
+
+    updateLinkPosition(links) {
+        if (links && links.length > 0) {
+            links.forEach(link => {
+                link.setSourceLocation(this.idMapNode.get(link.source.id).getLocation());
+                link.setTargetLocation(this.idMapNode.get(link.target.id).getLocation());
+            })
+        }
     }
     /**
      * 根据id 获取 node
@@ -778,7 +802,7 @@ export default class ElementController {
                     node.y += delta.y;
                 }
             });
-            const linkIdArray = this.updateLinkPosition(nodeIds);
+            const linkIdArray = this.updateLinkPositionForNode(nodeIds);
             this._updateRenderNodeObjLocation(nodeIds);
 
             this._updateRenderLinkObjLocation(linkIdArray);
@@ -817,7 +841,7 @@ export default class ElementController {
                 });
             }
         }
-        const linkIdArray = this.updateLinkPosition(nodeIds);
+        const linkIdArray = this.updateLinkPositionForNode(nodeIds);
         this._updateRenderNodeObjLocation(nodeIds);
         this._updateRenderLinkObjLocation(linkIdArray);
         this.controller.canvasController.updateRenderObject();
@@ -858,6 +882,7 @@ export default class ElementController {
             })
         } else {
             const newNodeArray = this.getNodes();
+
             this.controller.positionController.layout()(newNodeArray, this);
             const {
                 renderBorders,
@@ -882,6 +907,60 @@ export default class ElementController {
                 rePolygon.reLocation();
             })
         }
+        this.controller.canvasController.updateRenderObject();
+    }
+
+
+    updateGrpahAfterDimMidifed(oldDim, newDim) {
+        console.log(oldDim,newDim);
+        const xFactor = newDim.width / oldDim.width;
+        const yFactor = newDim.height / oldDim.height;
+        const newNodeArray = this.getNodes();
+        newNodeArray.forEach(node => {
+            node.x = node.x * xFactor;
+            node.y = node.y * yFactor;
+        });
+        newNodeArray.map(node => node.id);
+        const linkIds = this.updateLinkPositionForNode();
+        if (linkIds && linkIds.length > 0) {
+            linkIds.forEach((id) => {
+                const linkRenders = this.linkRenderMap.get(id);
+                const { polygonObjs, textObjs, lineObjs } = linkRenders;
+                polygonObjs.forEach((polygonObj) => {
+                    polygonObj.reLocation();
+                });
+                textObjs.forEach((textObj) => {
+                    textObj.reLocation();
+                });
+                lineObjs.forEach((lineObj) => {
+                    lineObj.reLocation();
+                })
+            })
+        }
+        const {
+            renderBorders,
+            renderIcons,
+            renderLines,
+            renderText,
+            renderPolygon,
+        } = this.renderObject;
+        renderBorders.forEach((renderBorder) => {
+            renderBorder.reLocation();
+        });
+        renderIcons.forEach((renderIcon) => {
+            renderIcon.reLocation();
+        });
+        renderLines.forEach((renderLine) => {
+            renderLine.reLocation();
+        });
+        renderText.forEach((reText) => {
+            reText.reLocation();
+        });
+        renderPolygon.forEach((rePolygon) => {
+            rePolygon.reLocation();
+        })
+
+
         this.controller.canvasController.updateRenderObject();
     }
 

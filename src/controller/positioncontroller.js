@@ -29,6 +29,12 @@ export default class PositionController {
     layout() {
         return this._mapType[this.useLayout].bind(this);
     }
+    setCanvasCenter({width,height}){
+        this.canvasCenter={
+            x:width/2,
+            y:height/2
+        }
+    }
 
     setLayout(layoutName) {
         if (layoutName != null) {
@@ -62,7 +68,7 @@ export default class PositionController {
                     row++;
                 }
             }
-            return elementController.updateLinkPosition(nodeIds);
+            return elementController.updateLinkPositionForNode(nodeIds);
         }
         return null;
     }
@@ -128,7 +134,7 @@ export default class PositionController {
                     node.y = baseY + Math.cos(outsideRoate * index) * outsideR;
                 });
             }
-            return elementController.updateLinkPosition(nodeIds);
+            return elementController.updateLinkPositionForNode(nodeIds);
         }
         return null;
     }
@@ -148,7 +154,7 @@ export default class PositionController {
                 no.x = no1.x + Math.sin(ahd * i) * radius;
                 no.y = no1.y - radius + Math.cos(ahd * i) * radius;
             }
-            return elementController.updateLinkPosition(nodeIds);
+            return elementController.updateLinkPositionForNode(nodeIds);
         }
         return null;
     }
@@ -190,7 +196,7 @@ export default class PositionController {
                 let heightNum = parseInt(nodeArray.length / rowNum);
                 no1y = no1y + heightNum * 150 + 300;
             });
-            return elementController.updateLinkPosition(nodeIds);
+            return elementController.updateLinkPositionForNode(nodeIds);
         }
         return null;
         
@@ -207,7 +213,7 @@ export default class PositionController {
                 node.x = no1.x + i * 150;
                 node.y = no1.y;
             });
-            return elementController.updateLinkPosition(nodeIds);
+            return elementController.updateLinkPositionForNode(nodeIds);
         }
         return null;
     }
@@ -223,7 +229,7 @@ export default class PositionController {
                 node.x = no1.x;
                 node.y = no1.y + i * 150;
             });
-            return elementController.updateLinkPosition(nodeIds);
+            return elementController.updateLinkPositionForNode(nodeIds);
         }
         return null;
     }
