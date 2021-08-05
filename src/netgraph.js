@@ -277,7 +277,6 @@ export default class NetGraph {
         this.controller.positionController.setCanvasCenter(size);
         const oldDim=this.controller.canvasController.getDim();
         this.controller.canvasController.updateDim(size);
-        console.log(oldDim)
         this.controller.elementController.updateGrpahAfterDimMidifed(oldDim,size);
         
         

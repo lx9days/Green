@@ -247,3 +247,11 @@ netGraph.replaceStyle([
 `setGroupDrag(bool)`用户可以通过使用`true`作为参数调用该方法，开启`GroupDrag`后用户可以对批量的选中结点进行拖拽操作.
 ### showBrushArea
 `showBrushArea()`调用该方法将会开启`NetGraph`的内置brush图层，用户可以通过拖住鼠标进行`brush`操作,用户松开鼠标后该`brush`过程自动结束并返回brush后的结点的ID,并自动将这些结点的状态置为选中状态
+### exportData
+`exportData()`将用户导入到`NetGraph`中的数据通过JSON的格式进行导出
+### exportDataAsString
+`exportData()`将用户导入到`NetGraph`中的数据转换为`String`类型后导出
+### exportCanvasAsBase64
+`exportCanvasAsBase64()`将Canvas画布以`Base64`编码的形式导出
+### updateDim
+`updateDim(size)`用户更新用户可见的Canvas 的尺寸,`size`为最新的画布的尺寸`{width:100,height:100}`,该操作会对过去`NetGraph`中已有的元素进行一定的调整来适应画布尺寸的改变
