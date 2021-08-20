@@ -959,10 +959,27 @@ export default class ElementController {
         renderPolygon.forEach((rePolygon) => {
             rePolygon.reLocation();
         })
-
-
         this.controller.canvasController.updateRenderObject();
     }
 
+    lockNodes(nodeIds){
+        if(nodeIds&&nodeIds.length>0){
+            nodeIds.forEach((id)=>{
+                if(this.idMapNode.has(id)){
+                    this.idMapNode.get(id).lock()
+                }
+            })
+        }
+    }
+
+    unlockNodes(nodeIds){
+        if(nodeIds&&nodeIds.length>0){
+            nodeIds.forEach((id)=>{
+                if(this.idMapNode.has(id)){
+                    this.idMapNode.get(id).unlock()
+                }
+            })
+        }
+    }
 
 }

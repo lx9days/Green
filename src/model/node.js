@@ -8,13 +8,16 @@ export default class Node {
         this.items = new Array();
         this.styles = new Array();
         this.draggable = true;
-        this.x = 0;
-        this.y = 0;
+        this._x = 0;
+        this._y = 0;
         this.status = 2;//1未选中，2选中，3隐藏
         this.styles
         this.sourceLinks = new Array();
         this.targetLinks = new Array();
+        this.isLocked=false
     }
+
+    
 
     getId() {
         return this.id;
@@ -154,6 +157,28 @@ export default class Node {
             if(index>-1){
                 this.targetLinks.splice(index,1);
             }
+        }
+    }
+    lock(){
+        this.isLocked=true
+    }
+    unlock(){
+        this.isLocked=false
+    }
+    get x(){
+        return this._x
+    }
+    get y(){
+        return this._y
+    }
+    set x(newX){
+        if(!this.isLocked){
+            this._x=newX
+        }
+    }
+    set y(newY){
+        if(!this.isLocked){
+            this._y=newY
         }
     }
 

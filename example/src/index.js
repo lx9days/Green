@@ -268,6 +268,13 @@ function draw(rawData) {
         console.log(netGraph.getNodes())
     })
 
+    document.getElementById("lockNode").addEventListener("click",()=>{
+        netGraph.lockNodes(["a002"])
+    })
+    document.getElementById("unlockNode").addEventListener("click",()=>{
+        netGraph.unlockNodes(["a002"])
+    })
+
     document.getElementById('add').addEventListener('click', () => {
         netGraph.addData({
             nodes: [

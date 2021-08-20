@@ -78,6 +78,7 @@ export default class CanvasController {
             onClick: this.deckClickHandler,
             onDragStart: this.deckDragStartHandler,
             onDragEnd: this.deckDragEndHandler,
+            pickingRadius:6,
             //getCursor:({isDragging,isHovering}) => isHovering ? 'grabbing' : 'grab'
         });
     }
@@ -137,6 +138,7 @@ export default class CanvasController {
                 getTargetPosition: d => d.targetPosition,
             },
             onClick: this.lineClickHandler,
+            pickingRadius:20
         });
         const iconLayer = new IconLayer({
             id: 'icon-layer',
@@ -310,6 +312,7 @@ export default class CanvasController {
                 getTargetPosition: d => d.targetPosition,
             },
             onClick: this.lineClickHandler,
+            pickingRadius:20,
         });
         const iconLayer = new IconLayer({
             id: 'icon-layer',

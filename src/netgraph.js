@@ -273,13 +273,32 @@ export default class NetGraph {
        return this.controller.canvasController.exportCanvasAsBase64()
     }
 
+    /**
+     * 
+     * @param {Oject} size Canvas Width
+     */
     updateDim(size){
         this.controller.positionController.setCanvasCenter(size);
         const oldDim=this.controller.canvasController.getDim();
         this.controller.canvasController.updateDim(size);
         this.controller.elementController.updateGrpahAfterDimMidifed(oldDim,size);
         
-        
+    }
+
+    /**
+     * 锁定结点
+     * @param {Array<string>} nodeIds 锁定结点的id
+     */
+    lockNodes(nodeIds){
+        this.controller.elementController.lockNodes(nodeIds)
+    }
+
+    /**
+     * 解锁结点
+     * @param {Array<string>} nodesIds 要解锁的结点的id
+     */
+    unlockNodes(nodeIds){
+        this.controller.elementController.unlockNodes(nodeIds)
     }
     
 }
