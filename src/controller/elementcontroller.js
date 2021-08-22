@@ -910,9 +910,10 @@ export default class ElementController {
         this.controller.canvasController.updateRenderObject();
     }
 
+    
+
 
     updateGrpahAfterDimMidifed(oldDim, newDim) {
-        console.log(oldDim,newDim);
         const xFactor = newDim.width / oldDim.width;
         const yFactor = newDim.height / oldDim.height;
         const newNodeArray = this.getNodes();

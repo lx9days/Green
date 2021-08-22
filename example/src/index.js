@@ -52,6 +52,18 @@ function draw(rawData) {
                     img: '/src/img1/a4.png'
                 }
             ],
+            links:[{
+                id: 'l01',
+                type: '但是',
+                from: 'a001',
+                to: 'a003',
+            },
+            {
+                id: 'l02',
+                type: '阿达',
+                from: 'a004',
+                to: 'a002',
+            }]
 
         }
     }
@@ -138,7 +150,7 @@ function draw(rawData) {
         console.log('lineClick');
     });
     netGraph.addEventListener('canvasRightClick', (info, e) => {
-        console.log(netGraph.exportCanvasAsBase64())
+       // console.log(netGraph.exportCanvasAsBase64())
         console.log('canvas right click')
     })
     netGraph.addEventListener('lineClickWithCtrl', (o, e) => {
@@ -229,7 +241,7 @@ function draw(rawData) {
         selectedNodes.map((v, i) => {
             selectedNodeIds.push(v.getId());
         });
-        netGraph.setNodeLayout('multSquare');
+        netGraph.setNodeLayout('oneColumn');
     });
 
     document.getElementById('brush').addEventListener('click', () => {

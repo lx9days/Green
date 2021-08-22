@@ -74,6 +74,9 @@ export default class NetGraph {
         return this.controller.elementController.getNodes(nodeIds);
 
     }
+    getIdMapNode(){
+        return this.controller.elementController.idMapNode;
+    }
     /**
      * 根据给定的ids获取link,null获取所有
      * @param {linkid} linkIds 

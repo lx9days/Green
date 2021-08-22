@@ -138,7 +138,6 @@ export default class CanvasController {
                 getTargetPosition: d => d.targetPosition,
             },
             onClick: this.lineClickHandler,
-            pickingRadius:20
         });
         const iconLayer = new IconLayer({
             id: 'icon-layer',
@@ -312,7 +311,6 @@ export default class CanvasController {
                 getTargetPosition: d => d.targetPosition,
             },
             onClick: this.lineClickHandler,
-            pickingRadius:20,
         });
         const iconLayer = new IconLayer({
             id: 'icon-layer',
@@ -599,7 +597,6 @@ export default class CanvasController {
     }
 
     updateDim({ width, height }) {
-        console.log(this.deck)
         this.props.containerWidth = width;
         this.props.containerHeight = height;
         const initViewState = {
@@ -625,7 +622,6 @@ export default class CanvasController {
         })
 
         this.deck.redraw(true);
-        console.log(this.deck)
 
     }
     getDim(){

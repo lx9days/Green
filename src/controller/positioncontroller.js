@@ -1,17 +1,18 @@
 import * as d3 from 'd3';
 
 export default class PositionController {
-    constructor(netGraph,{width,height}) {
+    constructor(netGraph, { width, height }) {
         this.netGraph = netGraph;
-        this.canvasCenter={
-            x:width/2,
-            y:height/2
-        }
-        this.offset={
-            x:0,
-            y:0
-        }
-       
+        this.canvasCenter = {
+            x: width / 2,
+            y: height / 2
+        };
+        this.offset = {
+            x: 0,
+            y: 0
+        };
+        this.force = null
+
         this.useLayout = 'square';
         this._mapType = {
             square: this.square,
@@ -29,10 +30,10 @@ export default class PositionController {
     layout() {
         return this._mapType[this.useLayout].bind(this);
     }
-    setCanvasCenter({width,height}){
-        this.canvasCenter={
-            x:width/2,
-            y:height/2
+    setCanvasCenter({ width, height }) {
+        this.canvasCenter = {
+            x: width / 2,
+            y: height / 2
         }
     }
 
@@ -48,11 +49,13 @@ export default class PositionController {
             let rowNum = Math.ceil(Math.sqrt(nodes.length));
             let node1 = nodes[0];
             if (node1) {
-                this.offset.x+=(Math.random()-0.5)*200;
-                this.offset.y+=(Math.random()-0.5)*200;
-               
-                node1.x = ((this.canvasCenter.x-rowNum*150)||0)+this.offset.x;
-                node1.y = ((this.canvasCenter.y-rowNum*150)||0)+this.offset.y;
+                this.offset.x += (Math.random() - 0.5) * 200;
+                this.offset.y += (Math.random() - 0.5) * 200;
+
+                console.log(this.canvasCenter)
+                node1.x = ((this.canvasCenter.x - rowNum * 150 / 2) || 0) + this.offset.x;
+                node1.y = ((this.canvasCenter.y - rowNum * 150 / 2) || 0) + this.offset.y;
+
             }
             let col = 0;
             let row = 0;
@@ -73,11 +76,11 @@ export default class PositionController {
         return null;
     }
 
-    star(selectedNodes, elementController,offset=null) {
+    star(selectedNodes, elementController, offset = null) {
         if (selectedNodes.length > 0) {
             let nodeIds = [];
             let linkIds = [];
-            let mapNodeIdToLinkIds = this.netGraph.getMapNodeIdToLinks();
+            let mapNodeIdToLinkIds = this.netGraph.getIdMapNode();
             let baseNode = selectedNodes[0];
             let baseX = baseNode.x ? baseNode.x : 0;
             let baseY = baseNode.y ? baseNode.y : 0;
@@ -139,7 +142,7 @@ export default class PositionController {
         return null;
     }
 
-    circleShape(nodes, elementController,offset=null) {
+    circleShape(nodes, elementController, offset = null) {
         if (nodes.length > 0) {
             let nodeIds = [];
             let radius = (nodes.length * 150) / (2 * Math.PI);
@@ -159,13 +162,13 @@ export default class PositionController {
         return null;
     }
 
-    multSquare(nodes, elementController,offset=null) {
+    multSquare(nodes, elementController, offset = null) {
         let no1x = 0;
         let no1y = 0;
         if (nodes.length > 0) {
             no1x = nodes[0].x || 0;
             no1y = nodes[0].y || 0;
-            const nodeIds=new Array();
+            const nodeIds = new Array();
             const typeMap = new Map();
             nodes.map(item => {
                 let type = item.data.Entity_type;///
@@ -199,10 +202,10 @@ export default class PositionController {
             return elementController.updateLinkPositionForNode(nodeIds);
         }
         return null;
-        
+
     }
 
-    oneRow(nodes, elementController,offset=null) {
+    oneRow(nodes, elementController, offset = null) {
         if (nodes.length > 0) {
             let nodeIds = [];
             let no1 = nodes[0];
@@ -218,7 +221,7 @@ export default class PositionController {
         return null;
     }
 
-    oneColumn(nodes, elementController,offset=null) {
+    oneColumn(nodes, elementController, offset = null) {
         if (nodes.length > 0) {
             let nodeIds = [];
             let no1 = nodes[0];
@@ -235,24 +238,27 @@ export default class PositionController {
     }
 
     auto(nodes) {
-        const mythis = this;
-        if (nodes.length < 100) {
-            this.jutuan(nodes);
-        } else {
-            let links = this.netGraph.getLinks();
-            this.force = d3.forceSimulation(nodes)
-                .force('link', d3.forceLink(links).id(d => d.id).distance(500))
-                .force('charge', d3.forceManyBody().strength(-300))
-                .force('center', d3.forceCenter());
-            setTimeout(() => {
-                this.netGraph.updateSettings({
-                    layout: {
-                        mode: 'static'
-                    }
+        const nodeIdToIndex = {};
+        nodes.forEach((item, index) => {
+            nodeIdToIndex[item.id] = index
+        })
+        const links = this.netGraph.getLinks()
+        const linkST = [];
+        links.forEach(link => {
+            const fromId = link.data.from;
+            const toId = link.data.to;
+            if (nodeIdToIndex[fromId] && nodeIdToIndex[toId]) {
+                linkST.push({
+                    source: nodeIdToIndex[fromId],
+                    target: nodeIdToIndex[toId]
                 });
-                mythis.force.stop();
-            }, 2000);
-        }
+            }
+        });
+        this.force = d3.forceSimulation(nodes)
+            .force("charge", d3.forceManyBody().strength(-300))
+            .force("link",d3.forceLink(linkST).distance(500))
+            .force("center",d3.forceCenter())
+
 
     }
 
