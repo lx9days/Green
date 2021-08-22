@@ -42,6 +42,7 @@ export default class ElementController {
     }
 
     _parseParams(flag, nodeIds) {
+        this.controller.eventController.unSubscribeByName("_updateEntityPosition")
         if (flag === 'new') {
             const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData(), 'replace');
             this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
@@ -52,7 +53,7 @@ export default class ElementController {
             this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
             this.controller.positionController.layout()(newNodeArray, this);
 
-            this.updateLinkPosition(newLinkArray);
+            // this.updateLinkPosition(newLinkArray);
             this._parseElements(newNodeArray, newLinkArray, 'part');
         } else {
             if (!nodeIds) {
@@ -215,6 +216,9 @@ export default class ElementController {
         }
         this.renderObject.charSet = Array.from(this.characterSet);
         this.controller.canvasController.updateRenderObject(this.renderObject);
+        this.controller.eventController.subscribe("_updateEntityPosition",(nodeIds)=>{
+            this.updateEntityPosition(nodeIds)
+        })
     }
 
     /**
@@ -247,8 +251,12 @@ export default class ElementController {
                         newLinkArray.push(linkEntity);
                         this.links.push(linkEntity);
                         this.idMapLink.set(linkEntity.id, linkEntity);
-                        this.idMapNode.get(linkEntity.source.id).addSourceLink(linkEntity);
-                        this.idMapNode.get(linkEntity.target.id).addTargetLink(linkEntity);
+                        const sourceNode = this.idMapNode.get(linkEntity.source.id);
+                        sourceNode.addSourceLink(linkEntity);
+                        linkEntity.sourceNode = sourceNode;
+                        const targetNode = this.idMapNode.get(linkEntity.target.id);
+                        targetNode.addTargetLink(linkEntity);
+                        linkEntity.targetNode = targetNode
                     } else {
                         throw new Error(`link cannot find soure or target node`);
                     }
@@ -358,42 +366,6 @@ export default class ElementController {
         this._parseParams('part', []);
     }
 
-    /**
-     * 对位置发生变化的node 更新其对应的 link 的位置
-     * @param {id} nodeIds 
-     * @returns 
-     */
-    updateLinkPositionForNode(nodeIds = null) {
-        let linkIdSet = new Set();
-        if (nodeIds && nodeIds.length > 0) {
-            nodeIds.forEach((nodeId) => {
-                const node = this.idMapNode.get(nodeId);
-                const sourceLinks = node.sourceLinks;
-                const targetLinks = node.targetLinks;
-                sourceLinks.forEach((link) => {
-                    link.setSourceLocation(node.getLocation());
-                    linkIdSet.add(link.getId());
-                });
-                targetLinks.forEach((link) => {
-                    link.setTargetLocation(node.getLocation());
-                    linkIdSet.add(link.getId());
-                });
-            });
-            return Array.from(linkIdSet);
-
-        } else {
-            return this._updateAllLinkLocation();
-        }
-    }
-
-    updateLinkPosition(links) {
-        if (links && links.length > 0) {
-            links.forEach(link => {
-                link.setSourceLocation(this.idMapNode.get(link.source.id).getLocation());
-                link.setTargetLocation(this.idMapNode.get(link.target.id).getLocation());
-            })
-        }
-    }
     /**
      * 根据id 获取 node
      * @param {id} nodeIds 
@@ -728,66 +700,8 @@ export default class ElementController {
             }
         }
     }
-    /**
-     * 更新link 对应的renderobj 的位置
-     * @param {id} linkIds 
-     */
-    _updateRenderLinkObjLocation(linkIds = null) {
-        if (linkIds && linkIds.length > 0) {
-            linkIds.forEach((id) => {
-                const renderObjects = this.linkRenderMap.get(id);
-                renderObjects.lineObjs.forEach((line) => {
-                    line.reLocation();
-                });
-                renderObjects.textObjs.forEach((text) => {
-                    text.reLocation();
-                });
-                renderObjects.polygonObjs.forEach((polygon) => {
-                    polygon.reLocation();
-                });
-            })
-        } else {
-            const { renderLines, renderPolygon } = this.renderObject;
-            renderLines.forEach((line) => {
-                line.reLocation();
-            });
-            renderPolygon.forEach((polygon) => {
 
-                polygon.reLocation();
-            });
-        }
-    }
-    /**
-     * 更新node 对应的renderobj的位置
-     * @param {id} nodeIds 
-     */
-    _updateRenderNodeObjLocation(nodeIds = null) {
-        if (nodeIds && nodeIds.length > 0) {
-            nodeIds.forEach((id) => {
-                const renderObjects = this.nodeRenderMap.get(id);
-                renderObjects.borderObjs.forEach((border) => {
-                    border.reLocation();
-                });
-                renderObjects.textObjs.forEach((text) => {
-                    text.reLocation();
-                });
-                renderObjects.iconObjs.forEach((icon) => {
-                    icon.reLocation();
-                });
-            })
-        } else {
-            const { renderText, renderIcons, renderBorders } = this.renderObject;
-            renderText.forEach((text) => {
-                text.reLocation();
-            });
-            renderIcons.forEach((icon) => {
-                icon.reLocation();
-            });
-            renderBorders.forEach((border) => {
-                border.reLocation();
-            })
-        }
-    }
+
     /**
      * 更新node 的位置
      * @param {id} nodeIds 
@@ -802,13 +716,8 @@ export default class ElementController {
                     node.y += delta.y;
                 }
             });
-            const linkIdArray = this.updateLinkPositionForNode(nodeIds);
-            this._updateRenderNodeObjLocation(nodeIds);
-
-            this._updateRenderLinkObjLocation(linkIdArray);
-            this.controller.canvasController.updateRenderObject();
+            this.updateEntityPosition(nodeIds)
         }
-
     }
     /**
      * 更新node 位置
@@ -841,20 +750,38 @@ export default class ElementController {
                 });
             }
         }
-        const linkIdArray = this.updateLinkPositionForNode(nodeIds);
-        this._updateRenderNodeObjLocation(nodeIds);
-        this._updateRenderLinkObjLocation(linkIdArray);
-        this.controller.canvasController.updateRenderObject();
+        this.updateEntityPosition(nodeIds)
     }
     /**
      * 由于布局更新，更新renderobj 的位置
      * @param {id} nodeIds 
      */
     updateLayout(nodeIds) {
+        const newNodeArray = this.getNodes(nodeIds);
         if (nodeIds) {
-            const newNodeArray = this.getNodes(nodeIds);
-            const linkIds = this.controller.positionController.layout()(newNodeArray, this);
+            this.controller.positionController.layout()(newNodeArray, this);
+        } else {
+            this.controller.positionController.layout()(newNodeArray, this);
+        }
+      //  this.updateEntityPosition(nodeIds);
+    }
+
+
+    updateEntityPosition(nodeIds=null) {
+        if (nodeIds) {
+            const needUpdateLinks = [];
             nodeIds.forEach((id) => {
+                if (this.idMapNode.has(id)) {
+                    const node = this.idMapNode.get(id)
+                    node.sourceLinks.forEach(link => {
+                        needUpdateLinks.push(link)
+                    })
+                    node.targetLinks.forEach(link => {
+                        needUpdateLinks.push(link)
+                    })
+                } else {
+                    throw new Error("cannot find node id:" + id)
+                }
                 const nodeRenders = this.nodeRenderMap.get(id);
                 const { iconObjs, borderObjs, textObjs } = nodeRenders;
                 iconObjs.forEach((iconObj) => {
@@ -867,8 +794,8 @@ export default class ElementController {
                     textObj.reLocation();
                 });
             });
-            linkIds.forEach((id) => {
-                const linkRenders = this.linkRenderMap.get(id);
+            needUpdateLinks.forEach(link => {
+                const linkRenders = this.linkRenderMap.get(link.id);
                 const { polygonObjs, textObjs, lineObjs } = linkRenders;
                 polygonObjs.forEach((polygonObj) => {
                     polygonObj.reLocation();
@@ -881,9 +808,6 @@ export default class ElementController {
                 })
             })
         } else {
-            const newNodeArray = this.getNodes();
-
-            this.controller.positionController.layout()(newNodeArray, this);
             const {
                 renderBorders,
                 renderIcons,
@@ -909,74 +833,32 @@ export default class ElementController {
         }
         this.controller.canvasController.updateRenderObject();
     }
-
-    
-
-
     updateGrpahAfterDimMidifed(oldDim, newDim) {
         const xFactor = newDim.width / oldDim.width;
         const yFactor = newDim.height / oldDim.height;
         const newNodeArray = this.getNodes();
+
         newNodeArray.forEach(node => {
             node.x = node.x * xFactor;
             node.y = node.y * yFactor;
         });
-        newNodeArray.map(node => node.id);
-        const linkIds = this.updateLinkPositionForNode();
-        if (linkIds && linkIds.length > 0) {
-            linkIds.forEach((id) => {
-                const linkRenders = this.linkRenderMap.get(id);
-                const { polygonObjs, textObjs, lineObjs } = linkRenders;
-                polygonObjs.forEach((polygonObj) => {
-                    polygonObj.reLocation();
-                });
-                textObjs.forEach((textObj) => {
-                    textObj.reLocation();
-                });
-                lineObjs.forEach((lineObj) => {
-                    lineObj.reLocation();
-                })
-            })
-        }
-        const {
-            renderBorders,
-            renderIcons,
-            renderLines,
-            renderText,
-            renderPolygon,
-        } = this.renderObject;
-        renderBorders.forEach((renderBorder) => {
-            renderBorder.reLocation();
-        });
-        renderIcons.forEach((renderIcon) => {
-            renderIcon.reLocation();
-        });
-        renderLines.forEach((renderLine) => {
-            renderLine.reLocation();
-        });
-        renderText.forEach((reText) => {
-            reText.reLocation();
-        });
-        renderPolygon.forEach((rePolygon) => {
-            rePolygon.reLocation();
-        })
-        this.controller.canvasController.updateRenderObject();
+        this.updateEntityPosition()
     }
 
-    lockNodes(nodeIds){
-        if(nodeIds&&nodeIds.length>0){
-            nodeIds.forEach((id)=>{
-                if(this.idMapNode.has(id)){
+    lockNodes(nodeIds) {
+        if (nodeIds && nodeIds.length > 0) {
+            nodeIds.forEach((id) => {
+                if (this.idMapNode.has(id)) {
                     this.idMapNode.get(id).lock()
                 }
             })
         }
     }
 
-    unlockNodes(nodeIds){
-        if(nodeIds&&nodeIds.length>0){
-            nodeIds.forEach((id)=>{
-                if(this.idMapNode.has(id)){
+    unlockNodes(nodeIds) {
+        if (nodeIds && nodeIds.length > 0) {
+            nodeIds.forEach((id) => {
+                if (this.idMapNode.has(id)) {
                     this.idMapNode.get(id).unlock()
                 }
             })

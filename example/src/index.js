@@ -241,7 +241,7 @@ function draw(rawData) {
         selectedNodes.map((v, i) => {
             selectedNodeIds.push(v.getId());
         });
-        netGraph.setNodeLayout('oneColumn');
+        netGraph.setNodeLayout('auto');
     });
 
     document.getElementById('brush').addEventListener('click', () => {

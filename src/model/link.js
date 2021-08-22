@@ -17,6 +17,8 @@ export default class Link {
             x:null,
             y:null
         };
+        this.sourceNode=null;
+        this.targetNode=null;
     }
 
     getId(){
@@ -113,7 +115,8 @@ export default class Link {
         this.target.y=y;
     }
     getTargetLocation(){
-        return {x:this.target.x,y:this.target.y};
+        //return {x:this.target.x,y:this.target.y};
+        return {x:this.targetNode.x,y:this.targetNode.y}
     }
 
     setSourceLocation({x,y}){
@@ -121,7 +124,8 @@ export default class Link {
         this.source.y=y;
     }
     getSourceLocation(){
-        return {x:this.source.x,y:this.source.y};
+        //return {x:this.source.x,y:this.source.y};
+        return {x:this.sourceNode.x,y:this.sourceNode.y}
     }
 
 }

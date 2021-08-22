@@ -43,7 +43,7 @@ export default class PositionController {
         }
     }
 
-    square(nodes, elementController) {
+    square(nodes) {
         if (nodes.length > 0) {
             let nodeIds = [];
             let rowNum = Math.ceil(Math.sqrt(nodes.length));
@@ -71,12 +71,12 @@ export default class PositionController {
                     row++;
                 }
             }
-            return elementController.updateLinkPositionForNode(nodeIds);
+            this.netGraph.controller.eventController.fire("_updateEntityPosition",[nodeIds])
         }
-        return null;
+
     }
 
-    star(selectedNodes, elementController, offset = null) {
+    star(selectedNodes) {
         if (selectedNodes.length > 0) {
             let nodeIds = [];
             let linkIds = [];
@@ -137,12 +137,12 @@ export default class PositionController {
                     node.y = baseY + Math.cos(outsideRoate * index) * outsideR;
                 });
             }
-            return elementController.updateLinkPositionForNode(nodeIds);
+            this.netGraph.controller.eventController.fire("_updateEntityPosition",[nodeIds])
         }
-        return null;
+
     }
 
-    circleShape(nodes, elementController, offset = null) {
+    circleShape(nodes) {
         if (nodes.length > 0) {
             let nodeIds = [];
             let radius = (nodes.length * 150) / (2 * Math.PI);
@@ -157,12 +157,12 @@ export default class PositionController {
                 no.x = no1.x + Math.sin(ahd * i) * radius;
                 no.y = no1.y - radius + Math.cos(ahd * i) * radius;
             }
-            return elementController.updateLinkPositionForNode(nodeIds);
+            this.netGraph.controller.eventController.fire("_updateEntityPosition",[nodeIds])
         }
-        return null;
+
     }
 
-    multSquare(nodes, elementController, offset = null) {
+    multSquare(nodes) {
         let no1x = 0;
         let no1y = 0;
         if (nodes.length > 0) {
@@ -199,13 +199,13 @@ export default class PositionController {
                 let heightNum = parseInt(nodeArray.length / rowNum);
                 no1y = no1y + heightNum * 150 + 300;
             });
-            return elementController.updateLinkPositionForNode(nodeIds);
+            this.netGraph.controller.eventController.fire("_updateEntityPosition",[nodeIds])
         }
-        return null;
+
 
     }
 
-    oneRow(nodes, elementController, offset = null) {
+    oneRow(nodes) {
         if (nodes.length > 0) {
             let nodeIds = [];
             let no1 = nodes[0];
@@ -216,12 +216,12 @@ export default class PositionController {
                 node.x = no1.x + i * 150;
                 node.y = no1.y;
             });
-            return elementController.updateLinkPositionForNode(nodeIds);
+            this.netGraph.controller.eventController.fire("_updateEntityPosition",[nodeIds])
         }
-        return null;
+
     }
 
-    oneColumn(nodes, elementController, offset = null) {
+    oneColumn(nodes) {
         if (nodes.length > 0) {
             let nodeIds = [];
             let no1 = nodes[0];
@@ -232,9 +232,9 @@ export default class PositionController {
                 node.x = no1.x;
                 node.y = no1.y + i * 150;
             });
-            return elementController.updateLinkPositionForNode(nodeIds);
+            this.netGraph.controller.eventController.fire("_updateEntityPosition",[nodeIds])
         }
-        return null;
+
     }
 
     auto(nodes) {
@@ -242,6 +242,7 @@ export default class PositionController {
         nodes.forEach((item, index) => {
             nodeIdToIndex[item.id] = index
         })
+        const nodeIds=nodes.map(node=>node.id)
         const links = this.netGraph.getLinks()
         const linkST = [];
         links.forEach(link => {
@@ -256,10 +257,14 @@ export default class PositionController {
         });
         this.force = d3.forceSimulation(nodes)
             .force("charge", d3.forceManyBody().strength(-300))
-            .force("link",d3.forceLink(linkST).distance(500))
-            .force("center",d3.forceCenter())
+            .force("link", d3.forceLink(linkST).distance(500))
+            .force("center", d3.forceCenter(this.canvasCenter.x,this.canvasCenter.y))
 
-
+        this.force.on("tick",()=>{
+            this.netGraph.controller.eventController.fire("_updateEntityPosition",[nodeIds])
+        })
+        
+        
     }
 
     jutuan(nodes) {

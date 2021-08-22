@@ -7,16 +7,16 @@ function computeArrow(link, offset, type) {
     let r;
     if (type === 'target') {
         r=offset.targetOffset.y;
-        sourceX = link.source.x+offset.sourceOffset.x;
-        sourceY = link.source.y+offset.sourceOffset.y;
-        targetX = link.target.x+offset.targetOffset.x;
-        targetY = link.target.y+offset.targetOffset.y;
+        sourceX = link.sourceNode.x+offset.sourceOffset.x;
+        sourceY = link.sourceNode.y+offset.sourceOffset.y;
+        targetX = link.targetNode.x+offset.targetOffset.x;
+        targetY = link.targetNode.y+offset.targetOffset.y;
     } else {
         r=offset.sourceOffset.y;
-        sourceX = link.target.x+offset.targetOffset.x;
-        sourceY = link.target.y+offset.targetOffset.y;
-        targetX = link.source.x+offset.sourceOffset.x;
-        targetY = link.source.y+offset.sourceOffset.y;
+        sourceX = link.targetNode.x+offset.targetOffset.x;
+        sourceY = link.targetNode.y+offset.targetOffset.y;
+        targetX = link.sourceNode.x+offset.sourceOffset.x;
+        targetY = link.sourceNode.y+offset.sourceOffset.y;
     }
     const dis = 6;
     const length = 2;
@@ -46,10 +46,10 @@ function computePolygon(link, shape, type, offset) {
 }
 
 function reLocationLinks(link, r = 11) {
-    let sourceX = link.source.x;
-    let sourceY = link.source.y;
-    let targetX = link.target.x;
-    let targetY = link.target.y;
+    let sourceX = link.sourceNode.x;
+    let sourceY = link.sourceNode.y;
+    let targetX = link.targetNode.x;
+    let targetY = link.targetNode.y;
 
 
     let dx = targetX - sourceX;
@@ -61,10 +61,10 @@ function reLocationLinks(link, r = 11) {
     link.targetLoc.x = targetX;
     link.targetLoc.y = targetY;
 
-    sourceX = link.target.x;
-    sourceY = link.target.y;
-    targetX = link.source.x;
-    targetY = link.source.y;
+    sourceX = link.targetNode.x;
+    sourceY = link.targetNode.y;
+    targetX = link.sourceNode.x;
+    targetY = link.sourceNode.y;
 
     dx = targetX - sourceX;
     dy = targetY - sourceY;
@@ -84,10 +84,10 @@ function reLocationLinks(link, r = 11) {
  */
 function generateLinkLocation(link, offset,renderLink) {
     let r=offset.targetOffset.y
-    let sourceX = link.source.x+offset.sourceOffset.x;
-    let sourceY = link.source.y+offset.sourceOffset.y;
-    let targetX = link.target.x+offset.targetOffset.x;
-    let targetY = link.target.y+offset.targetOffset.y;
+    let sourceX = link.sourceNode.x+offset.sourceOffset.x;
+    let sourceY = link.sourceNode.y+offset.sourceOffset.y;
+    let targetX = link.targetNode.x+offset.targetOffset.x;
+    let targetY = link.targetNode.y+offset.targetOffset.y;
 
 
     let dx = targetX - sourceX;
@@ -100,10 +100,10 @@ function generateLinkLocation(link, offset,renderLink) {
     renderLink.targetPosition[1] = targetY;
 
     r=offset.sourceOffset.y;
-    sourceX = link.target.x+offset.targetOffset.x;
-    sourceY = link.target.y+offset.targetOffset.y;
-    targetX = link.source.x+offset.sourceOffset.x;
-    targetY = link.source.y+offset.sourceOffset.y;
+    sourceX = link.targetNode.x+offset.targetOffset.x;
+    sourceY = link.targetNode.y+offset.targetOffset.y;
+    targetX = link.sourceNode.x+offset.sourceOffset.x;
+    targetY = link.sourceNode.y+offset.sourceOffset.y;
 
     dx = targetX - sourceX;
     dy = targetY - sourceY;
