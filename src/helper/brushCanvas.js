@@ -117,7 +117,7 @@ export default class BrushCanvas {
                 height: this.height
             }
         }
-        this.props.eventController.fire('_brushend', brushInfo);
+        this.props.eventController.fire('_brushend', [brushInfo]);
         document.getElementById(this.props.container).removeChild(this.canvas);
         this.deck = null;
     }

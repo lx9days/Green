@@ -59,35 +59,39 @@ const netGraph = new NetGraph({
             {
                 selector: 'node',
                 style: {
-                    'width': 50,
-                    'height': 40,
+                    'width': 50,//node 宽度
+                    'height': 40,//node 高度 只有在 shape 为‘rect’时可用
                     'url': (d) => d.data.img,
                     'opacity': 1,
                     'background-color': '#aaa',
                     'background-opacity': 1,
-                    'border-width': 5,
-                    'border-color': '#fff',
-                    'border-opacity': 1,
+                    'border-width': 5,//图片周围圆圈的宽度
+                    'border-color': '#fff',//颜色
+                    'border-opacity': 1,//透明度
                     'color': '#845624',
                     'text-opacity': 1,
                     'font-size': 16,
                     'text': (d) => d.data.name,
-                    'shape': 'circle',
+                    'shape': 'circle',//'circle','rect'两种
                 }
             },
             {
                 selector: 'link',
                 style: {
-                    'width': 2,
-                    'line-color': '#456456',
-                    'line-opacity': 1,
-                    'to-arrow-shape': 'triangle',
-                    'to-arrow-color': '#858585',
-                    'to-arrow-fill': 'filled',
-                    'color': '#845624',
-                    'text-opacity': 1,
-                    'font-size': 10,
-                    'text': (d) => d.data.type,
+                   'width': 2,//线宽度
+                    'line-color': '#456456',//线的颜色
+                    'line-opacity': 1,//线的透明度
+                    'to-arrow-shape': 'triangle',//target 箭头的形状
+                    'to-arrow-color': '#858585',//target 箭头的颜色
+                    'to-arrow-fill': 'filled', //target 箭头是否填充'none','filled'
+                    'from-arrow-shape': 'triangle',//source 箭头的形状
+                    'from-arrow-color': '#858585',//source 箭头的颜色
+                    'from-arrow-fill': 'filled',//source 箭头是否填充'none','filled'
+                    'color': '#845624',//线上文字的颜色
+                    'text-opacity': 1,//文字的透明度
+                    'font-size': 10,//文字的大小
+                    'text': (d) => d.data.type,//文字
+                    'direct':(d)=>d.data.direct//线的方向  函数返回值true 单向，函数返回值false 双向，默认单项
                 }
             },
             ]

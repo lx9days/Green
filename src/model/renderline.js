@@ -24,6 +24,7 @@ export default class RenderLine {
             targetArrowShape: 'none',
             targetArrowFill: 'filled',
             targetArrowScale: 1,
+            direct:true,
         }
         this._generateStyle();
         this._generatePosition();
@@ -154,6 +155,14 @@ export default class RenderLine {
                         }
                         break;
                     case 'to-arrow-scale':
+                        break;
+                    case 'direct':
+                        const directObj=style[item];
+                        if(isFunction(directObj)){
+                            this.style.direct=directObj(this.origionElement)
+                        }else{
+                            this.style.direct=true;
+                        }
                         break;
                     default:
                         break;

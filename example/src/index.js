@@ -57,12 +57,14 @@ function draw(rawData) {
                 type: '但是',
                 from: 'a001',
                 to: 'a003',
+                direct:false
             },
             {
                 id: 'l02',
                 type: '阿达',
                 from: 'a004',
                 to: 'a002',
+                direct:true
             }]
 
         }
@@ -108,10 +110,14 @@ function draw(rawData) {
                     'to-arrow-shape': 'triangle',
                     'to-arrow-color': '#858585',
                     'to-arrow-fill': 'filled',
+                    'from-arrow-shape': 'triangle',
+                    'from-arrow-color': '#858585',
+                    'from-arrow-fill': 'filled',
                     'color': '#845624',
                     'text-opacity': 1,
                     'font-size': 10,
                     'text': (d) => d.data.type,
+                    'direct':(d)=>d.data.direct
                 }
             },
             {
