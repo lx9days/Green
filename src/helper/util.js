@@ -18,8 +18,8 @@ function computeArrow(link, offset, type) {
         targetX = link.sourceNode.x+offset.sourceOffset.x;
         targetY = link.sourceNode.y+offset.sourceOffset.y;
     }
-    const dis = 6;
-    const length = 2;
+    const dis = 8;
+    const length =4;
     let dx = targetX - sourceX;
     let dy = targetY - sourceY;
     let v_norm = Math.sqrt(dx ** 2 + dy ** 2);

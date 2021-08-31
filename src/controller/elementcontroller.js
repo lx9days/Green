@@ -165,12 +165,19 @@ export default class ElementController {
             const renderLine = new RenderLine(link, offset);
             linkRenders.lineObjs.push(renderLine);
 
-            if (renderLine.style.sourceArrowShape !== 'none') {
+            if(renderLine.style.direct){
+                linkRenders.polygonObjs.push(new RenderPolygon(link, 'target', offset));
+            }else{
+                linkRenders.polygonObjs.push(new RenderPolygon(link, 'target', offset));
                 linkRenders.polygonObjs.push(new RenderPolygon(link, 'source', offset));
             }
-            if (renderLine.style.targetArrowShape !== 'none') {
-                linkRenders.polygonObjs.push(new RenderPolygon(link, 'target', offset));
-            }
+
+            // if (renderLine.style.sourceArrowShape !== 'none') {
+            //     linkRenders.polygonObjs.push(new RenderPolygon(link, 'source', offset));
+            // }
+            // if (renderLine.style.targetArrowShape !== 'none') {
+            //     linkRenders.polygonObjs.push(new RenderPolygon(link, 'target', offset));
+            // }
 
             const renderText = new RenderText(link, offset);
             this._generateCharSet(renderText.text);
