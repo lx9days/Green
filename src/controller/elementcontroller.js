@@ -1,10 +1,11 @@
 import Node from '../model/node';
 import Link from '../model/link';
-import RenderBorder from '../model/renderborder';
+import RenderBackground from '../model/renderbackground';
 import RenderIcon from '../model/rendericon';
 import RenderLine from '../model/renderline';
 import RenderPolygon from '../model/renderpolygon';
 import RenderText from '../model/rendertext';
+import RenderMark from '../model/rendermark';
 /**
  * ElementController 主要用于创建Node Link并将style 挂载到 Node Link 上，然后计算 Node Link 的位置
  * 之后将Node Link 解析成为 RenderObject(canvas controller用来选的的对象);
@@ -85,11 +86,12 @@ export default class ElementController {
         this.characterSet = new Set();//保存textlayer的字符
 
         this.renderObject = {
-            renderBorders: new Array(),
+            renderBackgrounds: new Array(),
             renderIcons: new Array(),
             renderLines: new Array(),
             renderText: new Array(),
             renderPolygon: new Array(),
+            renderMark: new Array(),
             charSet: null
         }
     }
@@ -99,21 +101,24 @@ export default class ElementController {
             this.linkRenderMap = new Map();
             this.characterSet = new Set();
             this.renderObject = {
-                renderBorders: new Array(),
+                renderBackgrounds: new Array(),
                 renderIcons: new Array(),
                 renderLines: new Array(),
                 renderText: new Array(),
                 renderPolygon: new Array(),
+                renderMark: new Array(),
                 charSet: null
             }
             nodeArray.forEach((node) => {
                 const nodeRenders = {
                     iconObjs: new Array(),
-                    borderObjs: new Array(),
-                    textObjs: new Array()
+                    backgroundObjs: new Array(),
+                    textObjs: new Array(),
+                    markObjs: new Array(),
                 }
-                nodeRenders.borderObjs.push(new RenderBorder(node));
+                nodeRenders.backgroundObjs.push(new RenderBackground(node));
                 nodeRenders.iconObjs.push(new RenderIcon(node));
+                nodeRenders.markObjs.push(new RenderMark(node));
                 const renderText = new RenderText(node);
                 this._generateCharSet(renderText.text);
                 nodeRenders.textObjs.push(renderText);
@@ -124,11 +129,13 @@ export default class ElementController {
             nodeArray.forEach((node) => {
                 const nodeRenders = {
                     iconObjs: new Array(),
-                    borderObjs: new Array(),
-                    textObjs: new Array()
+                    backgroundObjs: new Array(),
+                    textObjs: new Array(),
+                    markObjs: new Array(),
                 }
-                nodeRenders.borderObjs.push(new RenderBorder(node));
+                nodeRenders.backgroundObjs.push(new RenderBackground(node));
                 nodeRenders.iconObjs.push(new RenderIcon(node));
+                nodeRenders.markObjs.push(new RenderMark(node))
                 const renderText = new RenderText(node);
                 this._generateCharSet(renderText.text);
                 nodeRenders.textObjs.push(renderText);
@@ -148,36 +155,29 @@ export default class ElementController {
                 textObjs: new Array(),
                 lineObjs: new Array()
             }
-            const sourceRenderBorder = this.nodeRenderMap.get(link.source.id).borderObjs[0];
-            const targetRenderBorder = this.nodeRenderMap.get(link.target.id).borderObjs[0];
+            const sourceRenderBackground = this.nodeRenderMap.get(link.source.id).backgroundObjs[0];
+            const targetRenderBackground = this.nodeRenderMap.get(link.target.id).backgroundObjs[0];
             const sourceOffset = {
-                x: sourceRenderBorder.style.backgroundHeight / 2 + sourceRenderBorder.style.borderWidth / 2,
-                y: sourceRenderBorder.style.backgroundHeight / 2 + sourceRenderBorder.style.borderWidth / 2,
-                borderWidth: sourceRenderBorder.style.borderWidth
+                x: sourceRenderBackground.style.backgroundHeight / 2 + sourceRenderBackground.style.borderWidth / 2,
+                y: sourceRenderBackground.style.backgroundHeight / 2 + sourceRenderBackground.style.borderWidth / 2,
+                borderWidth: sourceRenderBackground.style.borderWidth
             }
             const targetOffset = {
-                x: targetRenderBorder.style.backgroundHeight / 2 + targetRenderBorder.style.borderWidth / 2,
-                y: targetRenderBorder.style.backgroundHeight / 2 + targetRenderBorder.style.borderWidth / 2,
-                borderWidth: targetRenderBorder.style.borderWidth
+                x: targetRenderBackground.style.backgroundHeight / 2 + targetRenderBackground.style.borderWidth / 2,
+                y: targetRenderBackground.style.backgroundHeight / 2 + targetRenderBackground.style.borderWidth / 2,
+                borderWidth: targetRenderBackground.style.borderWidth
             }
             const offset = { sourceOffset, targetOffset }
 
             const renderLine = new RenderLine(link, offset);
             linkRenders.lineObjs.push(renderLine);
 
-            if(renderLine.style.direct){
+            if (renderLine.style.direct) {
                 linkRenders.polygonObjs.push(new RenderPolygon(link, 'target', offset));
-            }else{
+            } else {
                 linkRenders.polygonObjs.push(new RenderPolygon(link, 'target', offset));
                 linkRenders.polygonObjs.push(new RenderPolygon(link, 'source', offset));
             }
-
-            // if (renderLine.style.sourceArrowShape !== 'none') {
-            //     linkRenders.polygonObjs.push(new RenderPolygon(link, 'source', offset));
-            // }
-            // if (renderLine.style.targetArrowShape !== 'none') {
-            //     linkRenders.polygonObjs.push(new RenderPolygon(link, 'target', offset));
-            // }
 
             const renderText = new RenderText(link, offset);
             this._generateCharSet(renderText.text);
@@ -190,11 +190,12 @@ export default class ElementController {
 
     _generateRenderObjs() {
         this.renderObject = {
-            renderBorders: new Array(),
+            renderBackgrounds: new Array(),
             renderIcons: new Array(),
             renderLines: new Array(),
             renderText: new Array(),
             renderPolygon: new Array(),
+            renderMark: new Array(),
             charSet: null
         }
         for (const nodeIdKey of this.nodeRenderMap.keys()) {
@@ -202,12 +203,15 @@ export default class ElementController {
             nodeRenders.iconObjs.forEach((iconObj) => {
                 this.renderObject.renderIcons.push(iconObj);
             });
-            nodeRenders.borderObjs.forEach((borderObj) => {
-                this.renderObject.renderBorders.push(borderObj);
+            nodeRenders.backgroundObjs.forEach((borderObj) => {
+                this.renderObject.renderBackgrounds.push(borderObj);
             });
             nodeRenders.textObjs.forEach((textObj) => {
                 this.renderObject.renderText.push(textObj);
             });
+            nodeRenders.markObjs.forEach(markObj => {
+                this.renderObject.renderMark.push(markObj);
+            })
         }
         for (const linkIdKey of this.linkRenderMap.keys()) {
             const linkRenders = this.linkRenderMap.get(linkIdKey);
@@ -223,7 +227,7 @@ export default class ElementController {
         }
         this.renderObject.charSet = Array.from(this.characterSet);
         this.controller.canvasController.updateRenderObject(this.renderObject);
-        this.controller.eventController.subscribe("_updateEntityPosition",(nodeIds)=>{
+        this.controller.eventController.subscribe("_updateEntityPosition", (nodeIds) => {
             this.updateEntityPosition(nodeIds)
         })
     }
@@ -499,10 +503,10 @@ export default class ElementController {
                         this.renderObject.renderIcons.splice(index, 1)
                     }
                 });
-                renderNode.borderObjs.forEach((border) => {
-                    const index = this.renderObject.renderBorders.indexOf(border);
+                renderNode.backgroundObjs.forEach((border) => {
+                    const index = this.renderObject.renderBackgrounds.indexOf(border);
                     if (index >= 0) {
-                        this.renderObject.renderBorders.splice(index, 1);
+                        this.renderObject.renderBackgrounds.splice(index, 1);
                     }
                 });
                 renderNode.textObjs.forEach((text) => {
@@ -511,6 +515,12 @@ export default class ElementController {
                         this.renderObject.renderText.splice(index, 1);
                     }
                 });
+                renderNode.markObjs.forEach(mark => {
+                    const index = this.renderObject.renderMark.indexOf(mark);
+                    if (index >= 0) {
+                        this.renderObject.renderMark.splice(index, 1);
+                    }
+                })
                 this.nodeRenderMap.delete(id);
             });
         }
@@ -609,12 +619,12 @@ export default class ElementController {
     updateNodeStatus(nodeIds, status) {
         if (nodeIds && nodeIds.length > 0) {
             const idsSet = new Set();
-            if (status === 2) {
-                this.nodes.forEach((node) => {
-                    node.setStatus(1);
-                })
-                this._updateNodeRenderObjStatus();
-            }
+            // if (status === 2) {
+            //     this.nodes.forEach((node) => {
+            //         node.setStatus(1);
+            //     })
+            //     this._updateNodeRenderObjStatus();
+            // }
             nodeIds.forEach((id) => {
                 const node = this.idMapNode.get(id);
                 if (node) {
@@ -638,16 +648,37 @@ export default class ElementController {
                     renderObjects.textObjs.forEach((text) => {
                         text.updateStatus();
                     });
-                    renderObjects.borderObjs.forEach((border) => {
+                    renderObjects.backgroundObjs.forEach((border) => {
                         border.updateStatus();
                     });
+                    renderObjects.markObjs.forEach(mark => {
+                        mark.updateStatus();
+                    })
                 }
             });
             if (status === 3) {
                 this.updateLinkStatus(Array.from(idsSet), status);
             }
-            this.controller.canvasController.updateRenderObject();
+        } else {
+            this.nodes.forEach(node => {
+                node.setStatus(status);
+                if (status === 3) {
+                    const sourceLinks = node.getSourceLinks();
+                    const targetLinks = node.getTargetLinks();
+                    sourceLinks.forEach(link => {
+                        idsSet.set(link.getId());
+                    });
+                    targetLinks.forEach(link => {
+                        idsSet.set(link.getId());
+                    });
+                }
+            });
+            this._updateNodeRenderObjStatus();
+            if (status === 3) {
+                this.updateLinkStatus(Array.from(idsSet), status);
+            }
         }
+        this.controller.canvasController.updateRenderObject();
 
     }
     /**
@@ -679,7 +710,7 @@ export default class ElementController {
      * @param {id} nodeIds 
      */
     _updateNodeRenderObjStatus(nodeIds = null) {
-        if (nodeIds && nodeIds.length < 0) {
+        if (nodeIds && nodeIds.length > 0) {
             nodeIds.forEach((id) => {
                 const renderObjects = this.nodeRenderMap.get(id);
                 renderObjects.iconObjs.forEach((icon) => {
@@ -688,9 +719,12 @@ export default class ElementController {
                 renderObjects.textObjs.forEach((text) => {
                     text.updateStatus();
                 });
-                renderObjects.borderObjs.forEach((border) => {
+                renderObjects.backgroundObjs.forEach((border) => {
                     border.updateStatus();
                 });
+                renderObjects.markObjs.forEach(mark => {
+                    mark.updateStatus();
+                })
             })
         } else {
             for (const key of this.nodeRenderMap.keys()) {
@@ -701,9 +735,12 @@ export default class ElementController {
                 renderObjects.textObjs.forEach((text) => {
                     text.updateStatus();
                 });
-                renderObjects.borderObjs.forEach((border) => {
+                renderObjects.backgroundObjs.forEach((border) => {
                     border.updateStatus();
                 });
+                renderObjects.markObjs.forEach(mark => {
+                    mark.updateStatus();
+                })
             }
         }
     }
@@ -770,11 +807,11 @@ export default class ElementController {
         } else {
             this.controller.positionController.layout()(newNodeArray, this);
         }
-      //  this.updateEntityPosition(nodeIds);
+        //  this.updateEntityPosition(nodeIds);
     }
 
 
-    updateEntityPosition(nodeIds=null) {
+    updateEntityPosition(nodeIds = null) {
         if (nodeIds) {
             const needUpdateLinks = [];
             nodeIds.forEach((id) => {
@@ -790,16 +827,19 @@ export default class ElementController {
                     throw new Error("cannot find node id:" + id)
                 }
                 const nodeRenders = this.nodeRenderMap.get(id);
-                const { iconObjs, borderObjs, textObjs } = nodeRenders;
+                const { iconObjs, backgroundObjs, textObjs, markObjs } = nodeRenders;
                 iconObjs.forEach((iconObj) => {
                     iconObj.reLocation();
                 });
-                borderObjs.forEach((borderObj) => {
+                backgroundObjs.forEach((borderObj) => {
                     borderObj.reLocation();
                 });
                 textObjs.forEach((textObj) => {
                     textObj.reLocation();
                 });
+                markObjs.forEach(mark => {
+                    mark.reLocation();
+                })
             });
             needUpdateLinks.forEach(link => {
                 const linkRenders = this.linkRenderMap.get(link.id);
@@ -816,14 +856,15 @@ export default class ElementController {
             })
         } else {
             const {
-                renderBorders,
+                renderBackgrounds,
                 renderIcons,
                 renderLines,
                 renderText,
                 renderPolygon,
+                renderMark,
             } = this.renderObject;
-            renderBorders.forEach((renderBorder) => {
-                renderBorder.reLocation();
+            renderBackgrounds.forEach((RenderBackground) => {
+                RenderBackground.reLocation();
             });
             renderIcons.forEach((renderIcon) => {
                 renderIcon.reLocation();
@@ -836,6 +877,9 @@ export default class ElementController {
             });
             renderPolygon.forEach((rePolygon) => {
                 rePolygon.reLocation();
+            })
+            renderMark.forEach(mark => {
+                mark.reLocation();
             })
         }
         this.controller.canvasController.updateRenderObject();

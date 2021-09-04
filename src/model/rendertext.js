@@ -20,6 +20,7 @@ export default class RenderText {
             shape: null,
             height: 0,
             textAnchor: 'middle',
+            backgroundHeight:0,
             textAlignmentBaseline: 'top',
             borderWidth:0
         }
@@ -50,11 +51,16 @@ export default class RenderText {
                 this.position[1] = elementPosition.y + this.style.height +this.style.borderWidth*2;
                 this.style.textAnchor='middle';
                 this.style.textAlignmentBaseline='top';
-            } else {
+            } else if(this.style.shape.toLowerCase()==='rounded_rect'){
                 this.position[0] = elementPosition.x + this.style.height+this.style.borderWidth;
                 this.position[1] = elementPosition.y +this.style.height/2+this.style.borderWidth;
                 this.style.textAnchor='start';
                 this.style.textAlignmentBaseline='center';
+            }else{
+                this.position[0] = elementPosition.x + this.style.height/2+this.style.borderWidth/2;
+                this.position[1] = elementPosition.y  +this.style.borderWidth*2+this.style.backgroundHeight;
+                this.style.textAnchor='middle';
+                this.style.textAlignmentBaseline='top';
             }
         }else{
             const elementSourcePosition=this.origionElement.getSourceLocation();
@@ -115,6 +121,14 @@ export default class RenderText {
                             this.style.shape = shapeObj(this.origionElement);
                         } else {
                             this.style.shape = shapeObj;
+                        }
+                        break;
+                    case 'background-height':
+                        const backgroundHeightObj=style[item];
+                        if(isFunction(backgroundHeightObj)){
+                            this.style.backgroundHeight=backgroundHeightObj(this.origionElement)
+                        }else{
+                            this.style.backgroundHeight=backgroundHeightObj;
                         }
                         break;
                     case 'height':

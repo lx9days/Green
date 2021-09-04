@@ -1,5 +1,6 @@
 import { Deck, COORDINATE_SYSTEM, OrthographicView } from '@deck.gl/core';
 import { ScatterplotLayer, IconLayer, LineLayer, TextLayer, PolygonLayer } from '@deck.gl/layers';
+import hexRgb from 'hex-rgb';
 import RoundedRectangleLayer from '../compositelayer/RoundedRectangleLayer';
 import BrushCanvas from '../helper/brushCanvas';
 
@@ -25,6 +26,7 @@ export default class CanvasController {
         this.deckDragEndHandler = this._deckDragEndHandler.bind(this);
         this.onViewStateChange = this._onViewStateChange.bind(this);
         this._brushInfoCallBack = this._brushInfoCallBack.bind(this);
+        this.lastHoverElement = null;
         this._initializeCanvas();
     }
 
@@ -44,8 +46,8 @@ export default class CanvasController {
 
         }
         this.canvas = document.createElement('canvas');
-        this.canvas.width=this.props.containerWidth;
-        this.canvas.height=this.props.containerHeight;
+        this.canvas.width = this.props.containerWidth;
+        this.canvas.height = this.props.containerHeight;
         this.canvas.addEventListener('contextmenu', (e) => {
 
             this.eventController.fire("canvasRightClick", [e]);
@@ -56,7 +58,7 @@ export default class CanvasController {
         if (this.deck) {
             this.deck = null;
         }
-        console.log(this.props.containerWidth,this.props.containerHeight);
+        console.log(this.props.containerWidth, this.props.containerHeight);
 
         this.deck = new Deck({
             views: new OrthographicView({
@@ -78,7 +80,7 @@ export default class CanvasController {
             onClick: this.deckClickHandler,
             onDragStart: this.deckDragStartHandler,
             onDragEnd: this.deckDragEndHandler,
-            pickingRadius:6,
+            pickingRadius: 6,
             //getCursor:({isDragging,isHovering}) => isHovering ? 'grabbing' : 'grab'
         });
     }
@@ -122,13 +124,15 @@ export default class CanvasController {
 
     updateRenderGraph() {
         const zoom = this.props.zoom;
-        const { renderBorders, renderIcons, renderLines, renderText, renderPolygon, charSet } = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark } = this.renderObject;
+        const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
+        const lineHighlightOpactiy = this.props.lineHighlightOpacity;
         const lineLayer = new LineLayer({
             id: 'line-layer',
             data: renderLines,
             autoHighlight: true,
+            highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
             pickable: true,
-            //autoHightlightColor: [0, 0, 0],
             getWidth: d => d.style.lineWidth || 2,
             getSourcePosition: d => d.sourcePosition,
             getTargetPosition: d => d.targetPosition,
@@ -145,8 +149,6 @@ export default class CanvasController {
             pickable: true,
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
-            autoHighlight: true,
-            autoHightlightColor: [255, 0, 0],
             getIcon: d => ({
                 url: d.url,
                 width: d.style.iconHeight,
@@ -156,10 +158,7 @@ export default class CanvasController {
             }),
             getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
             getColor: d => d.style.iconColor,
-            onDrag: this.nodeDragingHandler,
-            onClick: this.nodeClickHandler,
-            onDragStart: this.nodeDragStartHandler,
-            onDragEnd: this.nodeDragEndHandler,
+
             updateTriggers: {
                 getPosition: d => {
                     return d.position;
@@ -170,7 +169,7 @@ export default class CanvasController {
 
         const circleEdge = new ScatterplotLayer({
             id: 'circleedge-layer',
-            data: renderBorders.filter((v) => v.shapeType === 0),
+            data: renderBackgrounds.filter((v) => v.shapeType === 0),
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             pickable: true,
             opacity: 1,
@@ -181,7 +180,7 @@ export default class CanvasController {
                 return d.style.backgroundColor || [255, 255, 255, 255];
             },
             getRadius: (d) => {
-                return d.style.backgroundHeight / 2;
+                return d.style.circleHeight / 2;
             },
             getPosition: (d) => {
                 return d.position;
@@ -197,7 +196,7 @@ export default class CanvasController {
                 return d.style.borderWidth || 4;
             },
             getWidth: (d) => {
-                return d.style.backgroundWidth;
+                return d.style.width;
             },
             onDrag: this.nodeDragingHandler,
             onClick: this.nodeClickHandler,
@@ -205,12 +204,9 @@ export default class CanvasController {
             onDragEnd: this.nodeDragEndHandler,
 
         });
-
-
-
         const roundedEdge = new RoundedRectangleLayer({
             id: 'rounded',
-            data: renderBorders.filter((v) => v.shapeType === 1),
+            data: renderBackgrounds.filter((v) => v.shapeType === 1),
             opacity: 1,
             getFillColor: (d) => {
                 return d.style.backgroundColor || [255, 255, 255, 255];
@@ -248,6 +244,49 @@ export default class CanvasController {
                 return d.style.backgroundHeight / 2;
             }
         })
+        const rectBackgroundLayer = new PolygonLayer({
+            id: 'rect-background-layer',
+            data: renderBackgrounds.filter(v => v.shapeType === 2),
+            opacity: 1,
+            getFillColor: (d) => {
+                if (d.status === 2) {
+                    return d.style.backgroundColor || [255, 255, 255, 255]
+                } else {
+                    return [255, 255, 255, 0];
+                }
+            },
+            getPolygon: (d) => {
+                return d.backgroundPolygon || [];
+            },
+            getLineColor: (d) => {
+                if (d.status === 2) {
+                    return d.style.borderColor || [255, 255, 255, 255];
+                } else {
+                    return [255, 255, 255.0];
+                }
+            },
+            getLineWidth: (d) => {
+                if (d.status === 2) {
+                    return d.style.borderWidth || 0;
+                } else {
+                    return 0;
+                }
+            },
+            filled: true,
+            stroked: true,
+            updateTriggers: {
+                getPolygon: d => {
+                    return d.backgroundPolygon;
+                },
+                getFillColor: (d) => {
+                    if (d.status === 2) {
+                        return d.style.backgroundColor || [255, 255, 255, 255]
+                    } else {
+                        return [255, 255, 255, 0];
+                    }
+                },
+            }
+        });
 
         const textLayer = new TextLayer({
             id: 'text-layer',
@@ -291,16 +330,54 @@ export default class CanvasController {
                 }
             }
         });
-        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, circleEdge, roundedEdge, iconLayer, textLayer] });
+        const markRGB = hexRgb(this.props.nodeHighlightColor);
+        const markOpactiy = this.props.nodeHighlightOpacity;
+        const markLayer = new PolygonLayer({
+            id: "mark-layer",
+            opacity: 1,
+            data: renderMark,
+            pickable: true,
+            filled: true,
+            stroked: false,
+            autoHighlight: true,
+            highlightColor: [markRGB.red, markRGB.green, markRGB.blue, markOpactiy * 255],
+            getPolygon: d => d.backgroundPolygon,
+            getFillColor: (d) => {
+                if (d.status === 4) {
+                    return d.style.highLightColor;
+                } else {
+                    return [255, 255, 255, 0];
+                }
+            },
+            updateTriggers: {
+                getFillColor: (d) => {
+                    if (d.status === 4) {
+                        return d.style.highLightColor;
+                    } else {
+                        return [255, 255, 255, 0];
+                    }
+                },
+                getPolygon: d => d.backgroundPolygon,
+            },
+            onDrag: this.nodeDragingHandler,
+            onClick: this.nodeClickHandler,
+            onDragStart: this.nodeDragStartHandler,
+            onDragEnd: this.nodeDragEndHandler,
+        })
+        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, circleEdge, roundedEdge, rectBackgroundLayer, iconLayer, textLayer, markLayer] });
     }
 
     renderGraph() {
+
         const zoom = this.props.zoom;
-        const { renderBorders, renderIcons, renderLines, renderText, renderPolygon, charSet } = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark } = this.renderObject;
+        const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
+        const lineHighlightOpactiy = this.props.lineHighlightOpacity;
         const lineLayer = new LineLayer({
             id: 'line-layer',
             data: renderLines.filter(() => true),
             autoHighlight: true,
+            highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
             pickable: true,
             getWidth: d => d.style.lineWidth || 2,
             getSourcePosition: d => d.sourcePosition,
@@ -318,8 +395,6 @@ export default class CanvasController {
             pickable: true,
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
-            autoHighlight: true,
-            autoHightlightColor: [255, 0, 0],
             getIcon: d => ({
                 url: d.url,
                 width: d.style.iconHeight,
@@ -329,10 +404,7 @@ export default class CanvasController {
             }),
             getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
             getColor: d => d.style.iconColor,
-            onDrag: this.nodeDragingHandler,
-            onClick: this.nodeClickHandler,
-            onDragStart: this.nodeDragStartHandler,
-            onDragEnd: this.nodeDragEndHandler,
+
             updateTriggers: {
                 getPosition: d => {
                     return d.position;
@@ -342,7 +414,7 @@ export default class CanvasController {
 
         const circleEdge = new ScatterplotLayer({
             id: 'circleedge-layer',
-            data: renderBorders.filter((v) => v.shapeType === 0),
+            data: renderBackgrounds.filter((v) => v.shapeType === 0),
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             pickable: true,
             opacity: 1,
@@ -353,7 +425,7 @@ export default class CanvasController {
                 return d.style.backgroundColor || [255, 255, 255, 255];
             },
             getRadius: (d) => {
-                return d.style.backgroundHeight / 2;
+                return d.style.circleHeight / 2;
             },
             getPosition: (d) => {
                 return d.position;
@@ -382,7 +454,7 @@ export default class CanvasController {
 
         const roundedEdge = new RoundedRectangleLayer({
             id: 'rounded',
-            data: renderBorders.filter((v) => v.shapeType === 1),
+            data: renderBackgrounds.filter((v) => v.shapeType === 1 && v.status === 1),
             opacity: 1,
             getFillColor: (d) => {
                 return d.style.backgroundColor || [255, 255, 255, 255];
@@ -420,6 +492,51 @@ export default class CanvasController {
                 return d.style.backgroundHeight / 2;
             }
         })
+
+        const rectBackgroundLayer = new PolygonLayer({
+            id: 'rect-background-layer',
+            data: renderBackgrounds.filter(v => v.shapeType === 2),
+            opacity: 1,
+            getFillColor: (d) => {
+                if (d.status === 2) {
+                    return d.style.backgroundColor || [255, 255, 255, 255]
+                } else {
+                    return [255, 255, 255, 0];
+                }
+            },
+            getPolygon: (d) => {
+                return d.backgroundPolygon || [];
+            },
+            getLineColor: (d) => {
+                if (d.status === 2) {
+                    return d.style.borderColor || [255, 255, 255, 255];
+                } else {
+                    return [255, 255, 255.0];
+                }
+            },
+            getLineWidth: (d) => {
+                if (d.status === 2) {
+                    return d.style.borderWidth || 0;
+                } else {
+                    return 0;
+                }
+            },
+            filled: true,
+            stroked: true,
+            updateTriggers: {
+                getPolygon: d => {
+                    return d.backgroundPolygon;
+                },
+                getFillColor: (d) => {
+                    if (d.status === 2) {
+                        return d.style.backgroundColor || [255, 255, 255, 255]
+                    } else {
+                        return [255, 255, 255, 0];
+                    }
+                },
+            }
+        });
+
 
         const textLayer = new TextLayer({
             id: 'text-layer',
@@ -463,7 +580,41 @@ export default class CanvasController {
                 }
             }
         });
-        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, circleEdge, roundedEdge, iconLayer, textLayer] });
+        const markRGB = hexRgb(this.props.nodeHighlightColor);
+        const markOpactiy = this.props.nodeHighlightOpacity;
+        const markLayer = new PolygonLayer({
+            id: "mark-layer",
+            opacity: 1,
+            data: renderMark,
+            pickable: true,
+            filled: true,
+            stroked: false,
+            autoHighlight: true,
+            highlightColor: [markRGB.red, markRGB.green, markRGB.blue, markOpactiy * 255],
+            getPolygon: d => d.backgroundPolygon,
+            getFillColor: (d) => {
+                if (d.status === 4) {
+                    return d.style.highLightColor;
+                } else {
+                    return [255, 255, 255, 0];
+                }
+            },
+            updateTriggers: {
+                getFillColor: (d) => {
+                    if (d.status === 4) {
+                        return d.style.highLightColor;
+                    } else {
+                        return [255, 255, 255, 0];
+                    }
+                },
+                getPolygon: d => d.backgroundPolygon,
+            },
+            onDrag: this.nodeDragingHandler,
+            onClick: this.nodeClickHandler,
+            onDragStart: this.nodeDragStartHandler,
+            onDragEnd: this.nodeDragEndHandler,
+        });
+        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, circleEdge, roundedEdge, rectBackgroundLayer, iconLayer, textLayer, markLayer] });
     }
 
     _nodeClickHandler(info, e) {
@@ -480,11 +631,11 @@ export default class CanvasController {
             return true;
         }
         this.eventController.fire('nodeClick', [info, e]);
-        if (info.object.status === 1) {
-            this.elementController.updateNodeStatus([info.object.id], 2);
-        } else if (info.object.status === 2) {
-            this.elementController.updateNodeStatus([info.object.id], 1);
-        }
+        // if (info.object.status === 1) {
+        //     this.elementController.updateNodeStatus([info.object.id], 2);
+        // } else if (info.object.status === 2) {
+        //     this.elementController.updateNodeStatus([info.object.id], 1);
+        // }
         return true;
     }
 
@@ -585,7 +736,7 @@ export default class CanvasController {
 
 
         let nodeIds = this.pickObject(brushInfo);
-        this.elementController.updateNodeStatus(nodeIds, 2);
+        //this.elementController.updateNodeStatus(nodeIds, 2);
 
         this.eventController.fire('brush', [nodeIds]);
         this.eventController.unSubscribeByName('_brushend');
@@ -618,16 +769,16 @@ export default class CanvasController {
                 minZoom: this.props.minZoom,
                 controller: true,
             }),
-            viewState:this.props.viewState,
+            viewState: this.props.viewState,
         })
 
         this.deck.redraw(true);
 
     }
-    getDim(){
+    getDim() {
         return {
             width: this.props.containerWidth,
-            height:this.props.containerHeight,
+            height: this.props.containerHeight,
         }
     }
 

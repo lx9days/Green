@@ -1,5 +1,5 @@
 import axios from 'axios';
-import NetGraph from '../../src/index';
+import NetGraph,{HIGHLIGHT,SELECTED,UNSELECTED} from '../../src/index';
 
 const debug = true;
 
@@ -78,27 +78,36 @@ function draw(rawData) {
             container: 'container',
             maxZoom: 4,
             minZoom: -4,
+            nodeHighlightColor:'#d9d9d9',
+            nodeHighlightOpacity:0.5,
+            lineHighlightColor:'#ffd53f',
+            lineHighlightOpacity:0.5
         },
         layout: 'square',
         data: data,
+        
         style: [
             {
                 selector: 'node',
                 style: {
-                    'width': 50,
-                    'height': 40,
+                    'width': 60,
+                    'height': 60,
+                    'background-width':70,
+                    'background-height':70,
                     'url': (d) => d.data.img,
                     'opacity': 1,
-                    'background-color': '#aaa',
+                    'background-color': '#ffd53f',
                     'background-opacity': 1,
-                    'border-width': 5,
+                    'border-width': 0,
                     'border-color': '#fff',
                     'border-opacity': 1,
                     'color': '#845624',
                     'text-opacity': 1,
                     'font-size': 16,
                     'text': (d) => d.data.name,
-                    'shape': 'circle',
+                    'shape': 'rect',
+                    'highlight-color':"#Fff0BC",
+                    'highlight-opacity':0.5
                 }
             },
             {
@@ -189,19 +198,19 @@ function draw(rawData) {
 
     netGraph.addEventListener('brush', (nodeIds) => {
         console.log(nodeIds);
-        netGraph.replaceStyle([
-            {
-                selector:"node",
-                style:{
+        // netGraph.replaceStyle([
+        //     {
+        //         selector:"node",
+        //         style:{
 
-                }
-            },{
-                selector:"link",
-                style:{
+        //         }
+        //     },{
+        //         selector:"link",
+        //         style:{
                     
-                }
-            }
-        ])
+        //         }
+        //     }
+        // ])
     });
     netGraph.addEventListener('rightClick', () => {
 
@@ -235,7 +244,7 @@ function draw(rawData) {
                 'text-opacity': 1,
                 'font-size': 16,
                 'text': (d) => d.data.name,
-                'shape': 'rect',
+                'shape': 'circle',
             }
         },]);
     });
@@ -291,6 +300,14 @@ function draw(rawData) {
     })
     document.getElementById("unlockNode").addEventListener("click",()=>{
         netGraph.unlockNodes(["a002"])
+    });
+    document.getElementById("alterStatus").addEventListener("click",()=>{
+        const selectedNodes = netGraph.getSelectedNodes();
+        const selectedNodeIds = new Array();
+        selectedNodes.map((v, i) => {
+            selectedNodeIds.push(v.getId());
+        });
+        netGraph.updateNodeStatus(selectedNodeIds,HIGHLIGHT)
     })
 
     document.getElementById('add').addEventListener('click', () => {
