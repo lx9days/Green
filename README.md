@@ -7,6 +7,7 @@
     - [constructor](#constructor)
     - [addData](#adddata)
     - [replaceData](#replacedata)
+    - [nodestatus](#nodestatus)
     - [reloadData](#reloaddata)
     - [updateGraph](#updategraph)
     - [getNodes](#getnodes)
@@ -142,6 +143,10 @@ netGraph.replaceData({
         });
 ```
 `replaceData`将会用新的数据替换原有的数据
+
+### nodestatus
+ `HIGHLIGHT`,`SELECTED`,`UNSELECTED`,`HIDE`分别对应于`高亮`,`选中`,`未选中`,`隐藏`,为了避免使用错误可以从`index.js`中导入结点的状态然后使用
+ >目前`HIDE`状态还不可用
 
 ### reloadData
 

@@ -92,7 +92,6 @@ export default class NetGraph {
      */
     getSelectedNodes() {
         return this.controller.elementController.getSelectedNodes();
-
     }
 
     /**
@@ -302,6 +301,15 @@ export default class NetGraph {
      */
     unlockNodes(nodeIds){
         this.controller.elementController.unlockNodes(nodeIds)
+    }
+
+    /**
+     * 
+     * @param {Array<string>} nodeIds 
+     * @param {1未选中,2选中,3隐藏,4高亮} status 
+     */
+    updateNodeStatus(nodeIds=null,status){
+        this.controller.elementController.updateNodeStatus(nodeIds,status);
     }
     
 }

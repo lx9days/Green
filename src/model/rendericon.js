@@ -13,7 +13,7 @@ export default class RenderIcon{
             iconHeight:5,
             iconSize:6,
             iconOpacity:1,
-            iconColor:[0,0,0,255],
+            iconColor:[255,0,0,255],
             borderWidth:0,
         }
 
@@ -93,8 +93,4 @@ export default class RenderIcon{
         });
         this.style.iconColor[3]=this.style.iconOpacity*225;
     }
-
-
-
-
 }

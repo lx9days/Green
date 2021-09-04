@@ -5,7 +5,8 @@ export default class Link {
         this.data = data;
         this.classes = new Array();
         this.items = new Array();
-        this.status = 2;//1未选中，2选中，3隐藏
+        this.status = 2;//1未选中，2选中，3隐藏，4高亮
+        this.isHover=false;
         this.styles=new Array();
         this.source={
             id:data.from,

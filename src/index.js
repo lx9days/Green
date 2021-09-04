@@ -6,4 +6,9 @@ import GraphLayout from './graphlayout';
 
 export default NetGraph;
 
+export const UNSELECTED=1;
+export const SELECTED=2;
+export const HIDE=3;
+export const HIGHLIGHT=4;
+
 export {generateLinkLocation,GraphLayout};
