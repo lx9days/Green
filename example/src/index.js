@@ -4,9 +4,9 @@ import NetGraph,{HIGHLIGHT,SELECTED,UNSELECTED} from '../../src/index';
 const debug = true;
 
 
-// axios.get('/src/2472_data.json').then((res) => {
-//     const nodes = res.data.data.nodes;
-//     const links = res.data.data.links;
+// axios.get('/src/auto_500.json').then((res) => {
+//     const nodes = res.data.nodes;
+//     const links = res.data.links;
 
 //     nodes.forEach((node, i) => {
 //         node.img = '/src/img1/a' + 0 + '.png';
@@ -83,7 +83,7 @@ function draw(rawData) {
             lineHighlightColor:'#ffd53f',
             lineHighlightOpacity:0.5
         },
-        layout: 'square',
+        layout: 'auto',
         data: data,
         
         style: [
@@ -133,12 +133,14 @@ function draw(rawData) {
                 selector: 'node.fff',
                 style: {
                     'width': 60,
-                    'height': 40,
+                    'height': 60,
+                    'background-width':70,
+                    'background-height':70,
                     'url': (d) => d.data.img,
                     'opacity': 1,
-                    'background-color': '#aaa',
+                    'background-color': '#fff',
                     'background-opacity': 1,
-                    'border-width': 5,
+                    'border-width': 0,
                     'border-color': '#fff',
                     'border-opacity': 1,
                     'color': '#845624',
@@ -146,6 +148,8 @@ function draw(rawData) {
                     'font-size': 16,
                     'text': (d) => d.data.name,
                     'shape': 'rect',
+                    'highlight-color':"#Fff0BC",
+                    'highlight-opacity':0.5
                 }
             }
         ]
@@ -157,7 +161,7 @@ function draw(rawData) {
         //netGraph.replaceData();
     });
     netGraph.addEventListener('nodeClickWithCtrl', (info, e) => {
-        netGraph.addClassForNode(['a005'],['class1','class2'])
+        netGraph.addClassForNode(['a005'],['fff','class2'])
         console.log('nodeClickWithCtrl');
     });
 
@@ -197,20 +201,8 @@ function draw(rawData) {
     })
 
     netGraph.addEventListener('brush', (nodeIds) => {
-        console.log(nodeIds);
-        // netGraph.replaceStyle([
-        //     {
-        //         selector:"node",
-        //         style:{
-
-        //         }
-        //     },{
-        //         selector:"link",
-        //         style:{
-                    
-        //         }
-        //     }
-        // ])
+        
+        this.netGraph.showBrushArea()
     });
     netGraph.addEventListener('rightClick', () => {
 
@@ -289,10 +281,7 @@ function draw(rawData) {
         //netGraph.setGroupDrag(true);
     });
     document.getElementById('addClass').addEventListener('click', () => {
-        // netGraph.addClassForNode(['a005'], ['fff']);
-        // console.log(netGraph.getNodes());
-        netGraph.updateDim({width:1500,height:1000})
-        console.log(netGraph.getNodes())
+        netGraph.addClassForNode(['a005'], ['fff']);
     })
 
     document.getElementById("lockNode").addEventListener("click",()=>{

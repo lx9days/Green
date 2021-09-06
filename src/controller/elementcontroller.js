@@ -61,13 +61,13 @@ export default class ElementController {
                 const newNodeArray = this.nodes;
                 const newLinkArray = this.links;
                 this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
-                this.controller.positionController.layout()(newNodeArray, this);
+                //this.controller.positionController.layout()(newNodeArray, this);
                 this._parseElements(newNodeArray, newLinkArray, "all");
             } else {
                 const newNodeArray = this.getNodes(nodeIds);
                 const newLinkArray = this.links;
                 this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
-                this.controller.positionController.layout()(newNodeArray, this);
+                //this.controller.positionController.layout()(newNodeArray, this);
                 this._parseElements(newNodeArray, newLinkArray, "part");
             }
         }
@@ -398,6 +398,7 @@ export default class ElementController {
 
 
     getLinks(linkIds = null) {
+        console.log("get links")
         if (linkIds && linkIds.length > 0) {
             const linksArray = new Array();
 

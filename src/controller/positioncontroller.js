@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import * as d3Simple from "d3-force-sampled"
 
 export default class PositionController {
     constructor(netGraph, { width, height }) {
@@ -71,7 +72,7 @@ export default class PositionController {
                     row++;
                 }
             }
-            this.netGraph.controller.eventController.fire("_updateEntityPosition",[nodeIds])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
         }
 
     }
@@ -137,7 +138,7 @@ export default class PositionController {
                     node.y = baseY + Math.cos(outsideRoate * index) * outsideR;
                 });
             }
-            this.netGraph.controller.eventController.fire("_updateEntityPosition",[nodeIds])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
         }
 
     }
@@ -157,7 +158,7 @@ export default class PositionController {
                 no.x = no1.x + Math.sin(ahd * i) * radius;
                 no.y = no1.y - radius + Math.cos(ahd * i) * radius;
             }
-            this.netGraph.controller.eventController.fire("_updateEntityPosition",[nodeIds])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
         }
 
     }
@@ -199,7 +200,7 @@ export default class PositionController {
                 let heightNum = parseInt(nodeArray.length / rowNum);
                 no1y = no1y + heightNum * 150 + 300;
             });
-            this.netGraph.controller.eventController.fire("_updateEntityPosition",[nodeIds])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
         }
 
 
@@ -216,7 +217,7 @@ export default class PositionController {
                 node.x = no1.x + i * 150;
                 node.y = no1.y;
             });
-            this.netGraph.controller.eventController.fire("_updateEntityPosition",[nodeIds])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
         }
 
     }
@@ -232,7 +233,7 @@ export default class PositionController {
                 node.x = no1.x;
                 node.y = no1.y + i * 150;
             });
-            this.netGraph.controller.eventController.fire("_updateEntityPosition",[nodeIds])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
         }
 
     }
@@ -242,7 +243,7 @@ export default class PositionController {
         nodes.forEach((item, index) => {
             nodeIdToIndex[item.id] = index
         })
-        const nodeIds=nodes.map(node=>node.id)
+        const nodeIds = nodes.map(node => node.id)
         const links = this.netGraph.getLinks()
         const linkST = [];
         links.forEach(link => {
@@ -256,15 +257,18 @@ export default class PositionController {
             }
         });
         this.force = d3.forceSimulation(nodes)
-            .force("charge", d3.forceManyBody().strength(-300))
+            .velocityDecay(0.2)
+            .force("charge", d3Simple.forceManyBodySampled().strength(-100))
             .force("link", d3.forceLink(linkST).distance(500))
-            .force("center", d3.forceCenter(this.canvasCenter.x,this.canvasCenter.y))
+            .force("center", d3.forceCenter(this.canvasCenter.x, this.canvasCenter.y))
 
-        this.force.on("tick",()=>{
-            this.netGraph.controller.eventController.fire("_updateEntityPosition",[nodeIds])
+        this.force.on("tick", () => {
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
         })
-        
-        
+        let force=this.force;
+        setTimeout(()=>{
+            force.stop()
+        },5000)
     }
 
     jutuan(nodes) {
