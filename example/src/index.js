@@ -1,24 +1,25 @@
 import axios from 'axios';
 import NetGraph,{HIGHLIGHT,SELECTED,UNSELECTED} from '../../src/index';
 
-const debug = true;
+const debug = false;
 
 
-// axios.get('/src/auto_500.json').then((res) => {
-//     const nodes = res.data.nodes;
-//     const links = res.data.links;
+axios.get('/src/test_data.json').then((res) => {
+    const nodes = res.data.nodes;
+    const links = res.data.links;
 
-//     nodes.forEach((node, i) => {
-//         node.img = '/src/img1/a' + 0 + '.png';
-//     });
-//     console.log(nodes.length);
+    nodes.forEach((node, i) => {
+        node.img = '/src/img1/a' + 0 + '.png';
+    });
+    console.log("nodelength",nodes.length);
+    console.log("linklength",links.length);
 
-//     const data = {
-//         nodes,
-//         links
-//     }
-//     draw(data);
-// })
+    const data = {
+        nodes,
+        links
+    }
+    draw(data);
+})
 function draw(rawData) {
     let data = null;
     if (!debug) {
@@ -85,7 +86,6 @@ function draw(rawData) {
         },
         layout: 'auto',
         data: data,
-        
         style: [
             {
                 selector: 'node',
@@ -201,8 +201,8 @@ function draw(rawData) {
     })
 
     netGraph.addEventListener('brush', (nodeIds) => {
-        
-        this.netGraph.showBrushArea()
+        netGraph.updateNodeStatus(nodeIds,HIGHLIGHT)
+       console.log(nodeIds)
     });
     netGraph.addEventListener('rightClick', () => {
 
@@ -224,19 +224,23 @@ function draw(rawData) {
             selector: 'node#a005',
             style: {
                 'width': 60,
-                'height': 40,
+                'height': 60,
+                'background-width':100,
+                'background-height':70,
                 'url': (d) => d.data.img,
                 'opacity': 1,
-                'background-color': '#aaa',
+                'background-color': '#ffd53f',
                 'background-opacity': 1,
-                'border-width': 5,
+                'border-width': 0,
                 'border-color': '#fff',
                 'border-opacity': 1,
                 'color': '#845624',
                 'text-opacity': 1,
                 'font-size': 16,
                 'text': (d) => d.data.name,
-                'shape': 'circle',
+                'shape': 'rect',
+                'highlight-color':"#Fff0BC",
+                'highlight-opacity':0.5
             }
         },]);
     });
@@ -350,7 +354,7 @@ function draw(rawData) {
         })
     });
 }
-draw();
+//draw();
 
 
 
