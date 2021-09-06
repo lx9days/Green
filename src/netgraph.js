@@ -18,6 +18,7 @@ export default class NetGraph {
         const eventController=new EventController();
         const dataController = new DataController(props.data);
         const positionController = new PositionController(this,{width:props.canvasProps.containerWidth,height:props.canvasProps.containerHeight});
+        positionController.setLayout(props.layout)
         const styleController = new StyleController(props.style, this.dataController);
         this.controller = {
             dataController,

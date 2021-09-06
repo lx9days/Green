@@ -58,7 +58,7 @@ export default class CanvasController {
         if (this.deck) {
             this.deck = null;
         }
-        console.log(this.props.containerWidth, this.props.containerHeight);
+       // console.log(this.props.containerWidth, this.props.containerHeight);
 
         this.deck = new Deck({
             views: new OrthographicView({
@@ -167,86 +167,85 @@ export default class CanvasController {
             }
         });
 
-        const circleEdge = new ScatterplotLayer({
-            id: 'circleedge-layer',
-            data: renderBackgrounds.filter((v) => v.shapeType === 0),
-            coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
-            pickable: true,
-            opacity: 1,
-            stroked: true,
-            filled: true,
-            autoHighlight: false,
-            getFillColor: (d) => {
-                return d.style.backgroundColor || [255, 255, 255, 255];
-            },
-            getRadius: (d) => {
-                return d.style.circleHeight / 2;
-            },
-            getPosition: (d) => {
-                return d.position;
-            },
-            getLineColor: (d) => {
-                if (d.status === 2) {
-                    return d.style.borderColor
-                } else {
-                    return [255, 255, 255, 0];
-                }
-            },
-            getLineWidth: (d) => {
-                return d.style.borderWidth || 4;
-            },
-            getWidth: (d) => {
-                return d.style.width;
-            },
-            onDrag: this.nodeDragingHandler,
-            onClick: this.nodeClickHandler,
-            onDragStart: this.nodeDragStartHandler,
-            onDragEnd: this.nodeDragEndHandler,
+        // const circleEdge = new ScatterplotLayer({
+        //     id: 'circleedge-layer',
+        //     data: renderBackgrounds.filter((v) => v.shapeType === 0),
+        //     coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+        //     opacity: 1,
+        //     stroked: true,
+        //     filled: true,
+        //     autoHighlight: false,
+        //     getFillColor: (d) => {
+        //         return d.style.backgroundColor || [255, 255, 255, 255];
+        //     },
+        //     getRadius: (d) => {
+        //         return d.style.circleHeight / 2;
+        //     },
+        //     getPosition: (d) => {
+        //         return d.position;
+        //     },
+        //     getLineColor: (d) => {
+        //         if (d.status === 2) {
+        //             return d.style.borderColor
+        //         } else {
+        //             return [255, 255, 255, 0];
+        //         }
+        //     },
+        //     getLineWidth: (d) => {
+        //         return d.style.borderWidth || 4;
+        //     },
+        //     getWidth: (d) => {
+        //         return d.style.width;
+        //     },
+        //     onDrag: this.nodeDragingHandler,
+        //     onClick: this.nodeClickHandler,
+        //     onDragStart: this.nodeDragStartHandler,
+        //     onDragEnd: this.nodeDragEndHandler,
 
-        });
-        const roundedEdge = new RoundedRectangleLayer({
-            id: 'rounded',
-            data: renderBackgrounds.filter((v) => v.shapeType === 1),
-            opacity: 1,
-            getFillColor: (d) => {
-                return d.style.backgroundColor || [255, 255, 255, 255];
-            },
-            getLineColor: (d) => {
-                if (d.status === 2) {
-                    return d.style.borderColor
-                } else {
-                    return [255, 255, 255, 0];
-                }
-            },
-            getLineWidth: (d) => {
-                if (d.status === 2) {
-                    return d.style.borderWidth || 4
-                } else {
-                    return 0;
-                }
-            },
-            getFirstScatterPosition: (d) => {
-                return d.position;
-            },
-            getSecondScatterPosition: (d) => {
-                return [d.position[0] + d.style.backgroundWidth, d.position[1]];
-            },
-            getPolygon: (d) => {
-                return [[d.position[0], d.position[1] + d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth, d.position[1] + d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth, d.position[1] - d.style.backgroundHeight / 2], [d.position[0], d.position[1] - d.style.backgroundHeight / 2]];
-            },
-            getFirstPath: (d) => {
-                return [[d.position[0] - d.style.borderWidth / 2, d.position[1] - d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth + d.style.borderWidth / 2, d.position[1] - d.style.backgroundHeight / 2]];
-            },
-            getSecondPath: (d) => {
-                return [[d.position[0] - d.style.borderWidth / 2, d.position[1] + d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth + d.style.borderWidth / 2, d.position[1] + d.style.backgroundHeight / 2]];
-            },
-            getCircleRadius: (d) => {
-                return d.style.backgroundHeight / 2;
-            }
-        })
+        // });
+        // const roundedEdge = new RoundedRectangleLayer({
+        //     id: 'rounded',
+        //     data: renderBackgrounds.filter((v) => v.shapeType === 1),
+        //     opacity: 1,
+        //     getFillColor: (d) => {
+        //         return d.style.backgroundColor || [255, 255, 255, 255];
+        //     },
+        //     getLineColor: (d) => {
+        //         if (d.status === 2) {
+        //             return d.style.borderColor
+        //         } else {
+        //             return [255, 255, 255, 0];
+        //         }
+        //     },
+        //     getLineWidth: (d) => {
+        //         if (d.status === 2) {
+        //             return d.style.borderWidth || 4
+        //         } else {
+        //             return 0;
+        //         }
+        //     },
+        //     getFirstScatterPosition: (d) => {
+        //         return d.position;
+        //     },
+        //     getSecondScatterPosition: (d) => {
+        //         return [d.position[0] + d.style.backgroundWidth, d.position[1]];
+        //     },
+        //     getPolygon: (d) => {
+        //         return [[d.position[0], d.position[1] + d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth, d.position[1] + d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth, d.position[1] - d.style.backgroundHeight / 2], [d.position[0], d.position[1] - d.style.backgroundHeight / 2]];
+        //     },
+        //     getFirstPath: (d) => {
+        //         return [[d.position[0] - d.style.borderWidth / 2, d.position[1] - d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth + d.style.borderWidth / 2, d.position[1] - d.style.backgroundHeight / 2]];
+        //     },
+        //     getSecondPath: (d) => {
+        //         return [[d.position[0] - d.style.borderWidth / 2, d.position[1] + d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth + d.style.borderWidth / 2, d.position[1] + d.style.backgroundHeight / 2]];
+        //     },
+        //     getCircleRadius: (d) => {
+        //         return d.style.backgroundHeight / 2;
+        //     }
+        // })
         const rectBackgroundLayer = new PolygonLayer({
             id: 'rect-background-layer',
-            data: renderBackgrounds.filter(v => v.shapeType === 2),
+            data: renderBackgrounds,
             opacity: 1,
             getFillColor: (d) => {
                 if (d.status === 2) {
@@ -292,7 +291,6 @@ export default class CanvasController {
             id: 'text-layer',
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             data: renderText,
-            pickable: true,
             fontFamily: 'Microsoft YaHei',
             getPosition: d => {
                 return d.position;
@@ -315,7 +313,6 @@ export default class CanvasController {
             id: 'arrow-layer',
             opacity: 1,
             data: renderPolygon,
-            pickable: true,
             filled: true,
             stroked: true,
             getLineWidth: 1,
@@ -364,7 +361,7 @@ export default class CanvasController {
             onDragStart: this.nodeDragStartHandler,
             onDragEnd: this.nodeDragEndHandler,
         })
-        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, circleEdge, roundedEdge, rectBackgroundLayer, iconLayer, textLayer, markLayer] });
+        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, iconLayer, textLayer, markLayer] });
     }
 
     renderGraph() {
@@ -412,90 +409,90 @@ export default class CanvasController {
             }
         });
 
-        const circleEdge = new ScatterplotLayer({
-            id: 'circleedge-layer',
-            data: renderBackgrounds.filter((v) => v.shapeType === 0),
-            coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
-            pickable: true,
-            opacity: 1,
-            stroked: true,
-            filled: true,
-            autoHighlight: false,
-            getFillColor: (d) => {
-                return d.style.backgroundColor || [255, 255, 255, 255];
-            },
-            getRadius: (d) => {
-                return d.style.circleHeight / 2;
-            },
-            getPosition: (d) => {
-                return d.position;
-            },
-            getLineColor: (d) => {
-                if (d.status === 2) {
-                    return d.style.borderColor
-                } else {
-                    return [255, 255, 255, 0];
-                }
-            },
-            getLineWidth: (d) => {
-                return d.style.borderWidth || 4;
-            },
-            getWidth: (d) => {
-                return d.style.backgroundWidth;
-            },
-            onDrag: this.nodeDragingHandler,
-            onClick: this.nodeClickHandler,
-            onDragStart: this.nodeDragStartHandler,
-            onDragEnd: this.nodeDragEndHandler,
+        // const circleEdge = new ScatterplotLayer({
+        //     id: 'circleedge-layer',
+        //     data: renderBackgrounds.filter((v) => v.shapeType === 0),
+        //     coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+        //     pickable: true,
+        //     opacity: 1,
+        //     stroked: true,
+        //     filled: true,
+        //     autoHighlight: false,
+        //     getFillColor: (d) => {
+        //         return d.style.backgroundColor || [255, 255, 255, 255];
+        //     },
+        //     getRadius: (d) => {
+        //         return d.style.circleHeight / 2;
+        //     },
+        //     getPosition: (d) => {
+        //         return d.position;
+        //     },
+        //     getLineColor: (d) => {
+        //         if (d.status === 2) {
+        //             return d.style.borderColor
+        //         } else {
+        //             return [255, 255, 255, 0];
+        //         }
+        //     },
+        //     getLineWidth: (d) => {
+        //         return d.style.borderWidth || 4;
+        //     },
+        //     getWidth: (d) => {
+        //         return d.style.backgroundWidth;
+        //     },
+        //     onDrag: this.nodeDragingHandler,
+        //     onClick: this.nodeClickHandler,
+        //     onDragStart: this.nodeDragStartHandler,
+        //     onDragEnd: this.nodeDragEndHandler,
 
-        });
+        // });
 
 
 
-        const roundedEdge = new RoundedRectangleLayer({
-            id: 'rounded',
-            data: renderBackgrounds.filter((v) => v.shapeType === 1 && v.status === 1),
-            opacity: 1,
-            getFillColor: (d) => {
-                return d.style.backgroundColor || [255, 255, 255, 255];
-            },
-            getLineColor: (d) => {
-                if (d.status === 2) {
-                    return d.style.borderColor
-                } else {
-                    return [255, 255, 255, 0];
-                }
-            },
-            getLineWidth: (d) => {
-                if (d.status === 2) {
-                    return d.style.borderWidth || 4
-                } else {
-                    return 0;
-                }
-            },
-            getFirstScatterPosition: (d) => {
-                return d.position;
-            },
-            getSecondScatterPosition: (d) => {
-                return [d.position[0] + d.style.backgroundWidth, d.position[1]];
-            },
-            getPolygon: (d) => {
-                return [[d.position[0], d.position[1] + d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth, d.position[1] + d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth, d.position[1] - d.style.backgroundHeight / 2], [d.position[0], d.position[1] - d.style.backgroundHeight / 2]];
-            },
-            getFirstPath: (d) => {
-                return [[d.position[0] - d.style.borderWidth / 2, d.position[1] - d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth + d.style.borderWidth / 2, d.position[1] - d.style.backgroundHeight / 2]];
-            },
-            getSecondPath: (d) => {
-                return [[d.position[0] - d.style.borderWidth / 2, d.position[1] + d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth + d.style.borderWidth / 2, d.position[1] + d.style.backgroundHeight / 2]];
-            },
-            getCircleRadius: (d) => {
-                return d.style.backgroundHeight / 2;
-            }
-        })
+        // const roundedEdge = new RoundedRectangleLayer({
+        //     id: 'rounded',
+        //     data: renderBackgrounds.filter((v) => v.shapeType === 1 && v.status === 1),
+        //     opacity: 1,
+        //     getFillColor: (d) => {
+        //         return d.style.backgroundColor || [255, 255, 255, 255];
+        //     },
+        //     getLineColor: (d) => {
+        //         if (d.status === 2) {
+        //             return d.style.borderColor
+        //         } else {
+        //             return [255, 255, 255, 0];
+        //         }
+        //     },
+        //     getLineWidth: (d) => {
+        //         if (d.status === 2) {
+        //             return d.style.borderWidth || 4
+        //         } else {
+        //             return 0;
+        //         }
+        //     },
+        //     getFirstScatterPosition: (d) => {
+        //         return d.position;
+        //     },
+        //     getSecondScatterPosition: (d) => {
+        //         return [d.position[0] + d.style.backgroundWidth, d.position[1]];
+        //     },
+        //     getPolygon: (d) => {
+        //         return [[d.position[0], d.position[1] + d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth, d.position[1] + d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth, d.position[1] - d.style.backgroundHeight / 2], [d.position[0], d.position[1] - d.style.backgroundHeight / 2]];
+        //     },
+        //     getFirstPath: (d) => {
+        //         return [[d.position[0] - d.style.borderWidth / 2, d.position[1] - d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth + d.style.borderWidth / 2, d.position[1] - d.style.backgroundHeight / 2]];
+        //     },
+        //     getSecondPath: (d) => {
+        //         return [[d.position[0] - d.style.borderWidth / 2, d.position[1] + d.style.backgroundHeight / 2], [d.position[0] + d.style.backgroundWidth + d.style.borderWidth / 2, d.position[1] + d.style.backgroundHeight / 2]];
+        //     },
+        //     getCircleRadius: (d) => {
+        //         return d.style.backgroundHeight / 2;
+        //     }
+        // })
 
         const rectBackgroundLayer = new PolygonLayer({
             id: 'rect-background-layer',
-            data: renderBackgrounds.filter(v => v.shapeType === 2),
+            data: renderBackgrounds.filter(() =>true),
             opacity: 1,
             getFillColor: (d) => {
                 if (d.status === 2) {
@@ -565,7 +562,6 @@ export default class CanvasController {
             id: 'arrow-layer',
             opacity: 1,
             data: renderPolygon.filter(() => true),
-            pickable: true,
             filled: true,
             stroked: true,
             getLineWidth: 1,
@@ -614,7 +610,7 @@ export default class CanvasController {
             onDragStart: this.nodeDragStartHandler,
             onDragEnd: this.nodeDragEndHandler,
         });
-        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, circleEdge, roundedEdge, rectBackgroundLayer, iconLayer, textLayer, markLayer] });
+        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, iconLayer, textLayer, markLayer] });
     }
 
     _nodeClickHandler(info, e) {

@@ -47,12 +47,12 @@ export default class ElementController {
         if (flag === 'new') {
             const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData(), 'replace');
             this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
-            this.controller.positionController.layout()(newNodeArray, this);
+            this.controller.positionController.layout()(newNodeArray, newLinkArray);
             this._parseElements(newNodeArray, newLinkArray, 'all');
         } else if (flag === 'add') {
             const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData(), 'add');
             this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
-            this.controller.positionController.layout()(newNodeArray, this);
+            this.controller.positionController.layout()(newNodeArray);
 
             // this.updateLinkPosition(newLinkArray);
             this._parseElements(newNodeArray, newLinkArray, 'part');
