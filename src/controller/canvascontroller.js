@@ -645,7 +645,7 @@ export default class CanvasController {
     }
 
     _nodeDragingHandler(info, e) {
-        this.elementController.updateNodeLocation([info.object.id], { x: parseFloat(e.offsetCenter.x * (2 ** -this.props.zoom) + (this.props.viewState.target[0] - this.props.initTarget[0] * (2 ** -this.props.zoom))), y: parseFloat(e.offsetCenter.y * (2 ** -this.props.zoom) + (this.props.viewState.target[1] - this.props.initTarget[1] * (2 ** -this.props.zoom))) }, this.groupDrag);
+        this.elementController.updateNodeLocation([info.object.id], { x: parseFloat((e.offsetCenter.x-info.object.style.backgroundWidth/2) * (2 ** -this.props.zoom) + (this.props.viewState.target[0] - this.props.initTarget[0] * (2 ** -this.props.zoom))), y: parseFloat((e.offsetCenter.y-info.object.style.backgroundHeight/2) * (2 ** -this.props.zoom) + (this.props.viewState.target[1] - this.props.initTarget[1] * (2 ** -this.props.zoom))) }, this.groupDrag);
         this.eventController.fire('nodeDraging', [info, e]);
         return true;
     }
