@@ -244,8 +244,7 @@ export default class PositionController {
             nodeIdToIndex[item.id] = index
         })
         const nodeIds = nodes.map(node => node.id)
-        console.log()
-        let links = this.netGraph === null ? this.netGraph.getLinks() : srclinks;
+        let links = this.netGraph === null ? this.netGraph.getLinks() : (srclinks||[]);
         const linkST = [];
         links.forEach(link => {
             const fromId = link.data.from;
@@ -259,20 +258,19 @@ export default class PositionController {
         });
         this.force = d3.forceSimulation(nodes)
             .velocityDecay(0.2)
-            .force("charge", d3Simple.forceManyBodySampled().strength(-100))
-            .force("link", d3.forceLink(linkST).distance(500))
+            .force("charge", d3Simple.forceManyBodySampled())
+            .force("link", d3.forceLink(linkST))
             .force("center", d3.forceCenter(this.canvasCenter.x, this.canvasCenter.y))
-
         this.force.on("tick", () => {
             this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
         })
-        let force = this.force;
-        setTimeout(() => {
-            if (force) {
-                force.stop()
-            }
+        // let force = this.force;
+        // setTimeout(() => {
+        //     if (force) {
+        //         force.stop()
+        //     }
 
-        }, 5000)
+        // }, 20000)
     }
 
     jutuan(nodes) {

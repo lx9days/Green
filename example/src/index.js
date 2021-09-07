@@ -1,25 +1,25 @@
 import axios from 'axios';
 import NetGraph,{HIGHLIGHT,SELECTED,UNSELECTED} from '../../src/index';
 
-const debug = false;
+const debug = true;
 
 
-axios.get('/src/test_data.json').then((res) => {
-    const nodes = res.data.nodes;
-    const links = res.data.links;
+// axios.get('/src/test_data.json').then((res) => {
+//     const nodes = res.data.nodes;
+//     const links = res.data.links;
 
-    nodes.forEach((node, i) => {
-        node.img = '/src/img1/a' + 0 + '.png';
-    });
-    console.log("nodelength",nodes.length);
-    console.log("linklength",links.length);
+//     nodes.forEach((node, i) => {
+//         node.img = '/src/img1/a' + 0 + '.png';
+//     });
+//     console.log("nodelength",nodes.length);
+//     console.log("linklength",links.length);
 
-    const data = {
-        nodes,
-        links
-    }
-    draw(data);
-})
+//     const data = {
+//         nodes,
+//         links
+//     }
+//     draw(data);
+// })
 function draw(rawData) {
     let data = null;
     if (!debug) {
@@ -53,27 +53,14 @@ function draw(rawData) {
                     img: '/src/img1/a4.png'
                 }
             ],
-            links:[{
-                id: 'l01',
-                type: '但是',
-                from: 'a001',
-                to: 'a003',
-                direct:false
-            },
-            {
-                id: 'l02',
-                type: '阿达',
-                from: 'a004',
-                to: 'a002',
-                direct:true
-            }]
+            //links:[]
 
         }
     }
 
     const netGraph = new NetGraph({
         canvasProps: {
-            containerWidth: 2500,
+            containerWidth: 3000,
             containerHeight: 2000,
             zoom: 0,
             container: 'container',
@@ -90,10 +77,10 @@ function draw(rawData) {
             {
                 selector: 'node',
                 style: {
-                    'width': 60,
-                    'height': 60,
-                    'background-width':70,
-                    'background-height':70,
+                    'width': 45,
+                    'height': 45,
+                    'background-width':52,
+                    'background-height':52,
                     'url': (d) => d.data.img,
                     'opacity': 1,
                     'background-color': '#ffd53f',
@@ -107,7 +94,14 @@ function draw(rawData) {
                     'text': (d) => d.data.name,
                     'shape': 'rect',
                     'highlight-color':"#Fff0BC",
-                    'highlight-opacity':0.5
+                    'highlight-opacity':0.5,
+
+                    "lock-label-style":{
+                        'url':"",
+                        'width':'',
+                        'height':'',
+                        'position':'right-top',
+                    }
                 }
             },
             {
@@ -354,7 +348,7 @@ function draw(rawData) {
         })
     });
 }
-//draw();
+draw();
 
 
 

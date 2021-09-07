@@ -3,7 +3,11 @@ import { ScatterplotLayer, IconLayer, LineLayer, TextLayer, PolygonLayer } from 
 import hexRgb from 'hex-rgb';
 import RoundedRectangleLayer from '../compositelayer/RoundedRectangleLayer';
 import BrushCanvas from '../helper/brushCanvas';
-
+// const COlOR={
+//     color1:[125,56,45],
+//     colorRed:[255,0,0]
+//     colorBlue
+// }
 export default class CanvasController {
     constructor(props, eventController) {
         this.props = props;
@@ -122,6 +126,7 @@ export default class CanvasController {
         this.isAllowCanvasMove = false;
     }
 
+   
     updateRenderGraph() {
         const zoom = this.props.zoom;
         const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark } = this.renderObject;
@@ -157,8 +162,6 @@ export default class CanvasController {
                 anchorY: 0,
             }),
             getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
-            getColor: d => d.style.iconColor,
-
             updateTriggers: {
                 getPosition: d => {
                     return d.position;
@@ -273,6 +276,7 @@ export default class CanvasController {
             },
             filled: true,
             stroked: true,
+            positionFormat:'XY',
             updateTriggers: {
                 getPolygon: d => {
                     return d.backgroundPolygon;
@@ -320,6 +324,7 @@ export default class CanvasController {
             getPolygon: d => {
                 return d.polygon;
             },
+            positionFormat:'XY',
             getFillColor: (d) => d.style.polygonFillColor,
             updateTriggers: {
                 getPolygon: d => {
@@ -338,6 +343,7 @@ export default class CanvasController {
             stroked: false,
             autoHighlight: true,
             highlightColor: [markRGB.red, markRGB.green, markRGB.blue, markOpactiy * 255],
+            positionFormat:'XY',
             getPolygon: d => d.backgroundPolygon,
             getFillColor: (d) => {
                 if (d.status === 4) {
@@ -494,6 +500,7 @@ export default class CanvasController {
             id: 'rect-background-layer',
             data: renderBackgrounds.filter(() =>true),
             opacity: 1,
+            positionFormat:'XY',
             getFillColor: (d) => {
                 if (d.status === 2) {
                     return d.style.backgroundColor || [255, 255, 255, 255]
@@ -521,9 +528,6 @@ export default class CanvasController {
             filled: true,
             stroked: true,
             updateTriggers: {
-                getPolygon: d => {
-                    return d.backgroundPolygon;
-                },
                 getFillColor: (d) => {
                     if (d.status === 2) {
                         return d.style.backgroundColor || [255, 255, 255, 255]
@@ -564,17 +568,13 @@ export default class CanvasController {
             data: renderPolygon.filter(() => true),
             filled: true,
             stroked: true,
+            positionFormat:'XY',
             getLineWidth: 1,
             getLineColor: d => d.style.polyonColor,
             getPolygon: d => {
                 return d.polygon;
             },
             getFillColor: (d) => d.style.polygonFillColor,
-            updateTriggers: {
-                getPolygon: d => {
-                    return d.polygon;
-                }
-            }
         });
         const markRGB = hexRgb(this.props.nodeHighlightColor);
         const markOpactiy = this.props.nodeHighlightOpacity;
@@ -586,6 +586,7 @@ export default class CanvasController {
             filled: true,
             stroked: false,
             autoHighlight: true,
+            positionFormat:'XY',
             highlightColor: [markRGB.red, markRGB.green, markRGB.blue, markOpactiy * 255],
             getPolygon: d => d.backgroundPolygon,
             getFillColor: (d) => {
@@ -603,7 +604,6 @@ export default class CanvasController {
                         return [255, 255, 255, 0];
                     }
                 },
-                getPolygon: d => d.backgroundPolygon,
             },
             onDrag: this.nodeDragingHandler,
             onClick: this.nodeClickHandler,
