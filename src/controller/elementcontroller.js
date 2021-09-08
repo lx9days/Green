@@ -45,6 +45,7 @@ export default class ElementController {
     _parseParams(flag, nodeIds) {
         this.controller.eventController.unSubscribeByName("_updateEntityPosition")
         if (flag === 'new') {
+            this._init(this.controller)
             const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData(), 'replace');
             this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
             this.controller.positionController.layout()(newNodeArray, newLinkArray);
@@ -398,7 +399,6 @@ export default class ElementController {
 
 
     getLinks(linkIds = null) {
-        console.log("get links")
         if (linkIds && linkIds.length > 0) {
             const linksArray = new Array();
 
