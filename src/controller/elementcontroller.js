@@ -804,9 +804,9 @@ export default class ElementController {
     updateLayout(nodeIds) {
         const newNodeArray = this.getNodes(nodeIds);
         if (nodeIds) {
-            this.controller.positionController.layout()(newNodeArray, this);
+            this.controller.positionController.layout()(newNodeArray);
         } else {
-            this.controller.positionController.layout()(newNodeArray, this);
+            this.controller.positionController.layout()(newNodeArray);
         }
         //  this.updateEntityPosition(nodeIds);
     }

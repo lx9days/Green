@@ -246,6 +246,7 @@ export default class PositionController {
         const nodeIds = nodes.map(node => node.id)
         let links = this.netGraph === null ? this.netGraph.getLinks() : (srclinks||[]);
         const linkST = [];
+        console.log(links);
         links.forEach(link => {
             const fromId = link.data.from;
             const toId = link.data.to;
@@ -264,13 +265,13 @@ export default class PositionController {
         this.force.on("tick", () => {
             this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
         })
-        // let force = this.force;
-        // setTimeout(() => {
-        //     if (force) {
-        //         force.stop()
-        //     }
+        let force = this.force;
+        setTimeout(() => {
+            if (force) {
+                force.stop()
+            }
 
-        // }, 20000)
+        }, 2000)
     }
 
     jutuan(nodes) {
