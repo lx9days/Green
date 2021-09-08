@@ -264,13 +264,13 @@ export default class PositionController {
         this.force.on("tick", () => {
             this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
         })
-        // let force = this.force;
-        // setTimeout(() => {
-        //     if (force) {
-        //         force.stop()
-        //     }
+        let force = this.force;
+        setTimeout(() => {
+            if (force) {
+                force.stop()
+            }
 
-        // }, 20000)
+        }, 2000)
     }
 
     jutuan(nodes) {

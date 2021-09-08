@@ -53,8 +53,19 @@ export default class CanvasController {
         this.canvas.width = this.props.containerWidth;
         this.canvas.height = this.props.containerHeight;
         this.canvas.addEventListener('contextmenu', (e) => {
-
             this.eventController.fire("canvasRightClick", [e]);
+            e.preventDefault();
+        })
+        this.canvas.addEventListener('mousedown',e=>{
+            this.eventController.fire("canvasMouseDown",[e])
+            e.preventDefault();
+        })
+        this.canvas.addEventListener('mouseup',e=>{
+            this.eventController.fire("canvasMouseUp",[e])
+            e.preventDefault();
+        })
+        this.canvas.addEventListener('mousemove',e=>{
+            this.eventController.fire('canvasMouseMove',[e]);
             e.preventDefault();
         })
         container.appendChild(this.canvas);

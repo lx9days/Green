@@ -71,7 +71,7 @@ function draw(rawData) {
             lineHighlightColor:'#ffd53f',
             lineHighlightOpacity:0.5
         },
-        layout: 'auto',
+        layout: 'square',
         data: data,
         style: [
             {
@@ -148,6 +148,24 @@ function draw(rawData) {
             }
         ]
     });
+    let timeout=null
+    netGraph.addEventListener('canvasMouseDown',(e)=>{
+        timeout=setTimeout(()=>{
+            netGraph.showBrushArea()
+        },2000)
+    });
+    netGraph.addEventListener('canvasMouseUp',(e)=>{
+        if(timeout){
+            console.log("up")
+            clearTimeout(timeout)
+        }
+    })
+    netGraph.addEventListener('canvasMouseMove',(e)=>{
+        if(timeout){
+            console.log("mouve")
+            clearTimeout(timeout)
+        }
+    })
 
 
     netGraph.addEventListener('nodeClick', (object, e) => {
@@ -196,8 +214,10 @@ function draw(rawData) {
 
     netGraph.addEventListener('brush', (nodeIds) => {
         netGraph.updateNodeStatus(nodeIds,HIGHLIGHT)
-       console.log(nodeIds)
     });
+
+
+
     netGraph.addEventListener('rightClick', () => {
 
         console.log("rightClick")
@@ -250,7 +270,9 @@ function draw(rawData) {
     });
 
     document.getElementById('brush').addEventListener('click', () => {
+
         netGraph.showBrushArea();
+        
     });
 
     document.getElementById('groupDrag').addEventListener('click', () => {
