@@ -84,6 +84,7 @@ export default class NetGraph {
      * @returns 
      */
     getLinks(linkIds = null) {
+        console.log("get linksss")
         return this.controller.elementController.getLinks(linkIds);
     }
 

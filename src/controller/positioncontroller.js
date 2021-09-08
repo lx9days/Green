@@ -246,6 +246,7 @@ export default class PositionController {
         const nodeIds = nodes.map(node => node.id)
         let links = this.netGraph === null ? this.netGraph.getLinks() : (srclinks||[]);
         const linkST = [];
+        console.log(links);
         links.forEach(link => {
             const fromId = link.data.from;
             const toId = link.data.to;
