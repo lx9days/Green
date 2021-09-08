@@ -51,9 +51,82 @@ function draw(rawData) {
                     id: 'a005',
                     name: '是',
                     img: '/src/img1/a4.png'
+                },
+                {
+                    id: 'a006',
+                    name: '是',
+                    img: '/src/img1/a1.png',
+                },
+                {
+                    id: 'a007',
+                    name: '速度',
+                    img: '/src/img1/a2.png',
+                },
+                {
+                    id: 'a008',
+                    name: '负对数',
+                    img: '/src/img1/a3.png',
+                },
+                {
+                    id: 'a009',
+                    name: '是',
+                    img: '/src/img1/a4.png'
+                },{
+                    id: 'a0010',
+                    name: '是',
+                    img: '/src/img1/a4.png'
                 }
             ],
-            //links:[]
+            links:[
+                {
+                    id:'link1',
+                    type: '但是',
+                    from: 'a001',
+                    to: 'a002',
+                },{
+                    id:'link2',
+                    type: '但是',
+                    from: 'a001',
+                    to: 'a003',
+                },{
+                    id:'link3',
+                    type: '但是',
+                    from: 'a001',
+                    to: 'a004',
+                },{
+                    id:'link4',
+                    type: '但是',
+                    from: 'a001',
+                    to: 'a005',
+                },
+                {
+                    id:'link5',
+                    type: '但是',
+                    from: 'a001',
+                    to: 'a006',
+                },
+                {
+                    id:'link6',
+                    type: '但是',
+                    from: 'a001',
+                    to: 'a007',
+                },{
+                    id:'link7',
+                    type: '但是',
+                    from: 'a001',
+                    to: 'a008',
+                },{
+                    id:'link8',
+                    type: '但是',
+                    from: 'a001',
+                    to: 'a009',
+                },{
+                    id:'link9',
+                    type: '但是',
+                    from: 'a001',
+                    to: 'a0010',
+                }
+            ]
 
         }
     }
@@ -71,7 +144,7 @@ function draw(rawData) {
             lineHighlightColor:'#ffd53f',
             lineHighlightOpacity:0.5
         },
-        layout: 'square',
+        layout: 'auto',
         data: data,
         style: [
             {
@@ -148,7 +221,10 @@ function draw(rawData) {
             }
         ]
     });
+
+
     let timeout=null
+
     netGraph.addEventListener('canvasMouseDown',(e)=>{
         timeout=setTimeout(()=>{
             netGraph.showBrushArea()
@@ -213,7 +289,7 @@ function draw(rawData) {
     })
 
     netGraph.addEventListener('brush', (nodeIds) => {
-        netGraph.updateNodeStatus(nodeIds,HIGHLIGHT)
+        netGraph.updateNodeStatus(nodeIds,UNSELECTED)
     });
 
 
@@ -317,7 +393,16 @@ function draw(rawData) {
             selectedNodeIds.push(v.getId());
         });
         netGraph.updateNodeStatus(selectedNodeIds,HIGHLIGHT)
+    });
+    document.getElementById("replaceData").addEventListener("click",()=>{
+
+        netGraph.replaceData({
+            nodes:[],
+        })
+        console.log(netGraph.getNodes(["a001"]))
+        console.log(netGraph.getLinks())
     })
+
 
     document.getElementById('add').addEventListener('click', () => {
         netGraph.addData({

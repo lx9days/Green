@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import * as d3Simple from "d3-force-sampled"
+//import * as d3Simple from "d3-force-sampled"
 
 export default class PositionController {
     constructor(netGraph, { width, height }) {
@@ -258,8 +258,8 @@ export default class PositionController {
             }
         });
         this.force = d3.forceSimulation(nodes)
-            .velocityDecay(0.2)
-            .force("charge", d3Simple.forceManyBodySampled())
+            //.velocityDecay(0.2)
+            .force("charge", d3.forceManyBody())
             .force("link", d3.forceLink(linkST))
             .force("center", d3.forceCenter(this.canvasCenter.x, this.canvasCenter.y))
         this.force.on("tick", () => {
