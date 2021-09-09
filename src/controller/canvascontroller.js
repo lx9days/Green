@@ -140,7 +140,7 @@ export default class CanvasController {
    
     updateRenderGraph() {
         const zoom = this.props.zoom;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark } = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark ,renderLabels} = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
         const lineLayer = new LineLayer({
@@ -377,14 +377,34 @@ export default class CanvasController {
             onClick: this.nodeClickHandler,
             onDragStart: this.nodeDragStartHandler,
             onDragEnd: this.nodeDragEndHandler,
+        });
+        const labelLayer=new IconLayer({
+            id: 'label-layer',
+            data: renderLabels,
+            coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            getPosition: d => d.position,
+            getIcon: d => ({
+                url: d.url,
+                width: d.style.iconHeight,
+                height: d.style.iconHeight,
+                anchorX: 0,
+                anchorY: 0,
+            }),
+            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            updateTriggers: {
+                getPosition: d => {
+                    return d.position;
+                },
+                getSize: d => d.style.iconSize * (2 ** zoom),
+            }
         })
-        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, iconLayer, textLayer, markLayer] });
+        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer,labelLayer, iconLayer, textLayer, markLayer] });
     }
 
     renderGraph() {
 
         const zoom = this.props.zoom;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark } = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark ,renderLabels} = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
         const lineLayer = new LineLayer({
@@ -621,7 +641,27 @@ export default class CanvasController {
             onDragStart: this.nodeDragStartHandler,
             onDragEnd: this.nodeDragEndHandler,
         });
-        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, iconLayer, textLayer, markLayer] });
+        const labelLayer=new IconLayer({
+            id: 'label-layer',
+            data: renderLabels.filter(()=>true),
+            coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            getPosition: d => d.position,
+            getIcon: d => ({
+                url: d.url,
+                width: d.style.iconHeight,
+                height: d.style.iconHeight,
+                anchorX: 0,
+                anchorY: 0,
+            }),
+            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            updateTriggers: {
+                getPosition: d => {
+                    return d.position;
+                },
+                getSize: d => d.style.iconSize * (2 ** zoom),
+            }
+        })
+        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer,labelLayer, iconLayer, textLayer, markLayer] });
     }
 
     _nodeClickHandler(info, e) {

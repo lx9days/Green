@@ -6,6 +6,7 @@ import RenderLine from '../model/renderline';
 import RenderPolygon from '../model/renderpolygon';
 import RenderText from '../model/rendertext';
 import RenderMark from '../model/rendermark';
+import RenderLabel from '../model/renderlabel';
 /**
  * ElementController 主要用于创建Node Link并将style 挂载到 Node Link 上，然后计算 Node Link 的位置
  * 之后将Node Link 解析成为 RenderObject(canvas controller用来选的的对象);
@@ -89,6 +90,7 @@ export default class ElementController {
         this.renderObject = {
             renderBackgrounds: new Array(),
             renderIcons: new Array(),
+            renderLabels: new Array(),
             renderLines: new Array(),
             renderText: new Array(),
             renderPolygon: new Array(),
@@ -104,6 +106,7 @@ export default class ElementController {
             this.renderObject = {
                 renderBackgrounds: new Array(),
                 renderIcons: new Array(),
+                renderLabels: new Array(),
                 renderLines: new Array(),
                 renderText: new Array(),
                 renderPolygon: new Array(),
@@ -116,11 +119,15 @@ export default class ElementController {
                     backgroundObjs: new Array(),
                     textObjs: new Array(),
                     markObjs: new Array(),
+                    labelObjs: new Array(),
                 }
                 nodeRenders.backgroundObjs.push(new RenderBackground(node));
                 nodeRenders.iconObjs.push(new RenderIcon(node));
                 nodeRenders.markObjs.push(new RenderMark(node));
                 const renderText = new RenderText(node);
+                if (node.isLocked) {
+                    nodeRenders.labelObjs.push(new RenderLabel(node))
+                }
                 this._generateCharSet(renderText.text);
                 nodeRenders.textObjs.push(renderText);
                 this.nodeRenderMap.set(node.getId(), nodeRenders);
@@ -133,10 +140,14 @@ export default class ElementController {
                     backgroundObjs: new Array(),
                     textObjs: new Array(),
                     markObjs: new Array(),
+                    labelObjs: new Array(),
                 }
                 nodeRenders.backgroundObjs.push(new RenderBackground(node));
                 nodeRenders.iconObjs.push(new RenderIcon(node));
                 nodeRenders.markObjs.push(new RenderMark(node))
+                if (node.isLocked) {
+                    nodeRenders.labelObjs.push(new RenderLabel(node))
+                }
                 const renderText = new RenderText(node);
                 this._generateCharSet(renderText.text);
                 nodeRenders.textObjs.push(renderText);
@@ -193,6 +204,7 @@ export default class ElementController {
         this.renderObject = {
             renderBackgrounds: new Array(),
             renderIcons: new Array(),
+            renderLabels: new Array(),
             renderLines: new Array(),
             renderText: new Array(),
             renderPolygon: new Array(),
@@ -212,6 +224,9 @@ export default class ElementController {
             });
             nodeRenders.markObjs.forEach(markObj => {
                 this.renderObject.renderMark.push(markObj);
+            })
+            nodeRenders.labelObjs.forEach(labelObj => {
+                this.renderObject.renderLabels.push(labelObj);
             })
         }
         for (const linkIdKey of this.linkRenderMap.keys()) {
@@ -522,6 +537,12 @@ export default class ElementController {
                         this.renderObject.renderMark.splice(index, 1);
                     }
                 })
+                renderNode.labelObjs.forEach(label => {
+                    const index = this.renderObject.renderLabels.indexOf(label);
+                    if (index >= 0) {
+                        this.renderObject.renderLabels.splice(index, 1);
+                    }
+                })
                 this.nodeRenderMap.delete(id);
             });
         }
@@ -655,6 +676,9 @@ export default class ElementController {
                     renderObjects.markObjs.forEach(mark => {
                         mark.updateStatus();
                     })
+                    renderObjects.labelObjs.forEach(label => {
+                        label.updateStatus();
+                    })
                 }
             });
             if (status === 3) {
@@ -725,7 +749,10 @@ export default class ElementController {
                 });
                 renderObjects.markObjs.forEach(mark => {
                     mark.updateStatus();
-                })
+                });
+                renderObjects.labelObjs.forEach(label => {
+                    label.updateStatus()
+                });
             })
         } else {
             for (const key of this.nodeRenderMap.keys()) {
@@ -741,7 +768,10 @@ export default class ElementController {
                 });
                 renderObjects.markObjs.forEach(mark => {
                     mark.updateStatus();
-                })
+                });
+                renderObjects.labelObjs.forEach(label => {
+                    label.updateStatus()
+                });
             }
         }
     }
@@ -828,7 +858,7 @@ export default class ElementController {
                     throw new Error("cannot find node id:" + id)
                 }
                 const nodeRenders = this.nodeRenderMap.get(id);
-                const { iconObjs, backgroundObjs, textObjs, markObjs } = nodeRenders;
+                const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs } = nodeRenders;
                 iconObjs.forEach((iconObj) => {
                     iconObj.reLocation();
                 });
@@ -840,6 +870,9 @@ export default class ElementController {
                 });
                 markObjs.forEach(mark => {
                     mark.reLocation();
+                })
+                labelObjs.forEach(label => {
+                    label.reLocation();
                 })
             });
             needUpdateLinks.forEach(link => {
@@ -863,6 +896,7 @@ export default class ElementController {
                 renderText,
                 renderPolygon,
                 renderMark,
+                renderLabels
             } = this.renderObject;
             renderBackgrounds.forEach((RenderBackground) => {
                 RenderBackground.reLocation();
@@ -881,7 +915,10 @@ export default class ElementController {
             })
             renderMark.forEach(mark => {
                 mark.reLocation();
-            })
+            });
+            renderLabels.forEach(label => {
+                label.reLocation();
+            });
         }
         this.controller.canvasController.updateRenderObject();
     }
@@ -901,10 +938,17 @@ export default class ElementController {
         if (nodeIds && nodeIds.length > 0) {
             nodeIds.forEach((id) => {
                 if (this.idMapNode.has(id)) {
-                    this.idMapNode.get(id).lock()
+                    const node = this.idMapNode.get(id);
+                    const nodeLabel = new RenderLabel(node);
+                    const { labelObjs } = this.nodeRenderMap.get(id)
+                    labelObjs.push(nodeLabel);
+                    this.renderObject.renderLabels.push(nodeLabel);
                 }
-            })
+            });
+
+            this.controller.canvasController.updateRenderObject(this.renderObject);
         }
+
     }
 
     unlockNodes(nodeIds) {
@@ -912,8 +956,21 @@ export default class ElementController {
             nodeIds.forEach((id) => {
                 if (this.idMapNode.has(id)) {
                     this.idMapNode.get(id).unlock()
+                    const {labelObjs}=this.nodeRenderMap.get(id);
+                    labelObjs.forEach((label,i)=>{
+                        if(label.id===id){
+                            labelObjs.splice(i,1);
+                        }
+                    });
+                    this.renderObject.renderLabels.forEach((label,i)=>{
+                        if(label.id===id){
+                            this.renderObject.renderLabels.splice(i,1);
+                        }
+                    })
                 }
-            })
+            });
+
+            this.controller.canvasController.updateRenderObject(this.renderObject);
         }
     }
 
