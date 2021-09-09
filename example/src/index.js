@@ -152,8 +152,8 @@ function draw(rawData) {
                 style: {
                     'width': 45,
                     'height': 45,
-                    'background-width':52,
-                    'background-height':52,
+                    'background-width':62,
+                    'background-height':62,
                     'url': (d) => d.data.img,
                     'opacity': 1,
                     'background-color': '#ffd53f',
@@ -169,11 +169,11 @@ function draw(rawData) {
                     'highlight-color':"#Fff0BC",
                     'highlight-opacity':0.5,
 
-                    "lock-label-style":{
-                        'url':"",
-                        'width':'',
-                        'height':'',
-                        'position':'right-top',
+                    "label-style":{
+                        'url':'/src/img1/a3.png',
+                        'width':15,
+                        'height':15,
+                        'position':'left-top',
                     }
                 }
             },

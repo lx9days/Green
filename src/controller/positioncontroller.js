@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-//import * as d3Simple from "d3-force-sampled"
+import * as d3Simple from "d3-force-sampled"
 
 export default class PositionController {
     constructor(netGraph, { width, height }) {
@@ -241,26 +241,33 @@ export default class PositionController {
     auto(nodes, srclinks = null) {
         const nodeIdToIndex = {};
         nodes.forEach((item, index) => {
-            nodeIdToIndex[item.id] = index
+            nodeIdToIndex[item.id] = index+1;
         })
         const nodeIds = nodes.map(node => node.id)
-        let links = this.netGraph === null ? this.netGraph.getLinks() : (srclinks||[]);
+        let links=[];
+        if(srclinks){
+            links=srclinks;
+        }else if(this.netGraph){
+           links=this.netGraph.getLinks();
+        }else{
+            links=[];
+        }
+        
         const linkST = [];
-        console.log(links);
         links.forEach(link => {
             const fromId = link.data.from;
             const toId = link.data.to;
             if (nodeIdToIndex[fromId] && nodeIdToIndex[toId]) {
                 linkST.push({
-                    source: nodeIdToIndex[fromId],
-                    target: nodeIdToIndex[toId]
+                    source: nodeIdToIndex[fromId]-1,
+                    target: nodeIdToIndex[toId]-1
                 });
             }
         });
         this.force = d3.forceSimulation(nodes)
-            //.velocityDecay(0.2)
-            .force("charge", d3.forceManyBody())
-            .force("link", d3.forceLink(linkST))
+            .velocityDecay(0.2)
+            .force("charge", d3Simple.forceManyBodySampled().strength(-100))
+            .force("link", d3.forceLink(linkST).distance(250))
             .force("center", d3.forceCenter(this.canvasCenter.x, this.canvasCenter.y))
         this.force.on("tick", () => {
             this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
