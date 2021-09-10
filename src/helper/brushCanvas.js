@@ -63,6 +63,7 @@ export default class BrushCanvas {
             }),
             controller: false,
             initialViewState: viewState,
+            getCursor:()=>"crosshair",
             gl: this.gl,
         });
         this.deck.setProps({
