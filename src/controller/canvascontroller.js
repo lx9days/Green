@@ -401,6 +401,191 @@ export default class CanvasController {
         this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer,labelLayer, iconLayer, textLayer, markLayer] });
     }
 
+    renderLockNode(){
+        const zoom = this.props.zoom;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark ,renderLabels} = this.renderObject;
+        const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
+        const lineHighlightOpactiy = this.props.lineHighlightOpacity;
+        const lineLayer = new LineLayer({
+            id: 'line-layer',
+            data: renderLines,
+            autoHighlight: true,
+            highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
+            pickable: true,
+            getWidth: d => d.style.lineWidth || 2,
+            getSourcePosition: d => d.sourcePosition,
+            getTargetPosition: d => d.targetPosition,
+            getColor: d => d.style.lineColor || [255, 255, 255, 255],
+            updateTriggers: {
+                getSourcePosition: d => d.sourcePosition,
+                getTargetPosition: d => d.targetPosition,
+            },
+            onClick: this.lineClickHandler,
+        });
+        const iconLayer = new IconLayer({
+            id: 'icon-layer',
+            data: renderIcons,
+            pickable: true,
+            coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            getPosition: d => d.position,
+            getIcon: d => ({
+                url: d.url,
+                width: d.style.iconHeight,
+                height: d.style.iconHeight,
+                anchorX: 0,
+                anchorY: 0,
+            }),
+            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            updateTriggers: {
+                getPosition: d => {
+                    return d.position;
+                },
+                getSize: d => d.style.iconSize * (2 ** zoom),
+            }
+        });
+        const rectBackgroundLayer = new PolygonLayer({
+            id: 'rect-background-layer',
+            data: renderBackgrounds,
+            opacity: 1,
+            getFillColor: (d) => {
+                if (d.status === 2) {
+                    return d.style.backgroundColor || [255, 255, 255, 255]
+                } else {
+                    return [255, 255, 255, 0];
+                }
+            },
+            getPolygon: (d) => {
+                return d.backgroundPolygon || [];
+            },
+            getLineColor: (d) => {
+                if (d.status === 2) {
+                    return d.style.borderColor || [255, 255, 255, 255];
+                } else {
+                    return [255, 255, 255.0];
+                }
+            },
+            getLineWidth: (d) => {
+                if (d.status === 2) {
+                    return d.style.borderWidth || 0;
+                } else {
+                    return 0;
+                }
+            },
+            filled: true,
+            stroked: true,
+            positionFormat:'XY',
+            updateTriggers: {
+                getPolygon: d => {
+                    return d.backgroundPolygon;
+                },
+                getFillColor: (d) => {
+                    if (d.status === 2) {
+                        return d.style.backgroundColor || [255, 255, 255, 255]
+                    } else {
+                        return [255, 255, 255, 0];
+                    }
+                },
+            }
+        });
+
+        const textLayer = new TextLayer({
+            id: 'text-layer',
+            coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            data: renderText,
+            fontFamily: 'Microsoft YaHei',
+            getPosition: d => {
+                return d.position;
+            },
+            getText: d => d.text,
+            getSize: d => d.style.textSize,
+            getAngle: 0,
+            getTextAnchor: d => d.style.textAnchor,
+            getAlignmentBaseline: d => d.style.textAlignmentBaseline,
+            characterSet: charSet,
+            getColor: (d) => d.style.textColor,
+            updateTriggers: {
+                getPosition: d => {
+                    return d.position;
+                }
+            }
+        });
+
+        const arrowLayer = new PolygonLayer({
+            id: 'arrow-layer',
+            opacity: 1,
+            data: renderPolygon,
+            filled: true,
+            stroked: true,
+            getLineWidth: 1,
+            getLineColor: d => d.style.polyonColor,
+            getPolygon: d => {
+                return d.polygon;
+            },
+            positionFormat:'XY',
+            getFillColor: (d) => d.style.polygonFillColor,
+            updateTriggers: {
+                getPolygon: d => {
+                    return d.polygon;
+                }
+            }
+        });
+        const markRGB = hexRgb(this.props.nodeHighlightColor);
+        const markOpactiy = this.props.nodeHighlightOpacity;
+        const markLayer = new PolygonLayer({
+            id: "mark-layer",
+            opacity: 1,
+            data: renderMark,
+            pickable: true,
+            filled: true,
+            stroked: false,
+            autoHighlight: true,
+            highlightColor: [markRGB.red, markRGB.green, markRGB.blue, markOpactiy * 255],
+            positionFormat:'XY',
+            getPolygon: d => d.backgroundPolygon,
+            getFillColor: (d) => {
+                if (d.status === 4) {
+                    return d.style.highLightColor;
+                } else {
+                    return [255, 255, 255, 0];
+                }
+            },
+            updateTriggers: {
+                getFillColor: (d) => {
+                    if (d.status === 4) {
+                        return d.style.highLightColor;
+                    } else {
+                        return [255, 255, 255, 0];
+                    }
+                },
+                getPolygon: d => d.backgroundPolygon,
+            },
+            onDrag: this.nodeDragingHandler,
+            onClick: this.nodeClickHandler,
+            onDragStart: this.nodeDragStartHandler,
+            onDragEnd: this.nodeDragEndHandler,
+        });
+        const labelLayer=new IconLayer({
+            id: 'label-layer',
+            data: renderLabels.filter(()=>true),
+            coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            getPosition: d => d.position,
+            getIcon: d => ({
+                url: d.url,
+                width: d.style.iconHeight,
+                height: d.style.iconHeight,
+                anchorX: 0,
+                anchorY: 0,
+            }),
+            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            updateTriggers: {
+                getPosition: d => {
+                    return d.position;
+                },
+                getSize: d => d.style.iconSize * (2 ** zoom),
+            }
+        })
+        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer,labelLayer, iconLayer, textLayer, markLayer] });
+    }
     renderGraph() {
 
         const zoom = this.props.zoom;
@@ -758,8 +943,11 @@ export default class CanvasController {
         } else {
             this.updateRenderGraph();
         }
+    }
 
-
+    updateLockNode(renderObject){
+        this.renderObject=renderObject;
+        this.renderLockNode();
     }
     mountElementController(elementController) {
         this.elementController = elementController;

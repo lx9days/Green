@@ -936,26 +936,36 @@ export default class ElementController {
 
     lockNodes(nodeIds) {
         if (nodeIds && nodeIds.length > 0) {
-            nodeIds.forEach((id) => {
+           for(let i=0;i<nodeIds.length;i++) {
+               const id=nodeIds[i];
                 if (this.idMapNode.has(id)) {
                     const node = this.idMapNode.get(id);
+                    if(node.isLocked){
+                        continue;
+                    }
+                    node.lock()
                     const nodeLabel = new RenderLabel(node);
                     const { labelObjs } = this.nodeRenderMap.get(id)
                     labelObjs.push(nodeLabel);
                     this.renderObject.renderLabels.push(nodeLabel);
                 }
-            });
+            }
 
-            this.controller.canvasController.updateRenderObject(this.renderObject);
+            this.controller.canvasController.updateLockNode(this.renderObject);
         }
 
     }
 
     unlockNodes(nodeIds) {
         if (nodeIds && nodeIds.length > 0) {
-            nodeIds.forEach((id) => {
+           for(let i=0;i<nodeIds.length;i++ ){
+               const id=nodeIds[i];
                 if (this.idMapNode.has(id)) {
-                    this.idMapNode.get(id).unlock()
+                    const node=this.idMapNode.get(id);
+                    if(!node.isLocked){
+                        continue;
+                    }
+                    node.unlock();
                     const {labelObjs}=this.nodeRenderMap.get(id);
                     labelObjs.forEach((label,i)=>{
                         if(label.id===id){
@@ -968,9 +978,9 @@ export default class ElementController {
                         }
                     })
                 }
-            });
+            }
 
-            this.controller.canvasController.updateRenderObject(this.renderObject);
+            this.controller.canvasController.updateLockNode(this.renderObject);
         }
     }
 
