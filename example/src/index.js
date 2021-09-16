@@ -1,25 +1,25 @@
 import axios from 'axios';
 import NetGraph,{HIGHLIGHT,SELECTED,UNSELECTED} from '../../src/index';
 
-const debug = true;
+const debug = false;
 
 
-// axios.get('/src/test_data.json').then((res) => {
-//     const nodes = res.data.nodes;
-//     const links = res.data.links;
+axios.get('/src/auto_500.json').then((res) => {
+    const nodes = res.data.nodes;
+    const links = res.data.links;
 
-//     nodes.forEach((node, i) => {
-//         node.img = '/src/img1/a' + 0 + '.png';
-//     });
-//     console.log("nodelength",nodes.length);
-//     console.log("linklength",links.length);
+    nodes.forEach((node, i) => {
+        node.img = '/src/img1/a' + i + '.png';
+    });
+    console.log("nodelength",nodes.length);
+    console.log("linklength",links.length);
 
-//     const data = {
-//         nodes,
-//         links
-//     }
-//     draw(data);
-// })
+    const data = {
+        nodes,
+        links
+    }
+    draw(data);
+})
 function draw(rawData) {
     let data = null;
     if (!debug) {
@@ -161,14 +161,13 @@ function draw(rawData) {
                     'border-width': 0,
                     'border-color': '#fff',
                     'border-opacity': 1,
-                    'color': '#845624',
+                    'text-color': '#845624',
                     'text-opacity': 1,
                     'font-size': 16,
                     'text': (d) => d.data.name,
                     'shape': 'rect',
                     'highlight-color':"#Fff0BC",
-                    'highlight-opacity':0.5,
-
+                    'highlight-opacity':0.8,
                     "label-style":{
                         'url':'/src/img1/a3.png',
                         'width':15,
@@ -183,14 +182,8 @@ function draw(rawData) {
                     'width': 2,
                     'line-color': '#456456',
                     'line-opacity': 1,
-                    'to-arrow-shape': 'triangle',
-                    'to-arrow-color': '#858585',
-                    'to-arrow-fill': 'filled',
-                    'from-arrow-shape': 'triangle',
-                    'from-arrow-color': '#858585',
-                    'from-arrow-fill': 'filled',
-                    'color': '#845624',
                     'text-opacity': 1,
+                    'text-color':"456456",
                     'font-size': 10,
                     'text': (d) => d.data.type,
                     'direct':(d)=>d.data.direct
@@ -221,7 +214,6 @@ function draw(rawData) {
             }
         ]
     });
-
 
     let timeout=null
 
@@ -379,6 +371,14 @@ function draw(rawData) {
     document.getElementById('addClass').addEventListener('click', () => {
         netGraph.addClassForNode(['a005'], ['fff']);
     })
+    document.getElementById('updateLinkStyle').addEventListener('click',()=>{
+        netGraph.addStyle([{
+            selector:"link",
+            style: {
+                'line-color': '#fff',
+            }
+        }])
+    })
 
     document.getElementById("lockNode").addEventListener("click",()=>{
         netGraph.lockNodes(["a002"])
@@ -455,7 +455,7 @@ function draw(rawData) {
         })
     });
 }
-draw();
+//draw();
 
 
 

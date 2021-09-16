@@ -48,12 +48,12 @@ export default class ElementController {
         if (flag === 'new') {
             this._init(this.controller)
             const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData(), 'replace');
-            this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
+            this.controller.styleController.mountAllStyleToElement(newNodeArray, newLinkArray);
             this.controller.positionController.layout()(newNodeArray, newLinkArray);
             this._parseElements(newNodeArray, newLinkArray, 'all');
         } else if (flag === 'add') {
             const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData(), 'add');
-            this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
+            this.controller.styleController.mountAllStyleToElement(newNodeArray, newLinkArray);
             this.controller.positionController.layout()(newNodeArray);
 
             // this.updateLinkPosition(newLinkArray);
@@ -62,13 +62,13 @@ export default class ElementController {
             if (!nodeIds) {
                 const newNodeArray = this.nodes;
                 const newLinkArray = this.links;
-                this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
+                this.controller.styleController.mountAllStyleToElement(newNodeArray, newLinkArray);
                 //this.controller.positionController.layout()(newNodeArray, this);
                 this._parseElements(newNodeArray, newLinkArray, "all");
             } else {
                 const newNodeArray = this.getNodes(nodeIds);
                 const newLinkArray = this.links;
-                this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
+                this.controller.styleController.mountAllStyleToElement(newNodeArray, newLinkArray);
                 //this.controller.positionController.layout()(newNodeArray, this);
                 this._parseElements(newNodeArray, newLinkArray, "part");
             }
@@ -343,7 +343,9 @@ export default class ElementController {
         const newNodeArray = this.nodes;
         const newLinkArray = this.links;
         this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
-        this._parseElements(newNodeArray, newLinkArray, "all");
+        this.updateEntityStyle();
+        this.controller.canvasController.updateRenderObject();
+        
     }
 
     addClassForNode(nodeIds, classes) {
@@ -355,7 +357,9 @@ export default class ElementController {
                 }
             })
         }
-        this._parseParams('part', nodeIds);
+        this.controller.styleController.mountAllStyleToElement(newNodeArray, []);
+        this.controller.canvasController.updateRenderObject();
+        
     }
 
     removeClassForNode(nodeIds, classes) {
@@ -367,7 +371,8 @@ export default class ElementController {
                 }
             })
         }
-        this._parseParams('part', nodeIds);
+        this.controller.styleController.mountAllStyleToElement(newNodeArray, []);
+        this.controller.canvasController.updateRenderObject();
     }
     addClassForLink(linkIds, classes) {
         if (linkIds && classes) {
@@ -378,7 +383,8 @@ export default class ElementController {
                 }
             })
         }
-        this._parseParams('part', []);
+        this.controller.styleController.mountAllStyleToElement([], newLinkArray);
+        this.controller.canvasController.updateRenderObject();
     }
 
     removeClassForLink(linkIds, classes) {
@@ -390,7 +396,8 @@ export default class ElementController {
                 }
             })
         }
-        this._parseParams('part', []);
+        this.controller.styleController.mountAllStyleToElement([], newLinkArray);
+        this.controller.canvasController.updateRenderObject();
     }
 
     /**
@@ -842,6 +849,41 @@ export default class ElementController {
     }
 
 
+    updateEntityStyle() {
+        const {
+            renderBackgrounds,
+            renderIcons,
+            renderLines,
+            renderText,
+            renderPolygon,
+            renderMark,
+            renderLabels
+        } = this.renderObject;
+        renderBackgrounds.forEach((RenderBackground) => {
+            RenderBackground.rebuild();
+        });
+        renderIcons.forEach((renderIcon) => {
+            renderIcon.rebuild();
+        });
+        renderLines.forEach((renderLine) => {
+            renderLine.rebuild();
+        });
+        renderText.forEach((reText) => {
+            reText.rebuild();
+        });
+        renderPolygon.forEach((rePolygon) => {
+            rePolygon.rebuild();
+        })
+        renderMark.forEach(mark => {
+            mark.rebuild();
+        });
+        renderLabels.forEach(label => {
+            label.rebuild();
+        });
+        this.controller.canvasController.updateRenderObject();
+    }
+
+
     updateEntityPosition(nodeIds = null) {
         if (nodeIds) {
             const needUpdateLinks = [];
@@ -936,11 +978,11 @@ export default class ElementController {
 
     lockNodes(nodeIds) {
         if (nodeIds && nodeIds.length > 0) {
-           for(let i=0;i<nodeIds.length;i++) {
-               const id=nodeIds[i];
+            for (let i = 0; i < nodeIds.length; i++) {
+                const id = nodeIds[i];
                 if (this.idMapNode.has(id)) {
                     const node = this.idMapNode.get(id);
-                    if(node.isLocked){
+                    if (node.isLocked) {
                         continue;
                     }
                     node.lock()
@@ -958,23 +1000,23 @@ export default class ElementController {
 
     unlockNodes(nodeIds) {
         if (nodeIds && nodeIds.length > 0) {
-           for(let i=0;i<nodeIds.length;i++ ){
-               const id=nodeIds[i];
+            for (let i = 0; i < nodeIds.length; i++) {
+                const id = nodeIds[i];
                 if (this.idMapNode.has(id)) {
-                    const node=this.idMapNode.get(id);
-                    if(!node.isLocked){
+                    const node = this.idMapNode.get(id);
+                    if (!node.isLocked) {
                         continue;
                     }
                     node.unlock();
-                    const {labelObjs}=this.nodeRenderMap.get(id);
-                    labelObjs.forEach((label,i)=>{
-                        if(label.id===id){
-                            labelObjs.splice(i,1);
+                    const { labelObjs } = this.nodeRenderMap.get(id);
+                    labelObjs.forEach((label, i) => {
+                        if (label.id === id) {
+                            labelObjs.splice(i, 1);
                         }
                     });
-                    this.renderObject.renderLabels.forEach((label,i)=>{
-                        if(label.id===id){
-                            this.renderObject.renderLabels.splice(i,1);
+                    this.renderObject.renderLabels.forEach((label, i) => {
+                        if (label.id === id) {
+                            this.renderObject.renderLabels.splice(i, 1);
                         }
                     })
                 }
