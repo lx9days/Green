@@ -56,11 +56,14 @@ function draw(rawData) {
                     id: 'a006',
                     name: '是',
                     img: '/src/img1/a1.png',
+                    type:'human',
+                    ca:false,
                 },
                 {
                     id: 'a007',
                     name: '速度',
                     img: '/src/img1/a2.png',
+                    //class:['event','kkdkd']
                 },
                 {
                     id: 'a008',
@@ -183,7 +186,7 @@ function draw(rawData) {
                     'line-color': '#456456',
                     'line-opacity': 1,
                     'text-opacity': 1,
-                    'text-color':"456456",
+                    'text-color':"#456456",
                     'font-size': 10,
                     'text': (d) => d.data.type,
                     'direct':(d)=>d.data.direct
@@ -454,6 +457,10 @@ function draw(rawData) {
             ]
         })
     });
+
+    document.getElementById("treeLayout").addEventListener("click",()=>{
+        netGraph.setNodeLayout('hierarchy',["2786b7455ff93ce7ad0fc4a4cfe5bd21","61c90e594b88372f8fa3217c150656f0"]);
+    })
 }
 //draw();
 

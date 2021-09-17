@@ -170,13 +170,17 @@ export default class ElementController {
             const sourceRenderBackground = this.nodeRenderMap.get(link.source.id).backgroundObjs[0];
             const targetRenderBackground = this.nodeRenderMap.get(link.target.id).backgroundObjs[0];
             const sourceOffset = {
-                x: sourceRenderBackground.style.backgroundHeight / 2 + sourceRenderBackground.style.borderWidth / 2,
+                x: sourceRenderBackground.style.backgroundWidth / 2 + sourceRenderBackground.style.borderWidth / 2,
                 y: sourceRenderBackground.style.backgroundHeight / 2 + sourceRenderBackground.style.borderWidth / 2,
+                width:sourceRenderBackground.style.width,
+                height:sourceRenderBackground.style.height,
                 borderWidth: sourceRenderBackground.style.borderWidth
             }
             const targetOffset = {
-                x: targetRenderBackground.style.backgroundHeight / 2 + targetRenderBackground.style.borderWidth / 2,
+                x: targetRenderBackground.style.backgroundWidth / 2 + targetRenderBackground.style.borderWidth / 2,
                 y: targetRenderBackground.style.backgroundHeight / 2 + targetRenderBackground.style.borderWidth / 2,
+                width:targetRenderBackground.style.width,
+                height:targetRenderBackground.style.height,
                 borderWidth: targetRenderBackground.style.borderWidth
             }
             const offset = { sourceOffset, targetOffset }

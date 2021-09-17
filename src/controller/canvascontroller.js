@@ -899,6 +899,7 @@ export default class CanvasController {
         if (!this.dragDoune) {
             this.dragDoune=true;
             this.elementController.updateNodeLocation([info.object.id], { x: parseFloat((e.offsetCenter.x - info.object.style.backgroundWidth / 2) * (2 ** -this.props.zoom) + (this.props.viewState.target[0] - this.props.initTarget[0] * (2 ** -this.props.zoom))), y: parseFloat((e.offsetCenter.y - info.object.style.backgroundHeight / 2) * (2 ** -this.props.zoom) + (this.props.viewState.target[1] - this.props.initTarget[1] * (2 ** -this.props.zoom))) }, this.groupDrag);
+          
             this.eventController.fire('nodeDraging', [info, e]);
             setTimeout(()=>{
                 this.dragDoune=false;
