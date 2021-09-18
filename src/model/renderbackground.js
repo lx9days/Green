@@ -15,7 +15,7 @@ export default class RenderBackground {
             backgroundHeight: 10,
             backgroundColor: [255, 255, 255, 255],
             backgroundOpacity: 1,
-            borderWidth: 1,
+            borderWidth: 0,
             borderStyle: 'solid',
             borderColor: [255, 255, 255, 255],
             borderOpacity: 1,

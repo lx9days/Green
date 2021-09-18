@@ -78,7 +78,7 @@ export default class RenderText {
         styles.forEach((style) => {
             for (const item in style) {
                 switch (item.toLowerCase()) {
-                    case 'color':
+                    case 'text-color':
                         const textColorObj = style[item];
                         let textColorHex;
                         if (isFunction(textColorObj)) {

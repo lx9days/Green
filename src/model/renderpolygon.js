@@ -10,7 +10,7 @@ export default class RenderPolygon {
         this.status=element.getStatus();
         this.style = {
             polygonColor: [255, 255, 255, 255],
-            polygonShape: 'none',
+            polygonShape: 'triangle',
             polygonFill: 'filled',
             polygonScale: 1,
             polygonFillColor: [255, 255, 255, 255],
@@ -53,17 +53,17 @@ export default class RenderPolygon {
                 for (const item in style) {
                     switch (item.toLowerCase()) {
                         case 'from-arrow-color':
-                            const sourceArrowColorObj = style[item];
-                            let sourceArrowColorHex;
-                            if (isFunction(sourceArrowColorHex)) {
-                                sourceArrowColorHex = sourceArrowColorObj(this.origionElement);
-                            } else {
-                                sourceArrowColorHex = sourceArrowColorObj;
-                            }
-                            const sourceArrowColorRGB = hexRgb(sourceArrowColorHex);
-                            this.style.polygonColor[0] = sourceArrowColorRGB.red;
-                            this.style.polygonColor[1] = sourceArrowColorRGB.green;
-                            this.style.polygonColor[2] = sourceArrowColorRGB.blue;
+                            // const sourceArrowColorObj = style[item];
+                            // let sourceArrowColorHex;
+                            // if (isFunction(sourceArrowColorHex)) {
+                            //     sourceArrowColorHex = sourceArrowColorObj(this.origionElement);
+                            // } else {
+                            //     sourceArrowColorHex = sourceArrowColorObj;
+                            // }
+                            // const sourceArrowColorRGB = hexRgb(sourceArrowColorHex);
+                            // this.style.polygonColor[0] = sourceArrowColorRGB.red;
+                            // this.style.polygonColor[1] = sourceArrowColorRGB.green;
+                            // this.style.polygonColor[2] = sourceArrowColorRGB.blue;
                             break;
                         case 'from-arrow-shape':
                             const sourceArrowShapeObj = style[item];
@@ -97,6 +97,19 @@ export default class RenderPolygon {
                                 this.style.polygonOpacity = lineOpacityObj;
                             }
                             break;
+                        case 'line-color':
+                            const sourceArrowColorObj = style[item];
+                            let sourceArrowColorHex;
+                            if (isFunction(sourceArrowColorHex)) {
+                                sourceArrowColorHex = sourceArrowColorObj(this.origionElement);
+                            } else {
+                                sourceArrowColorHex = sourceArrowColorObj;
+                            }
+                            const sourceArrowColorRGB = hexRgb(sourceArrowColorHex);
+                            this.style.polygonColor[0] = sourceArrowColorRGB.red;
+                            this.style.polygonColor[1] = sourceArrowColorRGB.green;
+                            this.style.polygonColor[2] = sourceArrowColorRGB.blue;
+                            break;
                         default:
                             break;
                     }
@@ -107,17 +120,17 @@ export default class RenderPolygon {
                 for (const item in style) {
                     switch (item.toLowerCase()) {
                         case 'to-arrow-color':
-                            const targetArrowColorObj = style[item];
-                            let targetArrowColorHex;
-                            if (isFunction(targetArrowColorHex)) {
-                                targetArrowColorHex = targetArrowColorObj(this.origionElement);
-                            } else {
-                                targetArrowColorHex = targetArrowColorObj;
-                            }
-                            const targetArrowColorRGB = hexRgb(targetArrowColorHex);
-                            this.style.polygonColor[0] = targetArrowColorRGB.red;
-                            this.style.polygonColor[1] = targetArrowColorRGB.green;
-                            this.style.polygonColor[2] = targetArrowColorRGB.blue;
+                            // const targetArrowColorObj = style[item];
+                            // let targetArrowColorHex;
+                            // if (isFunction(targetArrowColorHex)) {
+                            //     targetArrowColorHex = targetArrowColorObj(this.origionElement);
+                            // } else {
+                            //     targetArrowColorHex = targetArrowColorObj;
+                            // }
+                            // const targetArrowColorRGB = hexRgb(targetArrowColorHex);
+                            // this.style.polygonColor[0] = targetArrowColorRGB.red;
+                            // this.style.polygonColor[1] = targetArrowColorRGB.green;
+                            // this.style.polygonColor[2] = targetArrowColorRGB.blue;
                             break;
                         case 'to-arrow-shape':
                             const targetArrowShapeObj = style[item];
@@ -150,6 +163,19 @@ export default class RenderPolygon {
                             } else {
                                 this.style.polygonOpacity = lineOpacityObj;
                             }
+                            break;
+                        case 'line-color':
+                            const targetArrowColorObj = style[item];
+                            let targetArrowColorHex;
+                            if (isFunction(targetArrowColorHex)) {
+                                targetArrowColorHex = targetArrowColorObj(this.origionElement);
+                            } else {
+                                targetArrowColorHex = targetArrowColorObj;
+                            }
+                            const targetArrowColorRGB = hexRgb(targetArrowColorHex);
+                            this.style.polygonColor[0] = targetArrowColorRGB.red;
+                            this.style.polygonColor[1] = targetArrowColorRGB.green;
+                            this.style.polygonColor[2] = targetArrowColorRGB.blue;
                             break;
                         default:
                             break;

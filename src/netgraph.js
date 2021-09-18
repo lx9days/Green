@@ -119,10 +119,14 @@ export default class NetGraph {
     /**
      * 添加样式
      * @param {{selecter:..,style{}}} styles 
+     * @param {boolean} needRender 是否立即应用样式
      */
-    addStyle(styles) {
+    addStyle(styles,needRender=true) {
         this.controller.styleController.addStyle(styles);
-        this.controller.elementController.updateStyle();
+        if(needRender){
+            this.controller.elementController.updateStyle();
+        }
+        
     }
 
     /**

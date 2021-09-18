@@ -74,7 +74,6 @@ export default class PositionController {
             }
             this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
         }
-
     }
 
     star(selectedNodes) {
@@ -241,26 +240,26 @@ export default class PositionController {
     auto(nodes, srclinks = null) {
         const nodeIdToIndex = {};
         nodes.forEach((item, index) => {
-            nodeIdToIndex[item.id] = index+1;
+            nodeIdToIndex[item.id] = index + 1;
         })
         const nodeIds = nodes.map(node => node.id)
-        let links=[];
-        if(srclinks){
-            links=srclinks;
-        }else if(this.netGraph){
-           links=this.netGraph.getLinks();
-        }else{
-            links=[];
+        let links = [];
+        if (srclinks) {
+            links = srclinks;
+        } else if (this.netGraph) {
+            links = this.netGraph.getLinks();
+        } else {
+            links = [];
         }
-        
+
         const linkST = [];
         links.forEach(link => {
             const fromId = link.data.from;
             const toId = link.data.to;
             if (nodeIdToIndex[fromId] && nodeIdToIndex[toId]) {
                 linkST.push({
-                    source: nodeIdToIndex[fromId]-1,
-                    target: nodeIdToIndex[toId]-1
+                    source: nodeIdToIndex[fromId] - 1,
+                    target: nodeIdToIndex[toId] - 1
                 });
             }
         });
@@ -278,7 +277,7 @@ export default class PositionController {
                 force.stop()
             }
 
-        }, 2000)
+        }, 5000)
     }
 
     jutuan(nodes) {
@@ -310,77 +309,100 @@ export default class PositionController {
             }, 5000);
         }, 200);
     }
+    BFSTree(rootNodes, nodes, links) {
+        const neborTable = new Map();
 
-    hierarchy(rootNodes) {
-        var mthis = this;
-        if (rootNodes.length > 0) {
-            // 有选中节点，可以进行层级
-            let allNodes = this.netGraph.getNodes()
-            let allLinks = this.netGraph.getLinks()
-            let allNodeIds = allNodes.map(node => node.id)
-            let rootIds = rootNodes.map(node => node.id)
-            let edgeList = allLinks.map(link => {
-                let linkData = {
-                    id: link.source.id,
-                    from: link.source.id,
-                    to: target.id
-                }
-                return linkData;
-            });
-            let params = {
-                nodeIds: allNodeIds,
-                RootNodeIdList: rootIds,
-                EdgeList: edgeList,
-                edge_from_backend: false
+        const tagMap = new Map();
+        const nodeMap = new Map();
+        let nodeRes = [];
+        nodes.forEach((node) => {
+            nodeMap.set(node.id, { id: node.id, children: [] });
+            tagMap.set(node.id, false);
+            neborTable.set(node.id, [])
+        });
+        links.forEach(link => {
+            if (neborTable.has(link.data.from)) {
+                neborTable.get(link.data.from).push(nodeMap.get(link.data.to));
             }
-            mthis.netWorkBackEnd.hierarchicalLayout(params, data => {
-                let treeRoot = data[0][0];
-                let node0Id = rootIds[0]
-                let node0 = mthis.netGraph.getNodes([node0Id])[0];
-                let initx = node0["x"];
-                let inity = node0["y"];
-                var root = d3.hierarchy(treeRoot);
+        })
+        console.log(neborTable);
+        for (let i = 0; i < rootNodes.length; i++) {
+            const queue = [];
+            if (!tagMap.get(rootNodes[i].id)) {
+                queue.push(nodeMap.get(rootNodes[i].id))
+                tagMap.set(rootNodes[i].id, true);
+            }
+
+            while (queue.length > 0) {
+                console.log(queue.length)
+                const fromNode = queue.shift();
+                neborTable.get(fromNode.id).forEach(toNode => {
+                    if (!tagMap.get(toNode.id)) {
+                        tagMap.set(toNode.id, true);
+                        fromNode.children.push(toNode);
+                        queue.push(toNode);
+                    }
+                })
+            }
+            nodeRes.push(nodeMap.get(rootNodes[i].id))
+        }
+
+        return {
+            nodes: nodeRes,
+        }
+    }
+    hierarchy(rootNodes) {
+        if (rootNodes.length > 0) {
+
+            const data = this.BFSTree(rootNodes, this.netGraph.getNodes(), this.netGraph.getLinks())
+            console.log(data)
+           
+            let allIds=[];
+            for (let i = 0; i < data.nodes.length; i++) {
+                let nn1 = [];
+                const initx = rootNodes[i].x;
+                const inity = rootNodes[i].y;
+                let allNodeIds = [];
+                const root = d3.hierarchy(data.nodes[i])
                 root.dx = 100;
                 root.dy = 300;
                 d3.tree().nodeSize([root.dx, root.dy])(root);
-                var nn1 = [];
-                var ct = root;
-                var tt = {
-                    id: ct.data.name,
-                    x: root["x"],
-                    y: root["y"]
+
+                let ct = root;
+                let tt = {
+                    id: ct.data.id,
+                    x: root.x,
+                    y: root.y
                 };
                 nn1.push(tt);
-                if (root.children) {
-                    var stack = root.children;
-                    while (stack.length != 0) {
-                        var ct = stack.pop();
-                        var tt = {
-                            id: ct.data.name
-                        };
-                        tt.x = ct.x;
-                        tt.y = ct.y;
-                        nn1.push(tt);
-                        if (ct.children !== undefined) {
-                            let childrens = ct.children;
-                            for (let i = childrens.length - 1; i >= 0; i--)
-                                stack.push(childrens[i]);
+                if (root.children && root.children.length > 0) {
+                    let stack = root.children;
+                    while (stack.length !== 0) {
+                        let ctt = stack.pop();
+                        let ttt = {
+                            id: ctt.data.id,
+                            x: ctt.x,
+                            y: ctt.y
+                        }
+                        nn1.push(ttt);
+                        if (ctt.children && ctt.children.length > 0) {
+                            ctt.children.forEach(child => {
+                                stack.push(child)
+                            })
                         }
                     }
                 }
-                nn1.map(item => {
-                    if (mthis.netGraph.getNode(item.id)) {
-                        if (!mthis.netGraph.getNodes([item.id])[0].userManualLock) {
-                            mthis.netGraph.getNodes([item.id])[0]["x"] = item.x + initx;
-                            mthis.netGraph.getNodes([item.id])[0]["y"] = item.y + inity;
-                        }
-                        mthis.netGraph.getNodes([item.id]).hierarchyLock = true;
-                    }
-                });
-                mthis.netGraph.updateGraph(allNodeIds);
-            }, err => { })
-        } else {
-            //   mthis.$myToast.warning("请选择节点进行层级排列操作！");
+                allNodeIds = nn1.map(item => item.id);
+                const allNodes = this.netGraph.getNodes(allNodeIds);
+                allNodes.forEach((node, i) => {
+                    node.x = nn1[i].x + initx;
+                    node.y = nn1[i].y + inity;
+                })
+                allIds=[...allIds,...allNodeIds];
+            }
+
+            this.netGraph.updateNodeSta
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [allIds])
         }
     }
 

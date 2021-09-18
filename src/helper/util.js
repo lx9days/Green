@@ -6,20 +6,20 @@ function computeArrow(link, offset, type) {
     let targetY;
     let r;
     if (type === 'target') {
-        r=offset.targetOffset.y;
-        sourceX = link.sourceNode.x+offset.sourceOffset.x;
-        sourceY = link.sourceNode.y+offset.sourceOffset.y;
-        targetX = link.targetNode.x+offset.targetOffset.x;
-        targetY = link.targetNode.y+offset.targetOffset.y;
+        r = offset.targetOffset.y + 2;
+        sourceX = link.sourceNode.x + offset.sourceOffset.width / 2;//+offset.sourceOffset.x;
+        sourceY = link.sourceNode.y + offset.sourceOffset.height / 2//+offset.sourceOffset.y;
+        targetX = link.targetNode.x + offset.targetOffset.width / 2;//+offset.targetOffset.x;
+        targetY = link.targetNode.y + offset.targetOffset.height / 2;//+offset.targetOffset.y;
     } else {
-        r=offset.sourceOffset.y;
-        sourceX = link.targetNode.x+offset.targetOffset.x;
-        sourceY = link.targetNode.y+offset.targetOffset.y;
-        targetX = link.sourceNode.x+offset.sourceOffset.x;
-        targetY = link.sourceNode.y+offset.sourceOffset.y;
+        r = offset.sourceOffset.y + 2;
+        sourceX = link.targetNode.x + offset.targetOffset.width / 2;//+offset.targetOffset.x;
+        sourceY = link.targetNode.y + offset.targetOffset.height / 2;//+offset.targetOffset.y;
+        targetX = link.sourceNode.x + offset.sourceOffset.width / 2;//+offset.sourceOffset.x;
+        targetY = link.sourceNode.y + offset.sourceOffset.height / 2;//+offset.sourceOffset.y;s
     }
     const dis = 8;
-    const length =4;
+    const length = 4;
     let dx = targetX - sourceX;
     let dy = targetY - sourceY;
     let v_norm = Math.sqrt(dx ** 2 + dy ** 2);
@@ -82,12 +82,12 @@ function reLocationLinks(link, r = 11) {
  * @param {偏移} offset 
  * @param {*} renderLink 
  */
-function generateLinkLocation(link, offset,renderLink) {
-    let r=offset.targetOffset.y
-    let sourceX = link.sourceNode.x+offset.sourceOffset.x;
-    let sourceY = link.sourceNode.y+offset.sourceOffset.y;
-    let targetX = link.targetNode.x+offset.targetOffset.x;
-    let targetY = link.targetNode.y+offset.targetOffset.y;
+function generateLinkLocation(link, offset, renderLink) {
+    let r = offset.targetOffset.y + 2;
+    let sourceX = link.sourceNode.x + offset.sourceOffset.width / 2;//+offset.sourceOffset.x;
+    let sourceY = link.sourceNode.y + offset.sourceOffset.height / 2//+offset.sourceOffset.y;
+    let targetX = link.targetNode.x + offset.targetOffset.width / 2;//+offset.targetOffset.x;
+    let targetY = link.targetNode.y + offset.targetOffset.height / 2;//+offset.targetOffset.y;
 
 
     let dx = targetX - sourceX;
@@ -99,11 +99,11 @@ function generateLinkLocation(link, offset,renderLink) {
     renderLink.targetPosition[0] = targetX;
     renderLink.targetPosition[1] = targetY;
 
-    r=offset.sourceOffset.y;
-    sourceX = link.targetNode.x+offset.targetOffset.x;
-    sourceY = link.targetNode.y+offset.targetOffset.y;
-    targetX = link.sourceNode.x+offset.sourceOffset.x;
-    targetY = link.sourceNode.y+offset.sourceOffset.y;
+    r = offset.sourceOffset.y + 2;
+    sourceX = link.targetNode.x + offset.targetOffset.width / 2;//+offset.targetOffset.x;
+    sourceY = link.targetNode.y + offset.targetOffset.height / 2;//+offset.targetOffset.y;
+    targetX = link.sourceNode.x + offset.sourceOffset.width / 2;//+offset.sourceOffset.x;
+    targetY = link.sourceNode.y + offset.sourceOffset.height / 2;//+offset.sourceOffset.y;
 
     dx = targetX - sourceX;
     dy = targetY - sourceY;

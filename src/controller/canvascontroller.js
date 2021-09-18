@@ -17,6 +17,7 @@ export default class CanvasController {
         this.elementController = null;
         this.renderObject = null;
         this.groupDrag = false;
+        this.dragDoune = null;
         this.eventController = eventController;
 
         this.nodeClickHandler = this._nodeClickHandler.bind(this);
@@ -56,16 +57,16 @@ export default class CanvasController {
             this.eventController.fire("canvasRightClick", [e]);
             e.preventDefault();
         })
-        this.canvas.addEventListener('mousedown',e=>{
-            this.eventController.fire("canvasMouseDown",[e])
+        this.canvas.addEventListener('mousedown', e => {
+            this.eventController.fire("canvasMouseDown", [e])
             e.preventDefault();
         })
-        this.canvas.addEventListener('mouseup',e=>{
-            this.eventController.fire("canvasMouseUp",[e])
+        this.canvas.addEventListener('mouseup', e => {
+            this.eventController.fire("canvasMouseUp", [e])
             e.preventDefault();
         })
-        this.canvas.addEventListener('mousemove',e=>{
-            this.eventController.fire('canvasMouseMove',[e]);
+        this.canvas.addEventListener('mousemove', e => {
+            this.eventController.fire('canvasMouseMove', [e]);
             e.preventDefault();
         })
         container.appendChild(this.canvas);
@@ -73,7 +74,7 @@ export default class CanvasController {
         if (this.deck) {
             this.deck = null;
         }
-       // console.log(this.props.containerWidth, this.props.containerHeight);
+        // console.log(this.props.containerWidth, this.props.containerHeight);
 
         this.deck = new Deck({
             views: new OrthographicView({
@@ -137,10 +138,10 @@ export default class CanvasController {
         this.isAllowCanvasMove = false;
     }
 
-   
+
     updateRenderGraph() {
         const zoom = this.props.zoom;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark ,renderLabels} = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
         const lineLayer = new LineLayer({
@@ -149,13 +150,14 @@ export default class CanvasController {
             autoHighlight: true,
             highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
             pickable: true,
-            getWidth: d => d.style.lineWidth || 2,
+            getWidth: d => d.style.lineWidth,
             getSourcePosition: d => d.sourcePosition,
             getTargetPosition: d => d.targetPosition,
-            getColor: d => d.style.lineColor || [255, 255, 255, 255],
+            getColor: d => d.style.lineColor,
             updateTriggers: {
                 getSourcePosition: d => d.sourcePosition,
                 getTargetPosition: d => d.targetPosition,
+                getColor: d => d.style.lineColor,
             },
             onClick: this.lineClickHandler,
         });
@@ -263,38 +265,38 @@ export default class CanvasController {
             opacity: 1,
             getFillColor: (d) => {
                 if (d.status === 2) {
-                    return d.style.backgroundColor || [255, 255, 255, 255]
+                    return d.style.backgroundColor;
                 } else {
                     return [255, 255, 255, 0];
                 }
             },
             getPolygon: (d) => {
-                return d.backgroundPolygon || [];
+                return d.backgroundPolygon;
             },
             getLineColor: (d) => {
                 if (d.status === 2) {
-                    return d.style.borderColor || [255, 255, 255, 255];
+                    return d.style.borderColor;
                 } else {
                     return [255, 255, 255.0];
                 }
             },
             getLineWidth: (d) => {
                 if (d.status === 2) {
-                    return d.style.borderWidth || 0;
+                    return d.style.borderWidth;
                 } else {
                     return 0;
                 }
             },
             filled: true,
             stroked: true,
-            positionFormat:'XY',
+            positionFormat: 'XY',
             updateTriggers: {
                 getPolygon: d => {
                     return d.backgroundPolygon;
                 },
                 getFillColor: (d) => {
                     if (d.status === 2) {
-                        return d.style.backgroundColor || [255, 255, 255, 255]
+                        return d.style.backgroundColor;
                     } else {
                         return [255, 255, 255, 0];
                     }
@@ -311,7 +313,7 @@ export default class CanvasController {
                 return d.position;
             },
             getText: d => d.text,
-            getSize: d => d.style.textSize,
+            getSize: d => d.style.textSize * (2 ** zoom),
             getAngle: 0,
             getTextAnchor: d => d.style.textAnchor,
             getAlignmentBaseline: d => d.style.textAlignmentBaseline,
@@ -320,7 +322,8 @@ export default class CanvasController {
             updateTriggers: {
                 getPosition: d => {
                     return d.position;
-                }
+                },
+                getSize: d => d.style.textSize * (2 ** zoom),
             }
         });
 
@@ -335,7 +338,7 @@ export default class CanvasController {
             getPolygon: d => {
                 return d.polygon;
             },
-            positionFormat:'XY',
+            positionFormat: 'XY',
             getFillColor: (d) => d.style.polygonFillColor,
             updateTriggers: {
                 getPolygon: d => {
@@ -354,7 +357,7 @@ export default class CanvasController {
             stroked: false,
             autoHighlight: true,
             highlightColor: [markRGB.red, markRGB.green, markRGB.blue, markOpactiy * 255],
-            positionFormat:'XY',
+            positionFormat: 'XY',
             getPolygon: d => d.backgroundPolygon,
             getFillColor: (d) => {
                 if (d.status === 4) {
@@ -378,7 +381,7 @@ export default class CanvasController {
             onDragStart: this.nodeDragStartHandler,
             onDragEnd: this.nodeDragEndHandler,
         });
-        const labelLayer=new IconLayer({
+        const labelLayer = new IconLayer({
             id: 'label-layer',
             data: renderLabels,
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
@@ -398,24 +401,25 @@ export default class CanvasController {
                 getSize: d => d.style.iconSize * (2 ** zoom),
             }
         })
-        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer,labelLayer, iconLayer, textLayer, markLayer] });
+        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
     }
 
-    renderLockNode(){
+    renderLockNode() {
         const zoom = this.props.zoom;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark ,renderLabels} = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
+
         const lineLayer = new LineLayer({
             id: 'line-layer',
             data: renderLines,
             autoHighlight: true,
             highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
             pickable: true,
-            getWidth: d => d.style.lineWidth || 2,
+            getWidth: d => d.style.lineWidth,
             getSourcePosition: d => d.sourcePosition,
             getTargetPosition: d => d.targetPosition,
-            getColor: d => d.style.lineColor || [255, 255, 255, 255],
+            getColor: d => d.style.lineColor,
             updateTriggers: {
                 getSourcePosition: d => d.sourcePosition,
                 getTargetPosition: d => d.targetPosition,
@@ -441,6 +445,9 @@ export default class CanvasController {
                     return d.position;
                 },
                 getSize: d => d.style.iconSize * (2 ** zoom),
+            },
+            onIconError: () => {
+                console.log("err")
             }
         });
         const rectBackgroundLayer = new PolygonLayer({
@@ -449,38 +456,38 @@ export default class CanvasController {
             opacity: 1,
             getFillColor: (d) => {
                 if (d.status === 2) {
-                    return d.style.backgroundColor || [255, 255, 255, 255]
+                    return d.style.backgroundColor;
                 } else {
                     return [255, 255, 255, 0];
                 }
             },
             getPolygon: (d) => {
-                return d.backgroundPolygon || [];
+                return d.backgroundPolygon;
             },
             getLineColor: (d) => {
                 if (d.status === 2) {
-                    return d.style.borderColor || [255, 255, 255, 255];
+                    return d.style.borderColor;
                 } else {
                     return [255, 255, 255.0];
                 }
             },
             getLineWidth: (d) => {
                 if (d.status === 2) {
-                    return d.style.borderWidth || 0;
+                    return d.style.borderWidth;
                 } else {
                     return 0;
                 }
             },
             filled: true,
             stroked: true,
-            positionFormat:'XY',
+            positionFormat: 'XY',
             updateTriggers: {
                 getPolygon: d => {
                     return d.backgroundPolygon;
                 },
                 getFillColor: (d) => {
                     if (d.status === 2) {
-                        return d.style.backgroundColor || [255, 255, 255, 255]
+                        return d.style.backgroundColor;
                     } else {
                         return [255, 255, 255, 0];
                     }
@@ -497,7 +504,7 @@ export default class CanvasController {
                 return d.position;
             },
             getText: d => d.text,
-            getSize: d => d.style.textSize,
+            getSize: d => d.style.textSize * (2 ** zoom),
             getAngle: 0,
             getTextAnchor: d => d.style.textAnchor,
             getAlignmentBaseline: d => d.style.textAlignmentBaseline,
@@ -506,7 +513,8 @@ export default class CanvasController {
             updateTriggers: {
                 getPosition: d => {
                     return d.position;
-                }
+                },
+                getSize: d => d.style.textSize * (2 ** zoom),
             }
         });
 
@@ -521,7 +529,7 @@ export default class CanvasController {
             getPolygon: d => {
                 return d.polygon;
             },
-            positionFormat:'XY',
+            positionFormat: 'XY',
             getFillColor: (d) => d.style.polygonFillColor,
             updateTriggers: {
                 getPolygon: d => {
@@ -540,7 +548,7 @@ export default class CanvasController {
             stroked: false,
             autoHighlight: true,
             highlightColor: [markRGB.red, markRGB.green, markRGB.blue, markOpactiy * 255],
-            positionFormat:'XY',
+            positionFormat: 'XY',
             getPolygon: d => d.backgroundPolygon,
             getFillColor: (d) => {
                 if (d.status === 4) {
@@ -564,9 +572,9 @@ export default class CanvasController {
             onDragStart: this.nodeDragStartHandler,
             onDragEnd: this.nodeDragEndHandler,
         });
-        const labelLayer=new IconLayer({
+        const labelLayer = new IconLayer({
             id: 'label-layer',
-            data: renderLabels.filter(()=>true),
+            data: renderLabels.filter(() => true),
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
             getIcon: d => ({
@@ -576,20 +584,23 @@ export default class CanvasController {
                 anchorX: 0,
                 anchorY: 0,
             }),
-            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            getSize: d => d.style.iconSize * (2 ** zoom),
             updateTriggers: {
                 getPosition: d => {
                     return d.position;
                 },
                 getSize: d => d.style.iconSize * (2 ** zoom),
+            },
+            onIconError: () => {
+                console.log(arguments)
             }
         })
-        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer,labelLayer, iconLayer, textLayer, markLayer] });
+        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
     }
     renderGraph() {
 
         const zoom = this.props.zoom;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark ,renderLabels} = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
         const lineLayer = new LineLayer({
@@ -598,10 +609,10 @@ export default class CanvasController {
             autoHighlight: true,
             highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
             pickable: true,
-            getWidth: d => d.style.lineWidth || 2,
+            getWidth: d => d.style.lineWidth,
             getSourcePosition: d => d.sourcePosition,
             getTargetPosition: d => d.targetPosition,
-            getColor: d => d.style.lineColor || [255, 255, 255, 255],
+            getColor: d => d.style.lineColor,
             updateTriggers: {
                 getSourcePosition: d => d.sourcePosition,
                 getTargetPosition: d => d.targetPosition,
@@ -628,6 +639,9 @@ export default class CanvasController {
                 getPosition: d => {
                     return d.position;
                 }
+            },
+            onIconError: () => {
+                console.log(arguments)
             }
         });
 
@@ -714,29 +728,29 @@ export default class CanvasController {
 
         const rectBackgroundLayer = new PolygonLayer({
             id: 'rect-background-layer',
-            data: renderBackgrounds.filter(() =>true),
+            data: renderBackgrounds.filter(() => true),
             opacity: 1,
-            positionFormat:'XY',
+            positionFormat: 'XY',
             getFillColor: (d) => {
                 if (d.status === 2) {
-                    return d.style.backgroundColor || [255, 255, 255, 255]
+                    return d.style.backgroundColor;
                 } else {
                     return [255, 255, 255, 0];
                 }
             },
             getPolygon: (d) => {
-                return d.backgroundPolygon || [];
+                return d.backgroundPolygon;
             },
             getLineColor: (d) => {
                 if (d.status === 2) {
-                    return d.style.borderColor || [255, 255, 255, 255];
+                    return d.style.borderColor;
                 } else {
                     return [255, 255, 255.0];
                 }
             },
             getLineWidth: (d) => {
                 if (d.status === 2) {
-                    return d.style.borderWidth || 0;
+                    return d.style.borderWidth;
                 } else {
                     return 0;
                 }
@@ -746,7 +760,7 @@ export default class CanvasController {
             updateTriggers: {
                 getFillColor: (d) => {
                     if (d.status === 2) {
-                        return d.style.backgroundColor || [255, 255, 255, 255]
+                        return d.style.backgroundColor;
                     } else {
                         return [255, 255, 255, 0];
                     }
@@ -765,7 +779,7 @@ export default class CanvasController {
                 return d.position;
             },
             getText: d => d.text,
-            getSize: d => d.style.textSize,
+            getSize: d => d.style.textSize * (2 ** zoom),
             getAngle: 0,
             getTextAnchor: d => d.style.textAnchor,
             getAlignmentBaseline: d => d.style.textAlignmentBaseline,
@@ -774,7 +788,8 @@ export default class CanvasController {
             updateTriggers: {
                 getPosition: d => {
                     return d.position;
-                }
+                },
+                getSize: d => d.style.textSize * (2 ** zoom)
             }
         });
 
@@ -784,7 +799,7 @@ export default class CanvasController {
             data: renderPolygon.filter(() => true),
             filled: true,
             stroked: true,
-            positionFormat:'XY',
+            positionFormat: 'XY',
             getLineWidth: 1,
             getLineColor: d => d.style.polyonColor,
             getPolygon: d => {
@@ -802,7 +817,7 @@ export default class CanvasController {
             filled: true,
             stroked: false,
             autoHighlight: true,
-            positionFormat:'XY',
+            positionFormat: 'XY',
             highlightColor: [markRGB.red, markRGB.green, markRGB.blue, markOpactiy * 255],
             getPolygon: d => d.backgroundPolygon,
             getFillColor: (d) => {
@@ -826,9 +841,9 @@ export default class CanvasController {
             onDragStart: this.nodeDragStartHandler,
             onDragEnd: this.nodeDragEndHandler,
         });
-        const labelLayer=new IconLayer({
+        const labelLayer = new IconLayer({
             id: 'label-layer',
-            data: renderLabels.filter(()=>true),
+            data: renderLabels.filter(() => true),
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
             getIcon: d => ({
@@ -844,9 +859,12 @@ export default class CanvasController {
                     return d.position;
                 },
                 getSize: d => d.style.iconSize * (2 ** zoom),
+            },
+            onIconError: () => {
+                console.log(arguments)
             }
         })
-        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer,labelLayer, iconLayer, textLayer, markLayer] });
+        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
     }
 
     _nodeClickHandler(info, e) {
@@ -876,9 +894,18 @@ export default class CanvasController {
         return true;
     }
 
+
     _nodeDragingHandler(info, e) {
-        this.elementController.updateNodeLocation([info.object.id], { x: parseFloat((e.offsetCenter.x-info.object.style.backgroundWidth/2) * (2 ** -this.props.zoom) + (this.props.viewState.target[0] - this.props.initTarget[0] * (2 ** -this.props.zoom))), y: parseFloat((e.offsetCenter.y-info.object.style.backgroundHeight/2) * (2 ** -this.props.zoom) + (this.props.viewState.target[1] - this.props.initTarget[1] * (2 ** -this.props.zoom))) }, this.groupDrag);
-        this.eventController.fire('nodeDraging', [info, e]);
+        if (!this.dragDoune) {
+            this.dragDoune=true;
+            this.elementController.updateNodeLocation([info.object.id], { x: parseFloat((e.offsetCenter.x - info.object.style.backgroundWidth / 2) * (2 ** -this.props.zoom) + (this.props.viewState.target[0] - this.props.initTarget[0] * (2 ** -this.props.zoom))), y: parseFloat((e.offsetCenter.y - info.object.style.backgroundHeight / 2) * (2 ** -this.props.zoom) + (this.props.viewState.target[1] - this.props.initTarget[1] * (2 ** -this.props.zoom))) }, this.groupDrag);
+          
+            this.eventController.fire('nodeDraging', [info, e]);
+            setTimeout(()=>{
+                this.dragDoune=false;
+            },220)
+        }
+
         return true;
     }
 
@@ -945,8 +972,8 @@ export default class CanvasController {
         }
     }
 
-    updateLockNode(renderObject){
-        this.renderObject=renderObject;
+    updateLockNode(renderObject) {
+        this.renderObject = renderObject;
         this.renderLockNode();
     }
     mountElementController(elementController) {

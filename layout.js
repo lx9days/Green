@@ -3,7 +3,7 @@ import dynamicPos from '@/util/dynamicPosition.js';
 import * as d3 from 'd3';
 
 export default class GraphLayout {
-  constructor (netGraph) {
+  constructor(netGraph) {
     this.netGraph = netGraph;
     this.useLayout = 'square';
     this.netWorkBackEnd = new NetWorkBackEnd();
@@ -24,14 +24,14 @@ export default class GraphLayout {
     };
   }
 
-  layout (layoutName = null, params = null) {
+  layout(layoutName = null, params = null) {
     if (layoutName) {
       this.useLayout = layoutName;
     }
     return this._mapType[this.useLayout].bind(this);
   }
 
-  getStartPosition () {
+  getStartPosition() {
     // let maxX = 0;
     // const minY = 0;
     // for (const extent of this.nodeExtent) {
@@ -43,9 +43,9 @@ export default class GraphLayout {
     // return [maxX, maxY];
   }
 
-  recordExtent (width, height) {}
+  recordExtent(width, height) { }
 
-  customPosition (nodes, links, positions) {
+  customPosition(nodes, links, positions) {
     const nodeIds = [];
     const length = positions.length;
     for (let i = 0; i < nodes.length; i++) {
@@ -60,7 +60,7 @@ export default class GraphLayout {
     this.netGraph.updateGraph(nodeIds);
   }
 
-  square (nodes) { // 矩形布局
+  square(nodes) { // 矩形布局
     if (nodes.length > 0) {
       const nodeIds = [];
       const rowNum = Math.ceil(Math.sqrt(nodes.length));
@@ -80,7 +80,7 @@ export default class GraphLayout {
     }
   }
 
-  star (selectedNodes) { // 星型布局
+  star(selectedNodes) { // 星型布局
     if (selectedNodes.length > 0) {
       const nodeIds = [];
       const linkIds = [];
@@ -140,7 +140,7 @@ export default class GraphLayout {
     }
   }
 
-  circleShape (nodes) { // 环形布局
+  circleShape(nodes) { // 环形布局
     if (nodes.length > 0) {
       const nodeIds = [];
       // 半径
@@ -162,7 +162,7 @@ export default class GraphLayout {
     }
   }
 
-  multSquare (nodes) { // 多矩形
+  multSquare(nodes) { // 多矩形
     var mthis = this;
     let no1x = 0;
     let no1y = 0;
@@ -200,7 +200,7 @@ export default class GraphLayout {
     }
   }
 
-  oneRow (nodes) {
+  oneRow(nodes) {
     if (nodes.length > 0) {
       const nodeIds = [];
       const no1 = nodes[0];
@@ -215,7 +215,7 @@ export default class GraphLayout {
     }
   }
 
-  oneColumn (nodes) {
+  oneColumn(nodes) {
     if (nodes.length > 0) {
       const nodeIds = [];
       const no1 = nodes[0];
@@ -229,7 +229,7 @@ export default class GraphLayout {
     }
   }
 
-  timeSequential (nodes) { // 时序布局
+  timeSequential(nodes) { // 时序布局
     const mthis = this;
     const docnodeids = [];
     const eventnodeids = [];
@@ -288,7 +288,7 @@ export default class GraphLayout {
     });
   }
 
-  hierarchy (rootNodes) { // 层级布局
+  hierarchy(rootNodes) { // 层级布局
     var mthis = this;
     if (rootNodes.length > 0) {
       // 有选中节点，可以进行层级
@@ -357,13 +357,13 @@ export default class GraphLayout {
         });
         mthis.netGraph.setSelectEle(hierarchyIds, []);
         mthis.netGraph.updateGraph(allNodeIds);
-      }, err => {});
+      }, err => { });
     } else {
       //   mthis.$myToast.warning("请选择节点进行层级排列操作！");
     }
   }
 
-  auto (nodes) {
+  auto(nodes) {
     const mthis = this;
     const nodeIdToIndex = {};
     nodes.forEach((item, index) => {
@@ -389,7 +389,7 @@ export default class GraphLayout {
     mthis.jutuan(nodes);
   }
 
-  jutuan (nodes) {
+  jutuan(nodes) {
     var mthis = this;
     const nodeIds = nodes.map(node => node.id);
     mthis.netGraph.updateSettings({
@@ -427,11 +427,11 @@ export default class GraphLayout {
     // }, 200);
   }
 
-  hierarchyCircle () { // 层级环布局
+  hierarchyCircle() { // 层级环布局
 
   }
 
-  computedSquarePosToNodes (nodes) {
+  computedSquarePosToNodes(nodes) {
     let sqnum = 0;
     const rowNum = Math.ceil(Math.sqrt(nodes.length));
     return nodes.map((item, index) => {
@@ -444,7 +444,7 @@ export default class GraphLayout {
     });
   }
 
-  computedDynamicPosToNodes (nodes) {
+  computedDynamicPosToNodes(nodes) {
     const posArr = dynamicPos.getDynamicPosition(0, 0, nodes, 0);
     return nodes.map((item, index) => {
       const base = posArr[index];

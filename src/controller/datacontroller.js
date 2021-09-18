@@ -14,11 +14,6 @@ export default class DataController {
             links:new Array()
         };
         this.newData=data;
-        // this.idMapNode = new Map();
-        // this.idMapLink = new Map();
-        // this.nodeIdMapLinks = new Map();
-        // this._initInternalDataStructure();
-        // this._initInternalDataStructure();
     }
     getData() {
         return this.data;
