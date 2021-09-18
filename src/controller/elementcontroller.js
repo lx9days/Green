@@ -361,7 +361,8 @@ export default class ElementController {
                 }
             })
         }
-        this.controller.styleController.mountAllStyleToElement(newNodeArray, []);
+        this.controller.styleController.mountAllStyleToElement(this.getNodes(nodeIds), []);
+        this.updateEntityStyle()
         this.controller.canvasController.updateRenderObject();
         
     }
@@ -375,7 +376,8 @@ export default class ElementController {
                 }
             })
         }
-        this.controller.styleController.mountAllStyleToElement(newNodeArray, []);
+        this.controller.styleController.mountAllStyleToElement(this.getNodes(nodeIds), []);
+        this.updateEntityStyle()
         this.controller.canvasController.updateRenderObject();
     }
     addClassForLink(linkIds, classes) {
@@ -387,7 +389,8 @@ export default class ElementController {
                 }
             })
         }
-        this.controller.styleController.mountAllStyleToElement([], newLinkArray);
+        this.controller.styleController.mountAllStyleToElement([], this.getLinks(linkIds));
+        this.updateEntityStyle()
         this.controller.canvasController.updateRenderObject();
     }
 
@@ -400,7 +403,8 @@ export default class ElementController {
                 }
             })
         }
-        this.controller.styleController.mountAllStyleToElement([], newLinkArray);
+        this.controller.styleController.mountAllStyleToElement([], this.getLinks(linkIds));
+        this.updateEntityStyle()
         this.controller.canvasController.updateRenderObject();
     }
 
