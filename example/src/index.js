@@ -214,6 +214,12 @@ function draw(rawData) {
                     'highlight-color':"#Fff0BC",
                     'highlight-opacity':0.5
                 }
+            },
+            {
+                selector:"link.selected",
+                style: {
+                    'line-color': '#fff',
+                }
             }
         ]
     });
@@ -377,14 +383,14 @@ function draw(rawData) {
     document.getElementById('updateLinkStyle').addEventListener('click',()=>{
 
        
-        netGraph.addStyle([{
-            selector:"link.selected",
-            style: {
-                'line-color': '#fff',
-            }
-        }],false);
+        // netGraph.addStyle([{
+        //     selector:"link.selected",
+        //     style: {
+        //         'line-color': '#fff',
+        //     }
+        // }],false);
 
-        netGraph.addClassForLink(['MG_8cb555585f988b72b61bd42c7ebe4b5f'],['color'])
+        netGraph.addClassForLink(['MG_8cb555585f988b72b61bd42c7ebe4b5f'],['selected'])
 
 
     })
