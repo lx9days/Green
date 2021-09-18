@@ -375,12 +375,18 @@ function draw(rawData) {
         netGraph.addClassForNode(['a005'], ['fff']);
     })
     document.getElementById('updateLinkStyle').addEventListener('click',()=>{
+
+       
         netGraph.addStyle([{
-            selector:"link",
+            selector:"link.selected",
             style: {
                 'line-color': '#fff',
             }
-        }])
+        }],false);
+
+        netGraph.addClassForLink(['MG_8cb555585f988b72b61bd42c7ebe4b5f'],['color'])
+
+
     })
 
     document.getElementById("lockNode").addEventListener("click",()=>{
@@ -459,7 +465,10 @@ function draw(rawData) {
     });
 
     document.getElementById("treeLayout").addEventListener("click",()=>{
+
         netGraph.setNodeLayout('hierarchy',["2786b7455ff93ce7ad0fc4a4cfe5bd21","61c90e594b88372f8fa3217c150656f0"]);
+
+
     })
 }
 //draw();
