@@ -142,6 +142,7 @@ export default class CanvasController {
     updateRenderGraph() {
         const zoom = this.props.zoom;
         const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels } = this.renderObject;
+        console.log(renderLines)
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
         const lineLayer = new LineLayer({
