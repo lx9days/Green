@@ -1,4 +1,4 @@
-import { Deck, COORDINATE_SYSTEM, OrthographicView } from '@deck.gl/core';
+import { Deck, COORDINATE_SYSTEM, OrthographicView, Viewport,FlyToInterpolator,LinearInterpolator } from '@deck.gl/core';
 import { ScatterplotLayer, IconLayer, LineLayer, TextLayer, PolygonLayer } from '@deck.gl/layers';
 import hexRgb from 'hex-rgb';
 import RoundedRectangleLayer from '../compositelayer/RoundedRectangleLayer';
@@ -41,6 +41,8 @@ export default class CanvasController {
             rotationX: 0,
             rotationOrbit: 0,
             zoom: this.props.zoom,
+            transitionDuration: 10000,
+            transitionInterpolator: new LinearInterpolator({transitionProps: ['target', 'zoom']})
         }
         this.props.viewState = initViewState;
         this.props.initTarget = initViewState.target;
@@ -102,17 +104,18 @@ export default class CanvasController {
     }
 
     _onViewStateChange({ viewState, oldViewState, interactionState }) {
-
         if (this.isAllowCanvasMove && !this.boxSelecting) {
 
         } else {
             if (interactionState.isZooming) {
                 this.props.zoom = viewState.zoom;
+
                 this.updateRenderGraph();
             } else {
                 viewState.target = oldViewState.target;
             }
         }
+        console.log(viewState)
         this.props.viewState = viewState;
         this.deck.setProps({ viewState });
     }
@@ -638,7 +641,8 @@ export default class CanvasController {
             updateTriggers: {
                 getPosition: d => {
                     return d.position;
-                }
+                },
+                getSize: d => d.style.iconSize * (2 ** zoom),
             },
             onIconError: () => {
                 console.log(arguments)
@@ -897,13 +901,13 @@ export default class CanvasController {
 
     _nodeDragingHandler(info, e) {
         if (!this.dragDoune) {
-            this.dragDoune=true;
+            this.dragDoune = true;
             this.elementController.updateNodeLocation([info.object.id], { x: parseFloat((e.offsetCenter.x - info.object.style.backgroundWidth / 2) * (2 ** -this.props.zoom) + (this.props.viewState.target[0] - this.props.initTarget[0] * (2 ** -this.props.zoom))), y: parseFloat((e.offsetCenter.y - info.object.style.backgroundHeight / 2) * (2 ** -this.props.zoom) + (this.props.viewState.target[1] - this.props.initTarget[1] * (2 ** -this.props.zoom))) }, this.groupDrag);
-          
+
             this.eventController.fire('nodeDraging', [info, e]);
-            setTimeout(()=>{
-                this.dragDoune=false;
-            },220)
+            setTimeout(() => {
+                this.dragDoune = false;
+            }, 220)
         }
 
         return true;
@@ -951,9 +955,13 @@ export default class CanvasController {
                 zoom: zoom,
             }
             this.props.zoom = zoom;
+            this.viewState = viewState;
             this.deck.setProps({ viewState });
-            this.renderGraph();
+            this.updateRenderGraph();
         }
+    }
+    getZoom() {
+        return this.props.zoom;
     }
 
     setGroupDrag(v) {
@@ -1043,7 +1051,20 @@ export default class CanvasController {
             height: this.props.containerHeight,
         }
     }
+    scrollIntoView() {
+        this.props.viewState.target = [100, 100, 0];
+        console.log(this.props.viewState);
 
-
-
+        const viewStat = {
+            target: this.props.viewState.target,
+            zoom: this.props.viewState.zoom,
+            rotationOrbit: this.props.viewState.rotationOrbit,
+            rotationX: this.props.viewState.rotationX,
+            transitionDuration: 80000,
+            transitionInterpolator: new LinearInterpolator({transitionProps: ['target', 'zoom']})
+        }
+        viewStat.transitionDuration = 2000;
+        this.deck.setProps({ viewState: viewStat })
+        this.updateRenderGraph()
+    }
 }

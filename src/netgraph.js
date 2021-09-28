@@ -113,7 +113,7 @@ export default class NetGraph {
     }
 
     scrollIntoView(nodeIds = null) {
-
+        this.controller.canvasController.scrollIntoView();
     }
 
     /**
@@ -207,7 +207,7 @@ export default class NetGraph {
      * 获取当前的zoom level
      */
     getZoom() {
-        this.controller.canvasController.getZoom();
+       return this.controller.canvasController.getZoom();
 
     }
 

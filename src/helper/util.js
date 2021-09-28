@@ -180,4 +180,49 @@ function isFunction(obj) {
     return false;
 }
 
-export { generatePolygon, getInteractionData, generateLinkLocation, isFunction, computePolygon }
+function BFSTree(rootNodes, nodes, links) {
+    const neborTable = new Map();
+
+    const tagMap = new Map();
+    const nodeMap = new Map();
+    let nodeRes = [];
+    nodes.forEach((node) => {
+        nodeMap.set(node.id, { id: node.id, children: [] });
+        tagMap.set(node.id, false);
+        neborTable.set(node.id, [])
+    });
+    links.forEach(link => {
+        if (neborTable.has(link.data.from)) {
+            neborTable.get(link.data.from).push(nodeMap.get(link.data.to));
+        }
+    })
+    console.log(neborTable);
+    for (let i = 0; i < rootNodes.length; i++) {
+        const queue = [];
+        if (!tagMap.get(rootNodes[i].id)) {
+            queue.push(nodeMap.get(rootNodes[i].id))
+            tagMap.set(rootNodes[i].id, true);
+        }
+        while (queue.length > 0) {
+            console.log(queue.length)
+            const fromNode = queue.shift();
+            neborTable.get(fromNode.id).forEach(toNode => {
+                if (!tagMap.get(toNode.id)) {
+                    tagMap.set(toNode.id, true);
+                    fromNode.children.push(toNode);
+                    queue.push(toNode);
+                }
+            })
+        }
+        nodeRes.push(nodeMap.get(rootNodes[i].id))
+    }
+
+    return {
+        nodes: nodeRes,
+    }
+}
+
+function autoFitView(nodes){
+    
+}
+export { generatePolygon, getInteractionData, generateLinkLocation, isFunction, computePolygon, BFSTree}
