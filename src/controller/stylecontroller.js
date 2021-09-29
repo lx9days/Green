@@ -62,7 +62,10 @@ export default class StyleController{
     }
     mountAllStyleToElement(nodes,links){
         //初始化选择器
+
         const selector=new Selector(nodes,links);
+        //const selectResult=selector.select(selectStr);
+
         this.styles=[...this.styles,...this.newStyles];
         this.newStyles=[];
         //const selector=new Selection(nodes,links);

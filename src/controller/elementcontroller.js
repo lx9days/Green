@@ -7,6 +7,7 @@ import RenderPolygon from '../model/renderpolygon';
 import RenderText from '../model/rendertext';
 import RenderMark from '../model/rendermark';
 import RenderLabel from '../model/renderlabel';
+import { autoFitView } from '../helper/util';
 /**
  * ElementController 主要用于创建Node Link并将style 挂载到 Node Link 上，然后计算 Node Link 的位置
  * 之后将Node Link 解析成为 RenderObject(canvas controller用来选的的对象);
@@ -172,15 +173,15 @@ export default class ElementController {
             const sourceOffset = {
                 x: sourceRenderBackground.style.backgroundWidth / 2 + sourceRenderBackground.style.borderWidth / 2,
                 y: sourceRenderBackground.style.backgroundHeight / 2 + sourceRenderBackground.style.borderWidth / 2,
-                width:sourceRenderBackground.style.width,
-                height:sourceRenderBackground.style.height,
+                width: sourceRenderBackground.style.width,
+                height: sourceRenderBackground.style.height,
                 borderWidth: sourceRenderBackground.style.borderWidth
             }
             const targetOffset = {
                 x: targetRenderBackground.style.backgroundWidth / 2 + targetRenderBackground.style.borderWidth / 2,
                 y: targetRenderBackground.style.backgroundHeight / 2 + targetRenderBackground.style.borderWidth / 2,
-                width:targetRenderBackground.style.width,
-                height:targetRenderBackground.style.height,
+                width: targetRenderBackground.style.width,
+                height: targetRenderBackground.style.height,
                 borderWidth: targetRenderBackground.style.borderWidth
             }
             const offset = { sourceOffset, targetOffset }
@@ -247,9 +248,14 @@ export default class ElementController {
         }
         this.renderObject.charSet = Array.from(this.characterSet);
         this.controller.canvasController.updateRenderObject(this.renderObject);
-        this.controller.eventController.subscribe("_updateEntityPosition", (nodeIds) => {
-            this.updateEntityPosition(nodeIds)
-        })
+        this.controller.eventController.subscribe("_updateEntityPosition", (nodeIds,layout) => {
+            this.updateEntityPosition(nodeIds,layout)
+        });
+        this.controller.eventController.subscribe("_fitView",(nodeIds=null)=>{
+            this.fitView(nodeIds);
+        });
+        this.controller.eventController.fire("_fitView",[null]);
+       
     }
 
     /**
@@ -348,8 +354,6 @@ export default class ElementController {
         const newLinkArray = this.links;
         this.controller.styleController.mountStyleToElement(newNodeArray, newLinkArray);
         this.updateEntityStyle();
-        this.controller.canvasController.updateRenderObject();
-        
     }
 
     addClassForNode(nodeIds, classes) {
@@ -362,9 +366,8 @@ export default class ElementController {
             })
         }
         this.controller.styleController.mountAllStyleToElement(this.getNodes(nodeIds), []);
-        this.updateEntityStyle()
-        this.controller.canvasController.updateRenderObject();
-        
+        this.updateEntityStyle({node:true,nodeIds})
+
     }
 
     removeClassForNode(nodeIds, classes) {
@@ -377,8 +380,7 @@ export default class ElementController {
             })
         }
         this.controller.styleController.mountAllStyleToElement(this.getNodes(nodeIds), []);
-        this.updateEntityStyle()
-        this.controller.canvasController.updateRenderObject();
+        this.updateEntityStyle({node:true,nodeIds})
     }
     addClassForLink(linkIds, classes) {
         if (linkIds && classes) {
@@ -390,8 +392,7 @@ export default class ElementController {
             })
         }
         this.controller.styleController.mountAllStyleToElement([], this.getLinks(linkIds));
-        this.updateEntityStyle()
-        this.controller.canvasController.updateRenderObject();
+        this.updateEntityStyle({link:true,linkIds})
     }
 
     removeClassForLink(linkIds, classes) {
@@ -404,8 +405,7 @@ export default class ElementController {
             })
         }
         this.controller.styleController.mountAllStyleToElement([], this.getLinks(linkIds));
-        this.updateEntityStyle()
-        this.controller.canvasController.updateRenderObject();
+        this.updateEntityStyle({link:true,linkIds})
     }
 
     /**
@@ -461,7 +461,7 @@ export default class ElementController {
         const selectedNodeArray = new Array();
 
         this.nodes.forEach((node) => {
-            if (node.getStatus() === 2) {
+            if (node.getStatus() === 2||node.getStatus===4) {
                 selectedNodeArray.push(node);
             }
         });
@@ -853,46 +853,134 @@ export default class ElementController {
         } else {
             this.controller.positionController.layout()(newNodeArray);
         }
+        
         //  this.updateEntityPosition(nodeIds);
     }
 
 
-    updateEntityStyle() {
-        const {
-            renderBackgrounds,
-            renderIcons,
-            renderLines,
-            renderText,
-            renderPolygon,
-            renderMark,
-            renderLabels
-        } = this.renderObject;
-        renderBackgrounds.forEach((RenderBackground) => {
-            RenderBackground.rebuild();
-        });
-        renderIcons.forEach((renderIcon) => {
-            renderIcon.rebuild();
-        });
-        renderLines.forEach((renderLine) => {
-            renderLine.rebuild();
-        });
-        renderText.forEach((reText) => {
-            reText.rebuild();
-        });
-        renderPolygon.forEach((rePolygon) => {
-            rePolygon.rebuild();
-        })
-        renderMark.forEach(mark => {
-            mark.rebuild();
-        });
-        renderLabels.forEach(label => {
-            label.rebuild();
-        });
+    updateEntityStyle(params = null) {
+        if (params === null) {
+            const {
+                renderBackgrounds,
+                renderIcons,
+                renderLines,
+                renderText,
+                renderPolygon,
+                renderMark,
+                renderLabels
+            } = this.renderObject;
+            renderBackgrounds.forEach((RenderBackground) => {
+                RenderBackground.rebuild();
+            });
+            renderIcons.forEach((renderIcon) => {
+                renderIcon.rebuild();
+            });
+            renderLines.forEach((renderLine) => {
+                renderLine.rebuild();
+            });
+            renderText.forEach((reText) => {
+                reText.rebuild();
+            });
+            renderPolygon.forEach((rePolygon) => {
+                rePolygon.rebuild();
+            })
+            renderMark.forEach(mark => {
+                mark.rebuild();
+            });
+            renderLabels.forEach(label => {
+                label.rebuild();
+            });
+           
+        }
+        if(params&&params.link){
+            if(params.linkIds&&params.linkIds.length>0){
+                params.linkIds.forEach(id=>{
+                    if(!this.linkRenderMap.has(id)){
+                        return;
+                    }
+                    const { polygonObjs, textObjs, lineObjs } = this.linkRenderMap.get(id);
+                    polygonObjs.forEach((polygonObj) => {
+                        polygonObj.rebuild();
+                    });
+                    textObjs.forEach((textObj) => {
+                        textObj.rebuild();
+                    });
+                    lineObjs.forEach((lineObj) => {
+                        lineObj.rebuild();
+                    })
+                })
+            }else{
+                for( const key of this.nodeRenderMap.keys()){
+                    const { polygonObjs, textObjs, lineObjs } = this.linkRenderMap.get(key);
+                    polygonObjs.forEach((polygonObj) => {
+                        polygonObj.rebuild();
+                    });
+                    textObjs.forEach((textObj) => {
+                        textObj.rebuild();
+                    });
+                    lineObjs.forEach((lineObj) => {
+                        lineObj.rebuild();
+                    })
+                }
+            }
+        }
+        if(params&&params.node){
+            if(params.nodeIds&&params.nodeIds.length>0){
+                params.nodeIds.forEach(id=>{
+                    if(!this.nodeRenderMap.has(id)){
+                        return;
+                    }
+                    const {iconObjs,backgroundObjs,textObjs,markObjs,labelObjs}=this.nodeRenderMap.get(id);
+                    iconObjs.forEach((iconObj) => {
+                        iconObj.rebuild();
+                    });
+                    backgroundObjs.forEach((borderObj) => {
+                        borderObj.rebuild();
+                    });
+                    textObjs.forEach((textObj) => {
+                        textObj.rebuild();
+                    });
+                    markObjs.forEach(mark => {
+                        mark.rebuild();
+                    })
+                    labelObjs.forEach(label => {
+                        label.rebuild();
+                    })
+                })
+            }else{
+                for( const key of this.nodeRenderMap.keys()){
+                    const {iconObjs,backgroundObjs,textObjs,markObjs,labelObjs}=this.nodeRenderMap.get(key);
+                    iconObjs.forEach((iconObj) => {
+                        iconObj.rebuild();
+                    });
+                    backgroundObjs.forEach((borderObj) => {
+                        borderObj.rebuild();
+                    });
+                    textObjs.forEach((textObj) => {
+                        textObj.rebuild();
+                    });
+                    markObjs.forEach(mark => {
+                        mark.rebuild();
+                    })
+                    labelObjs.forEach(label => {
+                        label.rebuild();
+                    })
+                }
+            }
+        }
         this.controller.canvasController.updateRenderObject();
+
+    }
+
+    fitView(nodeIds){
+        const viewSize=this.controller.canvasController.getDim();
+        const viewFitParams=autoFitView(this.getNodes(nodeIds),[viewSize.width,viewSize.height]);
+        this.controller.canvasController.fitView(viewFitParams);
+
     }
 
 
-    updateEntityPosition(nodeIds = null) {
+    updateEntityPosition(nodeIds = null,layout=false) {
         if (nodeIds) {
             const needUpdateLinks = [];
             nodeIds.forEach((id) => {
@@ -970,7 +1058,12 @@ export default class ElementController {
                 label.reLocation();
             });
         }
-        this.controller.canvasController.updateRenderObject();
+        if(!layout){
+            this.controller.canvasController.updateRenderObject();
+        }else{
+            this.fitView(nodeIds)
+        }
+        
     }
     updateGrpahAfterDimMidifed(oldDim, newDim) {
         const xFactor = newDim.width / oldDim.width;

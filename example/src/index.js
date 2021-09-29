@@ -9,14 +9,14 @@ axios.get('/src/auto_500.json').then((res) => {
     const links = res.data.links;
 
     nodes.forEach((node, i) => {
-        node.img = '/src/img1/a' + i + '.png';
+        node.img = '/src/img1/a' + 1 + '.png';
     });
     console.log("nodelength",nodes.length);
     console.log("linklength",links.length);
-
+   // const nodes=[]
     const data = {
-        nodes,
-        links
+        nodes:nodes,
+        links,
     }
     draw(data);
 })
@@ -136,8 +136,8 @@ function draw(rawData) {
 
     const netGraph = new NetGraph({
         canvasProps: {
-            containerWidth: 3000,
-            containerHeight: 2000,
+            containerWidth: 2500,
+            containerHeight: 1200,
             zoom: 0,
             container: 'container',
             maxZoom: 4,
@@ -147,7 +147,7 @@ function draw(rawData) {
             lineHighlightColor:'#ffd53f',
             lineHighlightOpacity:0.5
         },
-        layout: 'auto',
+        layout: 'square',
         data: data,
         style: [
             {
@@ -193,29 +193,6 @@ function draw(rawData) {
                 }
             },
             {
-                selector: 'node.fff',
-                style: {
-                    'width': 60,
-                    'height': 60,
-                    'background-width':70,
-                    'background-height':70,
-                    'url': (d) => d.data.img,
-                    'opacity': 1,
-                    'background-color': '#fff',
-                    'background-opacity': 1,
-                    'border-width': 0,
-                    'border-color': '#fff',
-                    'border-opacity': 1,
-                    'color': '#845624',
-                    'text-opacity': 1,
-                    'font-size': 16,
-                    'text': (d) => d.data.name,
-                    'shape': 'rect',
-                    'highlight-color':"#Fff0BC",
-                    'highlight-opacity':0.5
-                }
-            },
-            {
                 selector:"link.selected",
                 style: {
                     'line-color': '#fff',
@@ -223,7 +200,6 @@ function draw(rawData) {
             }
         ]
     });
-
     let timeout=null
 
     netGraph.addEventListener('canvasMouseDown',(e)=>{
@@ -233,13 +209,11 @@ function draw(rawData) {
     });
     netGraph.addEventListener('canvasMouseUp',(e)=>{
         if(timeout){
-            console.log("up")
             clearTimeout(timeout)
         }
     })
     netGraph.addEventListener('canvasMouseMove',(e)=>{
         if(timeout){
-            console.log("mouve")
             clearTimeout(timeout)
         }
     })
@@ -471,10 +445,22 @@ function draw(rawData) {
     });
 
     document.getElementById("treeLayout").addEventListener("click",()=>{
-
         netGraph.setNodeLayout('hierarchy',["2786b7455ff93ce7ad0fc4a4cfe5bd21","61c90e594b88372f8fa3217c150656f0"]);
-
-
+    });
+    document.getElementById("zoom").addEventListener("click",()=>{
+        let zoomNum=netGraph.getZoom();
+        console.log(zoomNum)
+        zoomNum+=0.4;
+        if(zoomNum>4){
+            zoomNum=-3;
+        }
+        netGraph.setZoom(zoomNum)
+    });
+    document.getElementById("scroll").addEventListener("click",()=>{
+        netGraph.scrollIntoView("3ded00b898c73c11a72558530859568d");
+    });
+    document.getElementById("fitView").addEventListener("click",()=>{
+        netGraph.fitView(null);
     })
 }
 //draw();

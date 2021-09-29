@@ -84,7 +84,6 @@ export default class NetGraph {
      * @returns 
      */
     getLinks(linkIds = null) {
-        console.log("get linksss")
         return this.controller.elementController.getLinks(linkIds);
     }
 
@@ -112,8 +111,13 @@ export default class NetGraph {
        return this.controller.elementController.pickObject(brushField);
     }
 
-    scrollIntoView(nodeIds = null) {
-
+    /**
+     * 
+     * @param {string} nodeId 
+     */
+    scrollIntoView(nodeId) {
+        const node=this.controller.elementController.getNodes([nodeId])[0];
+        this.controller.canvasController.scrollIntoView([node.x,node.y]);
     }
 
     /**
@@ -207,7 +211,7 @@ export default class NetGraph {
      * 获取当前的zoom level
      */
     getZoom() {
-        this.controller.canvasController.getZoom();
+       return this.controller.canvasController.getZoom();
 
     }
 
@@ -316,6 +320,10 @@ export default class NetGraph {
      */
     updateNodeStatus(nodeIds=null,status){
         this.controller.elementController.updateNodeStatus(nodeIds,status);
+    }
+
+    fitView(nodeIds){
+        this.controller.elementController.fitView(nodeIds);
     }
     
 }
