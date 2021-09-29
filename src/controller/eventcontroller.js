@@ -5,7 +5,7 @@ export default class EventController {
     }
     //触发事件
     fire(eventName,args){
-        // setTimeout(()=>{
+         setTimeout(()=>{
             if(!this.events.has(eventName)){
                 return false;
             }
@@ -15,7 +15,7 @@ export default class EventController {
                 ev.func(...args);
 
             });
-        // },100);
+         },50);
         return this;
     }
     //订阅事件

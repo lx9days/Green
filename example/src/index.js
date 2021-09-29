@@ -9,14 +9,14 @@ axios.get('/src/auto_500.json').then((res) => {
     const links = res.data.links;
 
     nodes.forEach((node, i) => {
-        node.img = '/src/img1/a' + i + '.png';
+        node.img = '/src/img1/a' + 1 + '.png';
     });
     console.log("nodelength",nodes.length);
     console.log("linklength",links.length);
-
+   // const nodes=[]
     const data = {
-        nodes,
-        links
+        nodes:nodes,
+        links,
     }
     draw(data);
 })
@@ -147,7 +147,7 @@ function draw(rawData) {
             lineHighlightColor:'#ffd53f',
             lineHighlightOpacity:0.5
         },
-        layout: 'auto',
+        layout: 'square',
         data: data,
         style: [
             {
@@ -457,7 +457,10 @@ function draw(rawData) {
         netGraph.setZoom(zoomNum)
     });
     document.getElementById("scroll").addEventListener("click",()=>{
-        netGraph.scrollIntoView("dd");
+        netGraph.scrollIntoView("3ded00b898c73c11a72558530859568d");
+    });
+    document.getElementById("fitView").addEventListener("click",()=>{
+        netGraph.fitView(null);
     })
 }
 //draw();

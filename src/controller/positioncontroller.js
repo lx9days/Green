@@ -54,7 +54,6 @@ export default class PositionController {
                 this.offset.x += (Math.random() - 0.5) * 200;
                 this.offset.y += (Math.random() - 0.5) * 200;
 
-                console.log(this.canvasCenter)
                 node1.x = ((this.canvasCenter.x - rowNum * 150 / 2) || 0) + this.offset.x;
                 node1.y = ((this.canvasCenter.y - rowNum * 150 / 2) || 0) + this.offset.y;
 
@@ -73,7 +72,7 @@ export default class PositionController {
                     row++;
                 }
             }
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds,true])
         }
     }
 
@@ -138,7 +137,7 @@ export default class PositionController {
                     node.y = baseY + Math.cos(outsideRoate * index) * outsideR;
                 });
             }
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds,true])
         }
 
     }
@@ -158,7 +157,7 @@ export default class PositionController {
                 no.x = no1.x + Math.sin(ahd * i) * radius;
                 no.y = no1.y - radius + Math.cos(ahd * i) * radius;
             }
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds,true])
         }
 
     }
@@ -200,7 +199,7 @@ export default class PositionController {
                 let heightNum = parseInt(nodeArray.length / rowNum);
                 no1y = no1y + heightNum * 150 + 300;
             });
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds,true])
         }
 
 
@@ -217,7 +216,7 @@ export default class PositionController {
                 node.x = no1.x + i * 150;
                 node.y = no1.y;
             });
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds,true])
         }
 
     }
@@ -233,7 +232,7 @@ export default class PositionController {
                 node.x = no1.x;
                 node.y = no1.y + i * 150;
             });
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds,true])
         }
 
     }
@@ -270,7 +269,7 @@ export default class PositionController {
             .force("link", d3.forceLink(linkST).distance(250))
             .force("center", d3.forceCenter(this.canvasCenter.x, this.canvasCenter.y))
         this.force.on("tick", () => {
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds,true])
         })
         let force = this.force;
         setTimeout(() => {
@@ -315,7 +314,6 @@ export default class PositionController {
         if (rootNodes.length > 0) {
 
             const data = BFSTree(rootNodes, this.netGraph.getNodes(), this.netGraph.getLinks())
-            console.log(data)
            
             let allIds=[];
             for (let i = 0; i < data.nodes.length; i++) {
@@ -362,7 +360,7 @@ export default class PositionController {
             }
 
             this.netGraph.updateNodeSta
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [allIds])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [allIds,true])
         }
     }
 

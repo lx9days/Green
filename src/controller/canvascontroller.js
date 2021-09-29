@@ -1,4 +1,4 @@
-import { Deck, COORDINATE_SYSTEM, OrthographicView, Viewport,FlyToInterpolator,LinearInterpolator } from '@deck.gl/core';
+import { Deck, COORDINATE_SYSTEM, OrthographicView, Viewport, FlyToInterpolator, LinearInterpolator } from '@deck.gl/core';
 import { ScatterplotLayer, IconLayer, LineLayer, TextLayer, PolygonLayer } from '@deck.gl/layers';
 import hexRgb from 'hex-rgb';
 import RoundedRectangleLayer from '../compositelayer/RoundedRectangleLayer';
@@ -42,7 +42,7 @@ export default class CanvasController {
             rotationOrbit: 0,
             zoom: this.props.zoom,
             transitionDuration: 10000,
-            transitionInterpolator: new LinearInterpolator({transitionProps: ['target', 'zoom']})
+            transitionInterpolator: new LinearInterpolator({ transitionProps: ['target', 'zoom'] })
         }
         this.props.viewState = initViewState;
         this.props.initTarget = initViewState.target;
@@ -115,7 +115,6 @@ export default class CanvasController {
                 viewState.target = oldViewState.target;
             }
         }
-        console.log(viewState)
         this.props.viewState = viewState;
         this.deck.setProps({ viewState });
     }
@@ -1051,19 +1050,32 @@ export default class CanvasController {
             height: this.props.containerHeight,
         }
     }
-    scrollIntoView() {
-        this.props.viewState.target = [100, 100, 0];
-        console.log(this.props.viewState);
 
+    fitView(params) {       
+        let viewState = {
+            target:[params.target[0],params.target[1],0],
+            rotationOrbit: this.props.viewState.rotationOrbit,
+            rotationX: this.props.viewState.rotationX,
+            zoom: params.zoom,
+        }
+        this.props.zoom = params.zoom;
+        this.viewState = viewState;
+        this.deck.setProps({ viewState: viewState });
+        this.updateRenderGraph();
+        ///this.deck.redraw(true)
+
+    }
+
+    scrollIntoView(target) {
+        this.props.viewState.target = [target[0], target[1], 0];
         const viewStat = {
             target: this.props.viewState.target,
             zoom: this.props.viewState.zoom,
             rotationOrbit: this.props.viewState.rotationOrbit,
             rotationX: this.props.viewState.rotationX,
             transitionDuration: 80000,
-            transitionInterpolator: new LinearInterpolator({transitionProps: ['target', 'zoom']})
+            transitionInterpolator: new LinearInterpolator({ transitionProps: ['target', 'zoom'] })
         }
-        viewStat.transitionDuration = 2000;
         this.deck.setProps({ viewState: viewStat })
         this.updateRenderGraph()
     }

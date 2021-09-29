@@ -7,6 +7,7 @@ import RenderPolygon from '../model/renderpolygon';
 import RenderText from '../model/rendertext';
 import RenderMark from '../model/rendermark';
 import RenderLabel from '../model/renderlabel';
+import { autoFitView } from '../helper/util';
 /**
  * ElementController 主要用于创建Node Link并将style 挂载到 Node Link 上，然后计算 Node Link 的位置
  * 之后将Node Link 解析成为 RenderObject(canvas controller用来选的的对象);
@@ -247,9 +248,14 @@ export default class ElementController {
         }
         this.renderObject.charSet = Array.from(this.characterSet);
         this.controller.canvasController.updateRenderObject(this.renderObject);
-        this.controller.eventController.subscribe("_updateEntityPosition", (nodeIds) => {
-            this.updateEntityPosition(nodeIds)
-        })
+        this.controller.eventController.subscribe("_updateEntityPosition", (nodeIds,layout) => {
+            this.updateEntityPosition(nodeIds,layout)
+        });
+        this.controller.eventController.subscribe("_fitView",(nodeIds=null)=>{
+            this.fitView(nodeIds);
+        });
+        this.controller.eventController.fire("_fitView",[null]);
+       
     }
 
     /**
@@ -847,6 +853,7 @@ export default class ElementController {
         } else {
             this.controller.positionController.layout()(newNodeArray);
         }
+        
         //  this.updateEntityPosition(nodeIds);
     }
 
@@ -965,8 +972,15 @@ export default class ElementController {
 
     }
 
+    fitView(nodeIds){
+        const viewSize=this.controller.canvasController.getDim();
+        const viewFitParams=autoFitView(this.getNodes(nodeIds),[viewSize.width,viewSize.height]);
+        this.controller.canvasController.fitView(viewFitParams);
 
-    updateEntityPosition(nodeIds = null) {
+    }
+
+
+    updateEntityPosition(nodeIds = null,layout=false) {
         if (nodeIds) {
             const needUpdateLinks = [];
             nodeIds.forEach((id) => {
@@ -1044,7 +1058,12 @@ export default class ElementController {
                 label.reLocation();
             });
         }
-        this.controller.canvasController.updateRenderObject();
+        if(!layout){
+            this.controller.canvasController.updateRenderObject();
+        }else{
+            this.fitView(nodeIds)
+        }
+        
     }
     updateGrpahAfterDimMidifed(oldDim, newDim) {
         const xFactor = newDim.width / oldDim.width;

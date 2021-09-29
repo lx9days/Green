@@ -196,7 +196,7 @@ function BFSTree(rootNodes, nodes, links) {
             neborTable.get(link.data.from).push(nodeMap.get(link.data.to));
         }
     })
-    console.log(neborTable);
+  
     for (let i = 0; i < rootNodes.length; i++) {
         const queue = [];
         if (!tagMap.get(rootNodes[i].id)) {
@@ -204,7 +204,7 @@ function BFSTree(rootNodes, nodes, links) {
             tagMap.set(rootNodes[i].id, true);
         }
         while (queue.length > 0) {
-            console.log(queue.length)
+           
             const fromNode = queue.shift();
             neborTable.get(fromNode.id).forEach(toNode => {
                 if (!tagMap.get(toNode.id)) {
@@ -222,7 +222,56 @@ function BFSTree(rootNodes, nodes, links) {
     }
 }
 
-function autoFitView(nodes){
-    
+function autoFitView(nodes, viewSize) {
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    let minX = Infinity;
+    let minY = Infinity;
+    for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].x > maxX) {
+            maxX = nodes[i].x;
+        }
+        if (nodes[i].x < minX) {
+            minX = nodes[i].x;
+        }
+        if (nodes[i].y > maxY) {
+            maxY = nodes[i].y;
+        }
+        if (nodes[i].y < minY) {
+            minY = nodes[i].y;
+        }
+    }
+    let originWidth = maxX - minX;
+    let originHeight = maxY - minY;
+    let curZoom = 0;
+    let target = [minX + originWidth / 2, minY + originHeight / 2];
+    let zoom = null
+    if (originWidth < viewSize[0] && originHeight < viewSize[1]) {
+
+        // if (originWidth / viewSize[0] < originHeight / viewSize[1]) {
+        //     zoom = viewSize[1] / originHeight;
+        // } else {
+        //     zoom = viewSize[0] / originWidth;
+        // }
+
+    } else if (originWidth < viewSize[0]) {
+        zoom = -(originHeight / viewSize[1] - 1);
+
+    } else if (originHeight < viewSize[1]) {
+        zoom = -(originWidth / viewSize[0] - 1);
+
+    } else {
+        if (originWidth / viewSize[0] > originHeight / viewSize[1]) {
+            zoom = -(originWidth / viewSize[0] - 1);
+        } else {
+            zoom = -(originHeight / viewSize[1] - 1);
+        }
+    }
+    zoom -= 0.18;
+    return {
+        target,
+        zoom: zoom
+    }
+
 }
-export { generatePolygon, getInteractionData, generateLinkLocation, isFunction, computePolygon, BFSTree}
+export { generatePolygon, getInteractionData, generateLinkLocation, isFunction, computePolygon, BFSTree, autoFitView }
