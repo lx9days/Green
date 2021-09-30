@@ -16,6 +16,7 @@
     - [setSelectNodes](#setselectnodes)
     - [brushNode](#brushnode)
     - [scrollIntoView](#scrollintoview)
+    - [fitView](#fitview)
     - [addStyle](#addstyle)
     - [updateStyle](#updatestyle)
     - [addClassForNode](#addclassfornode)
@@ -164,6 +165,9 @@ netGraph.replaceData({
 ### brushNode
  `brushNode(brushField)`,根据指定的`brushField`获取该范围内的所有`nodeIds`,`brushField`的格式为`{x:0,y:0,width:1,height:1}`
 ### scrollIntoView
+`scrollInfoView(nodeId)`,用户可以通过指定`nodeId`来将画布的中心移动到改node所在的位置上,用户不需要指定位置，NetGraph会自动获取结点所在的位置并对焦点进行移动
+### fitView
+`fitView(nodeIds)`,用户可以通过调用`fitView`来做到让展示的数据自动适应当前窗口的大小，`nodeIds`为`id`数组，如果`nodeId`为`null`那么将对画布上所有的数据进行窗口自适应，否则只对指定`ID`的数据进行自适应
 
 ### addStyle
 `addStyle(style)`传入`Array`类型的`style`格式为`[{selector:string,style:{...}}]`

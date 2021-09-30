@@ -255,21 +255,21 @@ function autoFitView(nodes, viewSize) {
         // }
 
     } else if (originWidth < viewSize[0]) {
-        zoom = -(originHeight / viewSize[1] - 1);
+        zoom = -Math.log2(originHeight / viewSize[1] - 1);
 
     } else if (originHeight < viewSize[1]) {
-        zoom = -(originWidth / viewSize[0] - 1);
+        zoom = -Math.log2(originWidth / viewSize[0]);
 
     } else {
         if (originWidth / viewSize[0] > originHeight / viewSize[1]) {
-            zoom = -(originWidth / viewSize[0] - 1);
+            zoom = -Math.log2(originWidth / viewSize[0]);
         } else {
-            zoom = -(originHeight / viewSize[1] - 1);
+            zoom = -Math.log2(originHeight / viewSize[1]);
         }
     }
-    if(zoom!=0){
-        zoom -= 0.18;
-    }
+    // if(zoom!=0){
+    //     zoom -= 0.18;
+    // }
     if(isNaN(target[0])){
         target[0]=viewSize[0]/2;
     }

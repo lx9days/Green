@@ -147,8 +147,8 @@ function draw(rawData) {
             lineHighlightColor:'#ffd53f',
             lineHighlightOpacity:0.5
         },
-        layout: 'auto',
-        data: {},
+        layout: 'square',
+        data: data,
         style: [
             {
                 selector: 'node',
