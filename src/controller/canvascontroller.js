@@ -41,8 +41,6 @@ export default class CanvasController {
             rotationX: 0,
             rotationOrbit: 0,
             zoom: this.props.zoom,
-            transitionDuration: 10000,
-            transitionInterpolator: new LinearInterpolator({ transitionProps: ['target', 'zoom'] })
         }
         this.props.viewState = initViewState;
         this.props.initTarget = initViewState.target;
@@ -85,13 +83,13 @@ export default class CanvasController {
                 y: 0,
                 width: '100%',
                 height: '100%',
-                maxZoom: this.props.maxZoom,
-                minZoom: this.props.minZoom,
+                maxZoom:50,
+                minZoom: -50,
                 controller: true,
             }),
             width: this.props.containerWidth,
             height: this.props.containerHeight,
-            initialViewState: initViewState,
+            viewState: initViewState,
             onViewStateChange: this.onViewStateChange,
             gl: this.gl,
             controller: true,
@@ -101,6 +99,15 @@ export default class CanvasController {
             pickingRadius: 6,
             //getCursor:({isDragging,isHovering}) => isHovering ? 'grabbing' : 'grab'
         });
+        this.props.viewState.height = this.props.containerHeight;
+        this.props.viewState.width = this.props.containerWidth;
+        this.props.viewState.maxRotationX = 90;
+        this.props.viewState.minRotationX = -90;
+        this.props.viewState.orbitAxis = "Z";
+        this.props.viewState.rotationOrbit = 0;
+        this.props.viewState.rotationX = 0;
+        this.props.viewState.minZoom = -Infinity;
+        this.props.viewState.maxZoom = Infinity;
     }
 
     _onViewStateChange({ viewState, oldViewState, interactionState }) {
@@ -109,12 +116,13 @@ export default class CanvasController {
         } else {
             if (interactionState.isZooming) {
                 this.props.zoom = viewState.zoom;
-
+                
                 this.updateRenderGraph();
             } else {
                 viewState.target = oldViewState.target;
             }
         }
+       
         this.props.viewState = viewState;
         this.deck.setProps({ viewState });
     }
@@ -404,6 +412,10 @@ export default class CanvasController {
             }
         })
         this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+
+
+
+        //this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight,viewState:viewState, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
     }
 
     renderLockNode() {
@@ -597,10 +609,11 @@ export default class CanvasController {
                 console.log(arguments)
             }
         })
+       
         this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
     }
     renderGraph() {
-       
+
 
         const zoom = this.props.zoom;
         const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels } = this.renderObject;
@@ -816,7 +829,7 @@ export default class CanvasController {
         const markLayer = new PolygonLayer({
             id: "mark-layer",
             opacity: 1,
-            data: renderMark,
+            data: renderMark.filter(()=>true),
             pickable: true,
             filled: true,
             stroked: false,
@@ -869,6 +882,7 @@ export default class CanvasController {
             }
         })
         this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+      
     }
 
     _nodeClickHandler(info, e) {
@@ -1052,32 +1066,37 @@ export default class CanvasController {
         }
     }
 
-    fitView(params) {       
-        let viewState = {
-            target:[params.target[0],params.target[1],0],
-            rotationOrbit: this.props.viewState.rotationOrbit,
-            rotationX: this.props.viewState.rotationX,
-            zoom: params.zoom,
+    fitView(params) {
+        
+        if(params.zoom<-5){
+            params.zoom=-4;
         }
-        this.props.zoom = params.zoom;
-        this.viewState = viewState;
-        this.deck.setProps({ viewState: viewState });
-        this.updateRenderGraph();
-        ///this.deck.redraw(true)
+        let isNeedUpdate=false;
+        if(params.zoom!==this.props.zoom){
+            isNeedUpdate=true;
+        }
+        this.props.viewState.target = [params.target[0], params.target[1], 0];
+        this.props.viewState.zoom =params.zoom;
+        this.props.zoom=params.zoom;
+        let viewStat = JSON.parse(JSON.stringify(this.props.viewState));
+        viewStat.minZoom=-1000;
+        viewStat.maxZoom=1000+Math.random();
+        this.props.viewState=viewStat;
+        this.deck.setProps({ viewState: viewStat });
+        if(isNeedUpdate){
+            this.updateRenderGraph();
+        }
+        
+
 
     }
 
     scrollIntoView(target) {
+
         this.props.viewState.target = [target[0], target[1], 0];
-        const viewStat = {
-            target: this.props.viewState.target,
-            zoom: this.props.viewState.zoom,
-            rotationOrbit: this.props.viewState.rotationOrbit,
-            rotationX: this.props.viewState.rotationX,
-            transitionDuration: 80000,
-            transitionInterpolator: new LinearInterpolator({ transitionProps: ['target', 'zoom'] })
-        }
+        const viewStat = JSON.parse(JSON.stringify(this.props.viewState))
+        viewStat.minZoom=-Infinity;
+        viewStat.maxZoom=Infinity;
         this.deck.setProps({ viewState: viewStat })
-        this.updateRenderGraph()
     }
 }
