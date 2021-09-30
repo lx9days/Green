@@ -267,7 +267,15 @@ function autoFitView(nodes, viewSize) {
             zoom = -(originHeight / viewSize[1] - 1);
         }
     }
-    zoom -= 0.18;
+    if(zoom!=0){
+        zoom -= 0.18;
+    }
+    if(isNaN(target[0])){
+        target[0]=viewSize[0]/2;
+    }
+    if(isNaN(target[1])){
+        target[1]=viewSize[1]/2;
+    }
     return {
         target,
         zoom: zoom
