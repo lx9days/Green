@@ -241,8 +241,8 @@ function autoFitView(nodes, viewSize) {
             minY = nodes[i].y;
         }
     }
-    let originWidth = maxX - minX;
-    let originHeight = maxY - minY;
+    let originWidth = (maxX - minX)+20;
+    let originHeight = (maxY - minY)+20;
     let curZoom = 0;
     let target = [minX + originWidth / 2, minY + originHeight / 2];
     let zoom = null
@@ -253,9 +253,10 @@ function autoFitView(nodes, viewSize) {
         // } else {
         //     zoom = viewSize[0] / originWidth;
         // }
+        zoom=0;
 
     } else if (originWidth < viewSize[0]) {
-        zoom = -Math.log2(originHeight / viewSize[1] - 1);
+        zoom = -Math.log2(originHeight / viewSize[1] );
 
     } else if (originHeight < viewSize[1]) {
         zoom = -Math.log2(originWidth / viewSize[0]);
@@ -276,6 +277,7 @@ function autoFitView(nodes, viewSize) {
     if(isNaN(target[1])){
         target[1]=viewSize[1]/2;
     }
+    console.log(viewSize,{target,zoom})
     return {
         target,
         zoom: zoom
