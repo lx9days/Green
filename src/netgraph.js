@@ -42,7 +42,6 @@ export default class NetGraph {
     addData(data) {
         this.controller.dataController.addData(data);
         this.controller.elementController.parseNewData('add');
-
     }
 
     /**
