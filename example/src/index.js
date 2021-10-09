@@ -147,7 +147,7 @@ function draw(rawData) {
             lineHighlightColor:'#ffd53f',
             lineHighlightOpacity:0.5
         },
-        layout: 'square',
+        layout: 'auto',
         data: data,
         style: [
             {
@@ -264,7 +264,7 @@ function draw(rawData) {
     })
 
     netGraph.addEventListener('brush', (nodeIds) => {
-        netGraph.updateNodeStatus(nodeIds,UNSELECTED)
+        netGraph.updateNodeStatus(nodeIds,SELECTED)
     });
 
 
@@ -317,7 +317,7 @@ function draw(rawData) {
         selectedNodes.map((v, i) => {
             selectedNodeIds.push(v.getId());
         });
-        netGraph.setNodeLayout('auto');
+        netGraph.setNodeLayout('square');
     });
 
     document.getElementById('brush').addEventListener('click', () => {
@@ -326,11 +326,9 @@ function draw(rawData) {
         
     });
 
+    
+
     document.getElementById('groupDrag').addEventListener('click', () => {
-        // netGraph.replaceData({
-        //     nodes:null,
-        //     links:null
-        // });
         netGraph.addData({
             links: [
                 {
@@ -348,8 +346,6 @@ function draw(rawData) {
 
             ]
         })
-        //console.log(netGraph.getNodes())
-        //netGraph.setGroupDrag(true);
     });
     document.getElementById('addClass').addEventListener('click', () => {
         netGraph.addClassForNode(['a005'], ['fff']);
@@ -370,10 +366,10 @@ function draw(rawData) {
     })
 
     document.getElementById("lockNode").addEventListener("click",()=>{
-        netGraph.lockNodes(["a002"])
+        netGraph.lockNodes(["3ded00b898c73c11a72558530859568d"])
     })
     document.getElementById("unlockNode").addEventListener("click",()=>{
-        netGraph.unlockNodes(["a002"])
+        netGraph.unlockNodes(["3ded00b898c73c11a72558530859568d"])
     });
     document.getElementById("alterStatus").addEventListener("click",()=>{
         const selectedNodes = netGraph.getSelectedNodes();
@@ -381,7 +377,7 @@ function draw(rawData) {
         selectedNodes.map((v, i) => {
             selectedNodeIds.push(v.getId());
         });
-        netGraph.updateNodeStatus(selectedNodeIds,HIGHLIGHT)
+        netGraph.updateNodeStatus(selectedNodeIds,UNSELECTED)
     });
     document.getElementById("replaceData").addEventListener("click",()=>{
 

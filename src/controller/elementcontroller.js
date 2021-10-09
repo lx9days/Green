@@ -1061,7 +1061,6 @@ export default class ElementController {
         if(!layout){
             this.controller.canvasController.updateRenderObject();
         }else{
-            console.log("fit")
             this.fitView(nodeIds)
         }
         

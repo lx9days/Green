@@ -277,7 +277,6 @@ function autoFitView(nodes, viewSize) {
     if(isNaN(target[1])){
         target[1]=viewSize[1]/2;
     }
-    console.log(viewSize,{target,zoom})
     return {
         target,
         zoom: zoom
