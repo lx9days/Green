@@ -205,7 +205,6 @@ export default class NetGraph {
     hideNodes(nodeIds) {
 
     }
-
     /**
      * 获取当前的zoom level
      */
@@ -213,7 +212,6 @@ export default class NetGraph {
        return this.controller.canvasController.getZoom();
 
     }
-
     /**
      * 设置zoom level
      * @param {number} zoom 
@@ -263,7 +261,6 @@ export default class NetGraph {
     showBrushArea(){
         this.controller.canvasController.showBrushArea();
     }
-
     /**
      * 将所有数据导出为json格式
      * @returns string
@@ -271,11 +268,9 @@ export default class NetGraph {
     exportData() {
         return JSON.stringify(this.props.data);
     }
-
     exportDataAsString() {
         return JSON.stringify(this.props.data).toString();
     }
-
     /**
      * 将canvas 转换为base64 
      * 
@@ -283,7 +278,6 @@ export default class NetGraph {
     exportCanvasAsBase64(){
        return this.controller.canvasController.exportCanvasAsBase64()
     }
-
     /**
      * 
      * @param {Oject} size Canvas Width
@@ -293,9 +287,7 @@ export default class NetGraph {
         const oldDim=this.controller.canvasController.getDim();
         this.controller.canvasController.updateDim(size);
         this.controller.elementController.updateGrpahAfterDimMidifed(oldDim,size);
-        
     }
-
     /**
      * 锁定结点
      * @param {Array<string>} nodeIds 锁定结点的id
@@ -303,7 +295,6 @@ export default class NetGraph {
     lockNodes(nodeIds){
         this.controller.elementController.lockNodes(nodeIds)
     }
-
     /**
      * 解锁结点
      * @param {Array<string>} nodesIds 要解锁的结点的id
@@ -311,7 +302,6 @@ export default class NetGraph {
     unlockNodes(nodeIds){
         this.controller.elementController.unlockNodes(nodeIds)
     }
-
     /**
      * 
      * @param {Array<string>} nodeIds 
@@ -320,7 +310,6 @@ export default class NetGraph {
     updateNodeStatus(nodeIds=null,status){
         this.controller.elementController.updateNodeStatus(nodeIds,status);
     }
-
     fitView(nodeIds){
         this.controller.elementController.fitView(nodeIds);
     }
