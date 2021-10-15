@@ -276,7 +276,7 @@ export default class PositionController {
             if (force) {
                 force.stop()
             }
-        }, 2500)
+        }, 5000)
     }
 
     jutuan(nodes) {

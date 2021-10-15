@@ -9,7 +9,7 @@ axios.get('/src/auto_500.json').then((res) => {
     const links = res.data.links;
 
     nodes.forEach((node, i) => {
-        node.img = '/src/img1/a' + 1 + '.png';
+        node.img = '/src/img1/a' + i + '.png';
     });
     console.log("nodelength",nodes.length);
     console.log("linklength",links.length);
@@ -147,7 +147,7 @@ function draw(rawData) {
             lineHighlightColor:'#ffd53f',
             lineHighlightOpacity:0.5
         },
-        layout: 'auto',
+        layout: 'square',
         data: data,
         style: [
             {
@@ -193,6 +193,13 @@ function draw(rawData) {
                 }
             },
             {
+                selector:'node.fff',
+                style:{
+                    'background-color': '#fff',
+                }
+            }
+            ,
+            {
                 selector:"link.selected",
                 style: {
                     'line-color': '#fff',
@@ -220,7 +227,8 @@ function draw(rawData) {
 
 
     netGraph.addEventListener('nodeClick', (object, e) => {
-        console.log("click")
+        console.log(object.object.id,e);
+        netGraph.updateNodeStatus([object.object.id],SELECTED)
         //netGraph.replaceData();
     });
     netGraph.addEventListener('nodeClickWithCtrl', (info, e) => {
@@ -286,7 +294,7 @@ function draw(rawData) {
 
     document.getElementById('addStyle').addEventListener('click', () => {
         netGraph.addStyle([{
-            selector: 'node#a005',
+            selector: 'node#603b971bdf7a398786544ded42be0348',
             style: {
                 'width': 60,
                 'height': 60,
@@ -326,30 +334,28 @@ function draw(rawData) {
         
     });
 
-    
-
+    // new NetworkChart({
+    //     ...
+    //     events:{
+    //       onClick: function(event){...},
+    //       onSelectionChange: function(event){...}
+    //     },
+    //     ...
+    //   });
+    let isGroup=false;
     document.getElementById('groupDrag').addEventListener('click', () => {
-        netGraph.addData({
-            links: [
-                {
-                    id: 'l01',
-                    type: '但是',
-                    from: 'a001',
-                    to: 'a003',
-                },
-                {
-                    id: 'l02',
-                    type: '阿达',
-                    from: 'a004',
-                    to: 'a002',
-                }
-
-            ]
-        })
+       
+        netGraph.setGroupDrag(!isGroup)
+        isGroup=!isGroup
     });
+
+
     document.getElementById('addClass').addEventListener('click', () => {
-        netGraph.addClassForNode(['a005'], ['fff']);
+        netGraph.addClassForNode(['5c2f3ba4d6943955a3b823e8518babd4'], ['fff']);
+       // netGraph.updateStyle();
     })
+
+
     document.getElementById('updateLinkStyle').addEventListener('click',()=>{
 
        
@@ -372,7 +378,7 @@ function draw(rawData) {
         netGraph.unlockNodes(["3ded00b898c73c11a72558530859568d"])
     });
     document.getElementById("alterStatus").addEventListener("click",()=>{
-        const selectedNodes = netGraph.getSelectedNodes();
+        const selectedNodes = netGraph.getNodes();
         const selectedNodeIds = new Array();
         selectedNodes.map((v, i) => {
             selectedNodeIds.push(v.getId());
@@ -457,6 +463,19 @@ function draw(rawData) {
     });
     document.getElementById("fitView").addEventListener("click",()=>{
         netGraph.fitView(null);
+    })
+
+    document.getElementById("auto").addEventListener("click",()=>{
+        const selectedNodes = netGraph.getSelectedNodes();
+        const selectedNodeIds = new Array();
+        selectedNodes.map((v, i) => {
+            selectedNodeIds.push(v.getId());
+        });
+        netGraph.setNodeLayout('auto');
+    });
+    document.getElementById("addBubble").addEventListener("click",()=>{
+        const nodeIds=netGraph.getNodes().map(v=>v.id);
+        netGraph.addBubbleSet([nodeIds],["#fff"],["one"]);
     })
 }
 //draw();

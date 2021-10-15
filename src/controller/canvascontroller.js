@@ -1,5 +1,5 @@
 import { Deck, COORDINATE_SYSTEM, OrthographicView, Viewport, FlyToInterpolator, LinearInterpolator } from '@deck.gl/core';
-import { ScatterplotLayer, IconLayer, LineLayer, TextLayer, PolygonLayer } from '@deck.gl/layers';
+import { ScatterplotLayer, IconLayer, LineLayer, TextLayer, PolygonLayer, SolidPolygonLayer } from '@deck.gl/layers';
 import hexRgb from 'hex-rgb';
 import RoundedRectangleLayer from '../compositelayer/RoundedRectangleLayer';
 import BrushCanvas from '../helper/brushCanvas';
@@ -83,7 +83,7 @@ export default class CanvasController {
                 y: 0,
                 width: '100%',
                 height: '100%',
-                maxZoom:50,
+                maxZoom: 50,
                 minZoom: -50,
                 controller: true,
             }),
@@ -116,13 +116,13 @@ export default class CanvasController {
         } else {
             if (interactionState.isZooming) {
                 this.props.zoom = viewState.zoom;
-                
+
                 this.updateRenderGraph();
             } else {
                 viewState.target = oldViewState.target;
             }
         }
-       
+
         this.props.viewState = viewState;
         this.deck.setProps({ viewState });
     }
@@ -151,15 +151,27 @@ export default class CanvasController {
 
     updateRenderGraph() {
         const zoom = this.props.zoom;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels } = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderBubble } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
+        let bubbleLayer = null
+        if (renderBubble.length > 0) {
+            bubbleLayer = new SolidPolygonLayer({
+                id: 'bubble-layer',
+                data: renderBubble,
+                positionFormat: 'XY',
+                getPolygon: d => d.polygon,
+                getFillColor: [0, 100, 60, 160]
+            });
+            console.log("renderBubble")
+        }
         const lineLayer = new LineLayer({
             id: 'line-layer',
             data: renderLines,
             autoHighlight: true,
             highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
             pickable: true,
+            positionFormat: 'XY',
             getWidth: d => d.style.lineWidth,
             getSourcePosition: d => d.sourcePosition,
             getTargetPosition: d => d.targetPosition,
@@ -177,6 +189,7 @@ export default class CanvasController {
             pickable: true,
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
+            positionFormat: 'XY',
             getIcon: d => ({
                 url: d.url,
                 width: d.style.iconHeight,
@@ -410,8 +423,14 @@ export default class CanvasController {
                 },
                 getSize: d => d.style.iconSize * (2 ** zoom),
             }
-        })
-        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+        });
+        if(renderBubble.length>0){
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer,lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+            console.log("renderBubblessss")
+        }else{
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+        }
+        
 
 
 
@@ -609,7 +628,7 @@ export default class CanvasController {
                 console.log(arguments)
             }
         })
-       
+
         this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
     }
     renderGraph() {
@@ -829,7 +848,7 @@ export default class CanvasController {
         const markLayer = new PolygonLayer({
             id: "mark-layer",
             opacity: 1,
-            data: renderMark.filter(()=>true),
+            data: renderMark.filter(() => true),
             pickable: true,
             filled: true,
             stroked: false,
@@ -882,7 +901,7 @@ export default class CanvasController {
             }
         })
         this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
-      
+
     }
 
     _nodeClickHandler(info, e) {
@@ -914,7 +933,11 @@ export default class CanvasController {
 
 
     _nodeDragingHandler(info, e) {
+        if (info.object.origionElement.isLocked) {
+            return true
+        }
         if (!this.dragDoune) {
+
             this.dragDoune = true;
             this.elementController.updateNodeLocation([info.object.id], { x: parseFloat((e.offsetCenter.x - info.object.style.backgroundWidth / 2) * (2 ** -this.props.zoom) + (this.props.viewState.target[0] - this.props.initTarget[0] * (2 ** -this.props.zoom))), y: parseFloat((e.offsetCenter.y - info.object.style.backgroundHeight / 2) * (2 ** -this.props.zoom) + (this.props.viewState.target[1] - this.props.initTarget[1] * (2 ** -this.props.zoom))) }, this.groupDrag);
 
@@ -1067,26 +1090,26 @@ export default class CanvasController {
     }
 
     fitView(params) {
-        
-        if(params.zoom<-5){
-            params.zoom=-4;
+
+        if (params.zoom < -5) {
+            params.zoom = -4;
         }
-        let isNeedUpdate=false;
-        if(params.zoom!==this.props.zoom){
-            isNeedUpdate=true;
+        let isNeedUpdate = false;
+        if (params.zoom !== this.props.zoom) {
+            isNeedUpdate = true;
         }
         this.props.viewState.target = [params.target[0], params.target[1], 0];
-        this.props.viewState.zoom =params.zoom;
-        this.props.zoom=params.zoom;
+        this.props.viewState.zoom = params.zoom;
+        this.props.zoom = params.zoom;
         let viewStat = JSON.parse(JSON.stringify(this.props.viewState));
-        viewStat.minZoom=-1000;
-        viewStat.maxZoom=1000+Math.random();
-        this.props.viewState=viewStat;
+        viewStat.minZoom = -1000;
+        viewStat.maxZoom = 1000 + Math.random();
+        this.props.viewState = viewStat;
         this.deck.setProps({ viewState: viewStat });
-        if(isNeedUpdate){
+        if (isNeedUpdate) {
             this.updateRenderGraph();
         }
-        
+
 
 
     }
@@ -1095,8 +1118,8 @@ export default class CanvasController {
 
         this.props.viewState.target = [target[0], target[1], 0];
         const viewStat = JSON.parse(JSON.stringify(this.props.viewState))
-        viewStat.minZoom=-Infinity;
-        viewStat.maxZoom=Infinity;
+        viewStat.minZoom = -Infinity;
+        viewStat.maxZoom = Infinity;
         this.deck.setProps({ viewState: viewStat })
     }
 }

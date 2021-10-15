@@ -310,8 +310,20 @@ export default class NetGraph {
     updateNodeStatus(nodeIds=null,status){
         this.controller.elementController.updateNodeStatus(nodeIds,status);
     }
+
+    /**
+     * 自适应view
+     * @param {Array<string>} nodeIds 
+     */
     fitView(nodeIds){
         this.controller.elementController.fitView(nodeIds);
     }
+
+    addBubbleSet(nodeIdArrays,colors){
+
+        this.controller.elementController.addBubbleSet(nodeIdArrays,colors);
+    }
+
+    
     
 }

@@ -35,8 +35,11 @@
   "dependencies": {
     "@deck.gl/core": "^8.3.11",
     "@deck.gl/layers": "^8.3.8",
+    "buffer": "^6.0.3",
     "d3": "^6.3.1",
     "d3-force-sampled": "^1.0.0",
-    "hex-rgb": "^4.2.0"
+    "hex-rgb": "^4.2.0",
+    "svg-mesh-3d": "^1.1.0",
+    "uuid": "^8.3.2"
   }
 }

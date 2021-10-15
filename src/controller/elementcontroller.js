@@ -8,6 +8,10 @@ import RenderText from '../model/rendertext';
 import RenderMark from '../model/rendermark';
 import RenderLabel from '../model/renderlabel';
 import { autoFitView } from '../helper/util';
+import Bubble from '../model/bubble';
+import { v4 as uuidv4 } from 'uuid';
+import RenderBubble from '../model/renderBubble'
+
 /**
  * ElementController 主要用于创建Node Link并将style 挂载到 Node Link 上，然后计算 Node Link 的位置
  * 之后将Node Link 解析成为 RenderObject(canvas controller用来选的的对象);
@@ -78,6 +82,10 @@ export default class ElementController {
     }
     //初始化数据结构
     _init(controller) {
+        this.bubbleInfo={
+            hasBubble:false,
+            bubbles:new Map(),
+        }
         this.nodes = new Array();
         this.links = new Array();
         this.controller = controller;
@@ -96,6 +104,7 @@ export default class ElementController {
             renderText: new Array(),
             renderPolygon: new Array(),
             renderMark: new Array(),
+            renderBubble:new Array(),
             charSet: null
         }
     }
@@ -112,6 +121,7 @@ export default class ElementController {
                 renderText: new Array(),
                 renderPolygon: new Array(),
                 renderMark: new Array(),
+                renderBubble:new Array(),
                 charSet: null
             }
             nodeArray.forEach((node) => {
@@ -214,6 +224,7 @@ export default class ElementController {
             renderText: new Array(),
             renderPolygon: new Array(),
             renderMark: new Array(),
+            renderBubble:new Array(),
             charSet: null
         }
         for (const nodeIdKey of this.nodeRenderMap.keys()) {
@@ -248,6 +259,10 @@ export default class ElementController {
         }
         this.renderObject.charSet = Array.from(this.characterSet);
         this.controller.canvasController.updateRenderObject(this.renderObject);
+
+        
+
+
         this.controller.eventController.subscribe("_updateEntityPosition", (nodeIds,layout) => {
             this.updateEntityPosition(nodeIds,layout)
         });
@@ -1061,6 +1076,8 @@ export default class ElementController {
         if(!layout){
             this.controller.canvasController.updateRenderObject();
         }else{
+            //修改
+            this.controller.canvasController.updateRenderObject();
             this.fitView(nodeIds)
         }
         
@@ -1125,6 +1142,54 @@ export default class ElementController {
 
             this.controller.canvasController.updateLockNode(this.renderObject);
         }
+    }
+
+    addBubbleSet(nodeIdArrays,colors,ids=null){
+        if(ids){
+            if(Array.isArray(ids)){
+                if(ids.length<nodeIdArrays.length){
+                    for(let i=ids.length;i<nodeIdArrays.length;i++){
+                        ids.push(uuidv4());
+                    }
+                }
+            }else{
+                throw new Error("invalid argument")
+            }
+            
+        }else{
+            ids=[];
+            for(let i=0;i<nodeIdArrays.length;i++){
+                ids.push(uuidv4())
+            }
+        }
+        if(!Array.isArray(nodeIdArrays)||!Array.isArray(colors)){
+            throw new Error('invalid argument')
+        }
+        if(nodeIdArrays.length>colors.length){
+            for(let i=colors.length;i<nodeIdArrays.length;i++){
+                colors.push("#fff");
+            }
+        }
+        nodeIdArrays.forEach((nodeIds,i)=>{
+            const backgrounds=[];
+            nodeIds.forEach(id=>{
+                const {backgroundObjs}=this.nodeRenderMap.get(id);
+                if(backgroundObjs.length===1){
+                    backgrounds.push(backgroundObjs[0]);
+                }else if(backgroundObjs.length>1){
+                    backgroundObjs.forEach(bg=>{
+                        backgrounds.push(bg);
+                    })
+                }
+            })
+            const bubble=new Bubble(this.getNodes(nodeIds),backgrounds,colors[i]);
+            this.bubbleInfo.bubbles.set(ids[i],bubble);
+            bubble.setIndex(this.renderObject.renderBubble.length);
+            this.renderObject.renderBubble=[...this.renderObject.renderBubble,...bubble.getRenderBubbles()];
+        });
+        console.log(this.renderObject);
+        console.log(this.bubbleInfo)
+        this.controller.canvasController.updateRenderObject();
     }
 
 }
