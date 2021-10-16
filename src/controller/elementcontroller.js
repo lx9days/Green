@@ -10,7 +10,6 @@ import RenderLabel from '../model/renderlabel';
 import { autoFitView } from '../helper/util';
 import Bubble from '../model/bubble';
 import { v4 as uuidv4 } from 'uuid';
-import RenderBubble from '../model/renderBubble'
 
 /**
  * ElementController 主要用于创建Node Link并将style 挂载到 Node Link 上，然后计算 Node Link 的位置
@@ -82,9 +81,9 @@ export default class ElementController {
     }
     //初始化数据结构
     _init(controller) {
-        this.bubbleInfo={
-            hasBubble:false,
-            bubbles:new Map(),
+        this.bubbleInfo = {
+            hasBubble: false,
+            bubbles: new Map(),
         }
         this.nodes = new Array();
         this.links = new Array();
@@ -104,7 +103,7 @@ export default class ElementController {
             renderText: new Array(),
             renderPolygon: new Array(),
             renderMark: new Array(),
-            renderBubble:new Array(),
+            renderBubble: new Array(),
             charSet: null
         }
     }
@@ -121,7 +120,7 @@ export default class ElementController {
                 renderText: new Array(),
                 renderPolygon: new Array(),
                 renderMark: new Array(),
-                renderBubble:new Array(),
+                renderBubble: new Array(),
                 charSet: null
             }
             nodeArray.forEach((node) => {
@@ -224,7 +223,7 @@ export default class ElementController {
             renderText: new Array(),
             renderPolygon: new Array(),
             renderMark: new Array(),
-            renderBubble:new Array(),
+            renderBubble: new Array(),
             charSet: null
         }
         for (const nodeIdKey of this.nodeRenderMap.keys()) {
@@ -260,17 +259,17 @@ export default class ElementController {
         this.renderObject.charSet = Array.from(this.characterSet);
         this.controller.canvasController.updateRenderObject(this.renderObject);
 
-        
 
 
-        this.controller.eventController.subscribe("_updateEntityPosition", (nodeIds,layout) => {
-            this.updateEntityPosition(nodeIds,layout)
+
+        this.controller.eventController.subscribe("_updateEntityPosition", (nodeIds, layout) => {
+            this.updateEntityPosition(nodeIds, layout)
         });
-        this.controller.eventController.subscribe("_fitView",(nodeIds=null)=>{
+        this.controller.eventController.subscribe("_fitView", (nodeIds = null) => {
             this.fitView(nodeIds);
         });
-        this.controller.eventController.fire("_fitView",[null]);
-       
+        this.controller.eventController.fire("_fitView", [null]);
+
     }
 
     /**
@@ -381,7 +380,7 @@ export default class ElementController {
             })
         }
         this.controller.styleController.mountAllStyleToElement(this.getNodes(nodeIds), []);
-        this.updateEntityStyle({node:true,nodeIds})
+        this.updateEntityStyle({ node: true, nodeIds })
 
     }
 
@@ -395,7 +394,7 @@ export default class ElementController {
             })
         }
         this.controller.styleController.mountAllStyleToElement(this.getNodes(nodeIds), []);
-        this.updateEntityStyle({node:true,nodeIds})
+        this.updateEntityStyle({ node: true, nodeIds })
     }
     addClassForLink(linkIds, classes) {
         if (linkIds && classes) {
@@ -407,7 +406,7 @@ export default class ElementController {
             })
         }
         this.controller.styleController.mountAllStyleToElement([], this.getLinks(linkIds));
-        this.updateEntityStyle({link:true,linkIds})
+        this.updateEntityStyle({ link: true, linkIds })
     }
 
     removeClassForLink(linkIds, classes) {
@@ -420,7 +419,7 @@ export default class ElementController {
             })
         }
         this.controller.styleController.mountAllStyleToElement([], this.getLinks(linkIds));
-        this.updateEntityStyle({link:true,linkIds})
+        this.updateEntityStyle({ link: true, linkIds })
     }
 
     /**
@@ -476,7 +475,7 @@ export default class ElementController {
         const selectedNodeArray = new Array();
 
         this.nodes.forEach((node) => {
-            if (node.getStatus() === 2||node.getStatus===4) {
+            if (node.getStatus() === 2 || node.getStatus === 4) {
                 selectedNodeArray.push(node);
             }
         });
@@ -868,7 +867,7 @@ export default class ElementController {
         } else {
             this.controller.positionController.layout()(newNodeArray);
         }
-        
+
         //  this.updateEntityPosition(nodeIds);
     }
 
@@ -905,12 +904,12 @@ export default class ElementController {
             renderLabels.forEach(label => {
                 label.rebuild();
             });
-           
+
         }
-        if(params&&params.link){
-            if(params.linkIds&&params.linkIds.length>0){
-                params.linkIds.forEach(id=>{
-                    if(!this.linkRenderMap.has(id)){
+        if (params && params.link) {
+            if (params.linkIds && params.linkIds.length > 0) {
+                params.linkIds.forEach(id => {
+                    if (!this.linkRenderMap.has(id)) {
                         return;
                     }
                     const { polygonObjs, textObjs, lineObjs } = this.linkRenderMap.get(id);
@@ -924,8 +923,8 @@ export default class ElementController {
                         lineObj.rebuild();
                     })
                 })
-            }else{
-                for( const key of this.nodeRenderMap.keys()){
+            } else {
+                for (const key of this.nodeRenderMap.keys()) {
                     const { polygonObjs, textObjs, lineObjs } = this.linkRenderMap.get(key);
                     polygonObjs.forEach((polygonObj) => {
                         polygonObj.rebuild();
@@ -939,13 +938,13 @@ export default class ElementController {
                 }
             }
         }
-        if(params&&params.node){
-            if(params.nodeIds&&params.nodeIds.length>0){
-                params.nodeIds.forEach(id=>{
-                    if(!this.nodeRenderMap.has(id)){
+        if (params && params.node) {
+            if (params.nodeIds && params.nodeIds.length > 0) {
+                params.nodeIds.forEach(id => {
+                    if (!this.nodeRenderMap.has(id)) {
                         return;
                     }
-                    const {iconObjs,backgroundObjs,textObjs,markObjs,labelObjs}=this.nodeRenderMap.get(id);
+                    const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs } = this.nodeRenderMap.get(id);
                     iconObjs.forEach((iconObj) => {
                         iconObj.rebuild();
                     });
@@ -962,9 +961,9 @@ export default class ElementController {
                         label.rebuild();
                     })
                 })
-            }else{
-                for( const key of this.nodeRenderMap.keys()){
-                    const {iconObjs,backgroundObjs,textObjs,markObjs,labelObjs}=this.nodeRenderMap.get(key);
+            } else {
+                for (const key of this.nodeRenderMap.keys()) {
+                    const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs } = this.nodeRenderMap.get(key);
                     iconObjs.forEach((iconObj) => {
                         iconObj.rebuild();
                     });
@@ -987,15 +986,15 @@ export default class ElementController {
 
     }
 
-    fitView(nodeIds){
-        const viewSize=this.controller.canvasController.getDim();
-        const viewFitParams=autoFitView(this.getNodes(nodeIds),[viewSize.width,viewSize.height]);
+    fitView(nodeIds) {
+        const viewSize = this.controller.canvasController.getDim();
+        const viewFitParams = autoFitView(this.getNodes(nodeIds), [viewSize.width, viewSize.height]);
         this.controller.canvasController.fitView(viewFitParams);
 
     }
 
 
-    updateEntityPosition(nodeIds = null,layout=false) {
+    updateEntityPosition(nodeIds = null, layout = false) {
         if (nodeIds) {
             const needUpdateLinks = [];
             nodeIds.forEach((id) => {
@@ -1073,14 +1072,16 @@ export default class ElementController {
                 label.reLocation();
             });
         }
-        if(!layout){
+        this.rebuildBubble()
+        
+        if (!layout) {
             this.controller.canvasController.updateRenderObject();
-        }else{
-            //修改
+        } else {
+            //修改todo
             this.controller.canvasController.updateRenderObject();
             this.fitView(nodeIds)
         }
-        
+
     }
     updateGrpahAfterDimMidifed(oldDim, newDim) {
         const xFactor = newDim.width / oldDim.width;
@@ -1144,52 +1145,76 @@ export default class ElementController {
         }
     }
 
-    addBubbleSet(nodeIdArrays,colors,ids=null){
-        if(ids){
-            if(Array.isArray(ids)){
-                if(ids.length<nodeIdArrays.length){
-                    for(let i=ids.length;i<nodeIdArrays.length;i++){
-                        ids.push(uuidv4());
-                    }
+    addBubbleSet(nodeIdArrays, colors, ids = null) {
+        if (Array.isArray(ids)) {
+            if (ids.length < nodeIdArrays.length) {
+                for (let i = ids.length; i < nodeIdArrays.length; i++) {
+                    ids.push(uuidv4());
                 }
-            }else{
-                throw new Error("invalid argument")
             }
-            
-        }else{
-            ids=[];
-            for(let i=0;i<nodeIdArrays.length;i++){
+        } else {
+            ids = [];
+            for (let i = 0; i < nodeIdArrays.length; i++) {
                 ids.push(uuidv4())
             }
         }
-        if(!Array.isArray(nodeIdArrays)||!Array.isArray(colors)){
+        if (!Array.isArray(nodeIdArrays) || !Array.isArray(colors)) {
             throw new Error('invalid argument')
         }
-        if(nodeIdArrays.length>colors.length){
-            for(let i=colors.length;i<nodeIdArrays.length;i++){
+        if (nodeIdArrays.length > colors.length) {
+            for (let i = colors.length; i < nodeIdArrays.length; i++) {
                 colors.push("#fff");
             }
         }
-        nodeIdArrays.forEach((nodeIds,i)=>{
-            const backgrounds=[];
-            nodeIds.forEach(id=>{
-                const {backgroundObjs}=this.nodeRenderMap.get(id);
-                if(backgroundObjs.length===1){
+        nodeIdArrays.forEach((nodeIds, i) => {
+            const backgrounds = [];
+            nodeIds.forEach(id => {
+                const { backgroundObjs } = this.nodeRenderMap.get(id);
+                if (backgroundObjs.length === 1) {
                     backgrounds.push(backgroundObjs[0]);
-                }else if(backgroundObjs.length>1){
-                    backgroundObjs.forEach(bg=>{
+                } else if (backgroundObjs.length > 1) {
+                    backgroundObjs.forEach(bg => {
                         backgrounds.push(bg);
                     })
                 }
             })
-            const bubble=new Bubble(this.getNodes(nodeIds),backgrounds,colors[i]);
-            this.bubbleInfo.bubbles.set(ids[i],bubble);
+            const bubble = new Bubble(this.getNodes(nodeIds), backgrounds, colors[i],ids[i]);
+            this.bubbleInfo.bubbles.set(ids[i], bubble);
             bubble.setIndex(this.renderObject.renderBubble.length);
-            this.renderObject.renderBubble=[...this.renderObject.renderBubble,...bubble.getRenderBubbles()];
+            this.renderObject.renderBubble.push(bubble)
         });
-        console.log(this.renderObject);
-        console.log(this.bubbleInfo)
         this.controller.canvasController.updateRenderObject();
+        return ids;
+    }
+
+    removeBubbleSet(ids=null){
+        if(this.bubbleInfo.bubbles.size===0){
+            return [];
+        }
+        if(Array.isArray(ids)){
+            ids.forEach(id=>{
+                const bubble=this.bubbleInfo.bubbles.get(id);
+                const index=this.renderObject.renderBubble.indexOf(bubble);
+                if(index>=0){
+                    this.renderObject.renderBubble.splice(index,1);
+                    this.bubbleInfo.bubbles.delete(id);
+                }
+                
+            })
+        }else{
+            this.bubbleInfo.bubbles=new Map();
+            this.renderObject.renderBubble=new Array();
+        }
+        this.controller.canvasController.updateRenderObject();
+        return this.renderObject.renderBubble.map(v=>v.id)
+    }
+
+    rebuildBubble(){
+        if(this.bubbleInfo.bubbles.size>0){
+            for(const key of this.bubbleInfo.bubbles){
+                key[1].reCompute()
+            }
+        }
     }
 
 }

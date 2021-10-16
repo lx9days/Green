@@ -319,9 +319,23 @@ export default class NetGraph {
         this.controller.elementController.fitView(nodeIds);
     }
 
-    addBubbleSet(nodeIdArrays,colors){
-
-        this.controller.elementController.addBubbleSet(nodeIdArrays,colors);
+    /**
+     * 用户通过指定id、颜色、域id生成对应的域
+     * @param {Array<Array>} nodeIdArrays node Id 数组的数组
+     * @param {Array}} colors 不同域的颜色
+     * @param {Array} ids 每个域的id
+     * @returns 所有域的id数组
+     */
+    addBubbleSet(nodeIdArrays,colors,ids){
+        return this.controller.elementController.addBubbleSet(nodeIdArrays,colors,ids);
+    }
+    /**
+     *  删除指定的域
+     * @param {Array} ids 删除域的ids
+     * @returns 目前的域的ids
+     */
+    removeBubbleSet(ids){
+        return this.controller.elementController.removeBubbleSet(ids);
     }
 
     

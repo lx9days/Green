@@ -88,6 +88,8 @@ export default class RenderBackground {
             x:elementPosition.x-offset.x,
             y:elementPosition.y-offset.y
         }
+        this.position[0]=polygonBasePosition.x;
+        this.position[1]=polygonBasePosition.y;
         this.backgroundPolygon.push([polygonBasePosition.x,polygonBasePosition.y]);
         this.backgroundPolygon.push([polygonBasePosition.x+this.style.backgroundWidth,polygonBasePosition.y]);
         this.backgroundPolygon.push([polygonBasePosition.x+this.style.backgroundWidth,polygonBasePosition.y+this.style.backgroundHeight])

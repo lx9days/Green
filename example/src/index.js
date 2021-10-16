@@ -474,8 +474,11 @@ function draw(rawData) {
         netGraph.setNodeLayout('auto');
     });
     document.getElementById("addBubble").addEventListener("click",()=>{
-        const nodeIds=netGraph.getNodes().map(v=>v.id);
-        netGraph.addBubbleSet([nodeIds],["#fff"],["one"]);
+        const nodeIds=netGraph.getSelectedNodes().map(v=>v.id);
+       netGraph.addBubbleSet([nodeIds,["b001","b002","b003","b004","b005","b006","b007"]],["#d7473a","#4ea79b"],["one","two"]);
+    });
+    document.getElementById("removeBubble").addEventListener("click",()=>{
+        console.log(netGraph.removeBubbleSet(["one"]));
     })
 }
 //draw();

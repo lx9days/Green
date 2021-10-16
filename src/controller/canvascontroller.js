@@ -161,9 +161,12 @@ export default class CanvasController {
                 data: renderBubble,
                 positionFormat: 'XY',
                 getPolygon: d => d.polygon,
-                getFillColor: [0, 100, 60, 160]
+                getFillColor: d=>d.color,
+                updateTriggers: {
+                    getPolygon: d => d.polygon,
+                },
             });
-            console.log("renderBubble")
+            
         }
         const lineLayer = new LineLayer({
             id: 'line-layer',
@@ -426,7 +429,6 @@ export default class CanvasController {
         });
         if(renderBubble.length>0){
             this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer,lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
-            console.log("renderBubblessss")
         }else{
             this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
         }
