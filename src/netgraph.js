@@ -74,6 +74,9 @@ export default class NetGraph {
         return this.controller.elementController.getNodes(nodeIds);
 
     }
+    getNode(id){
+        return this.controller.elementController.getNode(id);
+    }
     getIdMapNode(){
         return this.controller.elementController.idMapNode;
     }
@@ -336,6 +339,14 @@ export default class NetGraph {
      */
     removeBubbleSet(ids){
         return this.controller.elementController.removeBubbleSet(ids);
+    }
+
+    addFlowAnimation(){
+
+    }
+
+    removeFlowAnimation(){
+        
     }
 
     

@@ -1,6 +1,8 @@
 import * as d3 from 'd3';
-import * as d3Simple from "d3-force-sampled"
+//import * as d3Simple from "d3-force-sampled"
+//import NetWorkBackEnd from './network_backend';
 import {BFSTree} from '../helper/util'
+import dynamicPos from '../helper/dynamicPosition';
 
 export default class PositionController {
     constructor(netGraph, { width, height }) {
@@ -13,6 +15,7 @@ export default class PositionController {
             x: 0,
             y: 0
         };
+        //this.netWorkBackEnd = new NetWorkBackEnd();
         this.force = null
 
         this.useLayout = 'square';
@@ -358,69 +361,65 @@ export default class PositionController {
                 allIds=[...allIds,...allNodeIds];
             }
 
-            this.netGraph.updateNodeSta
             this.netGraph.controller.eventController.fire("_updateEntityPosition", [allIds,true])
         }
     }
 
-    timeSequential() {  //时序布局
-        return
-        let mthis = this
-        let doctypes = ["document"].concat(this.docV);
-        let eventtypes = ["event"].concat(this.evV);
-        let docnodeids = [];
-        let eventnodeids = [];
-        let entitynodeids = [];
-        this.selectionId.forEach(item => {
-            let node = mthis.netchart.getNode(item);
-            if (node) {
-                if (doctypes.indexOf(node.data.Entity_type) > -1) {
-                    docnodeids.push(node.id);
-                } else if (eventtypes.indexOf(node.data.Entity_type) > -1) {
-                    eventnodeids.push(node.id);
-                } else {
-                    entitynodeids.push(node.id);
-                }
-            }
+    timeSequential(nodes) { // 时序布局
+        const mthis = this;
+        const docnodeids = [];
+        const eventnodeids = [];
+        const entitynodeids = [];
+        const nodeIds = [];
+        nodes.forEach(node => {
+          const data = node.data ? node.data : node;
+          const id = data.id;
+          nodeIds.push(id);
+          if (data.metaType === 'event') {
+            eventnodeids.push(id);
+          } else if (data.metaType === 'document') {
+            docnodeids.push(id);
+          } else if (data.metaType === 'entity') {
+            entitynodeids.push(id);
+          }
         });
-        let datetype = "day"; //时序分度值
-        let mixed = true; //时序是否混合显示
-        let params = {
-            event_ids: eventnodeids,
-            doc_ids: docnodeids,
-            group_by: datetype,
-            mix: mixed
-        }
+        const datetype = 'day'; // 时序分度值
+        const mixed = true; // 时序是否混合显示
+        const params = {
+          event_ids: eventnodeids,
+          doc_ids: docnodeids,
+          group_by: datetype,
+          mix: mixed
+        };
         mthis.netWorkBackEnd.timeLineLayout(params, result => {
-            let baseX = 400 * (Math.random() - 0.5) + 200;
-            let baseY = baseX;
-            let pos = [0, 0];
-            //排布其他节点
-            if (entitynodeids.length > 0) {
-                pos = dynamicPos.getSquarePosition(baseX, baseY, entitynodeids);
-
-                entitynodeids.forEach((item, index) => {
-                    mthis.netchart.getNode(item)["x"] = pos[index][0];
-                    mthis.netchart.getNode(item)["y"] = pos[index][1];
-                });
-            }
-            baseY = baseY - 200;
-            if (mixed) {
-                //混合排布
-                Object.keys(result).forEach((item, index) => {
-                    let Xr = baseX + index * 150;
-                    result[item]["mix_ids"].forEach((it, ind) => {
-                        mthis.netchart.getNode(it)["x"] = Xr;
-                        mthis.netchart.getNode(it)["y"] = baseY - ind * 100;
-                    });
-                });
-            } else {
-                // 非混合排布
-            }
-        }, err => {
-            //   mthis.$Message.error("/doc/timeline接口异常！");
-        })
-    }
+          const baseX = 400 * (Math.random() - 0.5) + 200;
+          let baseY = baseX;
+          let pos = [0, 0];
+          // 排布其他节点
+          if (entitynodeids.length > 0) {
+            pos = dynamicPos.getSquarePosition(baseX, baseY, entitynodeids);
+    
+            entitynodeids.forEach((item, index) => {
+              mthis.netGraph.getNode(item).x = pos[index][0];
+              mthis.netGraph.getNode(item).y = pos[index][1];
+            });
+          }
+          baseY = baseY - 200;
+          if (mixed) {
+            // 混合排布
+            Object.keys(result).forEach((item, index) => {
+              const Xr = baseX + index * 150;
+              result[item].mix_ids.forEach((it, ind) => {
+                mthis.netGraph.getNode(it).x = Xr;
+                mthis.netGraph.getNode(it).y = baseY - ind * 100;
+              });
+            });
+          } else {
+            // 非混合排布
+          }
+          this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds,true])
+        });
+      }
 
 
 }

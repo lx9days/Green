@@ -441,6 +441,14 @@ export default class ElementController {
         }
     }
 
+    getNode(id){
+        if(id){
+            return this.idMapNode(id);
+        }else{
+            throw new Error("argument is invalid")
+        }
+    }
+
 
     getLinks(linkIds = null) {
         if (linkIds && linkIds.length > 0) {
