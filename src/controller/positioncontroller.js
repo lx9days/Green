@@ -54,8 +54,8 @@ export default class PositionController {
                 this.offset.x += (Math.random() - 0.5) * 200;
                 this.offset.y += (Math.random() - 0.5) * 200;
 
-                node1.x = ((this.canvasCenter.x - rowNum * 150 / 2) || 0) + this.offset.x;
-                node1.y = ((this.canvasCenter.y - rowNum * 150 / 2) || 0) + this.offset.y;
+                node1.x = ((this.canvasCenter.x - rowNum * 100 / 2) || 0) + this.offset.x;
+                node1.y = ((this.canvasCenter.y - rowNum * 100 / 2) || 0) + this.offset.y;
 
             }
             let col = 0;
@@ -64,8 +64,8 @@ export default class PositionController {
                 let node = nodes[i];
                 let nodeId = node.id;
                 nodeIds.push(nodeId);
-                node.x = node1.x + col * 150;
-                node.y = node1.y + row * 150;
+                node.x = node1.x + col * 100;
+                node.y = node1.y + row * 100;
                 col++;
                 if (col >= rowNum) {
                     col = 0;
@@ -276,7 +276,7 @@ export default class PositionController {
             if (force) {
                 force.stop()
             }
-        }, 2500)
+        }, 5000)
     }
 
     jutuan(nodes) {

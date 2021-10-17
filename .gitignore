@@ -1,3 +1,4 @@
 example/src/img1
 example/src/*.json
+example/src/*.zip
 node_modules

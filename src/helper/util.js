@@ -1,3 +1,4 @@
+import * as svgMesh3d from 'svg-mesh-3d';
 //计算箭头的形状
 function computeArrow(link, offset, type) {
     let sourceX;
@@ -283,4 +284,24 @@ function autoFitView(nodes, viewSize) {
     }
 
 }
-export { generatePolygon, getInteractionData, generateLinkLocation, isFunction, computePolygon, BFSTree, autoFitView }
+
+function svgPathToPolygon(path){
+    
+    const mesh = svgMesh3d(path,{
+        normalize:false
+    });
+    const positions=mesh.positions;
+    
+    const cells=mesh.cells;
+    const polygons=new Array(cells.length);
+    
+    cells.forEach((cell,i)=>{
+        const polygon=new Array(3);
+        polygon[0]=positions[cell[0]];
+        polygon[1]=positions[cell[1]];
+        polygon[2]=positions[cell[2]];
+        polygons[i]=polygon;
+    });
+    return polygons;
+}
+export { generatePolygon, getInteractionData, generateLinkLocation, isFunction, computePolygon, BFSTree, autoFitView ,svgPathToPolygon}
