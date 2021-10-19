@@ -330,6 +330,7 @@ export default class NetGraph {
      * @returns 所有域的id数组
      */
     addBubbleSet(nodeIdArrays,colors,ids){
+
         return this.controller.elementController.addBubbleSet(nodeIdArrays,colors,ids);
     }
     /**
@@ -341,12 +342,19 @@ export default class NetGraph {
         return this.controller.elementController.removeBubbleSet(ids);
     }
 
+    /**
+     * 
+     */
+    layoutBubbleSet(){
+        this.controller.elementController.layoutBubbleSet();
+    }
+
     addFlowAnimation(){
 
     }
 
     removeFlowAnimation(){
-        
+
     }
 
     

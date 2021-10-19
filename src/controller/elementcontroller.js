@@ -257,7 +257,7 @@ export default class ElementController {
             });
         }
         this.renderObject.charSet = Array.from(this.characterSet);
-        this.controller.canvasController.updateRenderObject(this.renderObject);
+        this.controller.canvasController.updateRenderObject({renderObject:this.renderObject});
 
 
 
@@ -501,7 +501,7 @@ export default class ElementController {
             }
         });
         this.updateNodeStatus(nodeIds, 2);
-        this.controller.canvasController.updateRenderObject();
+        this.controller.canvasController.updateRenderObject({style:1});
     }
     /**
      * 根据node id 删除 node
@@ -647,7 +647,7 @@ export default class ElementController {
             });
             this._removeRenderObjectForLink(linkIds);
         }
-        this.controller.canvasController.updateRenderObject(this.renderObject);
+        this.controller.canvasController.updateRenderObject({renderObject:this.renderObject});
 
     }
     //隐藏node
@@ -740,7 +740,7 @@ export default class ElementController {
                 this.updateLinkStatus(Array.from(idsSet), status);
             }
         }
-        this.controller.canvasController.updateRenderObject();
+        this.controller.canvasController.updateRenderObject({style:1});
 
     }
     /**
@@ -990,7 +990,7 @@ export default class ElementController {
                 }
             }
         }
-        this.controller.canvasController.updateRenderObject();
+        this.controller.canvasController.updateRenderObject({style:1});
 
     }
 
@@ -1003,6 +1003,7 @@ export default class ElementController {
 
 
     updateEntityPosition(nodeIds = null, layout = false) {
+        
         if (nodeIds) {
             const needUpdateLinks = [];
             nodeIds.forEach((id) => {
@@ -1083,10 +1084,10 @@ export default class ElementController {
         this.rebuildBubble()
         
         if (!layout) {
-            this.controller.canvasController.updateRenderObject();
+            this.controller.canvasController.updateRenderObject({position:1});
         } else {
             //修改todo
-            this.controller.canvasController.updateRenderObject();
+            this.controller.canvasController.updateRenderObject({position:1});
             this.fitView(nodeIds)
         }
 
@@ -1191,7 +1192,7 @@ export default class ElementController {
             bubble.setIndex(this.renderObject.renderBubble.length);
             this.renderObject.renderBubble.push(bubble)
         });
-        this.controller.canvasController.updateRenderObject();
+        this.controller.canvasController.updateRenderObject({});
         return ids;
     }
 
@@ -1213,8 +1214,13 @@ export default class ElementController {
             this.bubbleInfo.bubbles=new Map();
             this.renderObject.renderBubble=new Array();
         }
-        this.controller.canvasController.updateRenderObject();
+        this.controller.canvasController.updateRenderObject({});
         return this.renderObject.renderBubble.map(v=>v.id)
+    }
+
+    layoutBubbleSet(){
+        console.log("layout")
+        this.controller.positionController.layoutBubbleSet(Array.from(this.bubbleInfo.bubbles.values()));
     }
 
     rebuildBubble(){

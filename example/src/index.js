@@ -9,7 +9,7 @@ axios.get('/src/auto_500.json').then((res) => {
     const links = res.data.links;
 
     nodes.forEach((node, i) => {
-        node.img = '/src/img1/a' + i + '.png';
+        node.img = '/src/img1/b' + 0 + '.png';
     });
     console.log("nodelength",nodes.length);
     console.log("linklength",links.length);
@@ -479,6 +479,9 @@ function draw(rawData) {
     });
     document.getElementById("removeBubble").addEventListener("click",()=>{
         console.log(netGraph.removeBubbleSet(["one"]));
+    });
+    document.getElementById("layoutBubble").addEventListener("click",()=>{
+        netGraph.layoutBubbleSet();
     })
 }
 //draw();
