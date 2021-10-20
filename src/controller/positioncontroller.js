@@ -1,6 +1,8 @@
 import * as d3 from 'd3';
-import * as d3Simple from "d3-force-sampled"
-import {BFSTree} from '../helper/util'
+//import * as d3Simple from "d3-force-sampled"
+//import NetWorkBackEnd from './network_backend';
+import { BFSTree } from '../helper/util'
+import dynamicPos from '../helper/dynamicPosition';
 
 export default class PositionController {
     constructor(netGraph, { width, height }) {
@@ -13,6 +15,7 @@ export default class PositionController {
             x: 0,
             y: 0
         };
+        //this.netWorkBackEnd = new NetWorkBackEnd();
         this.force = null
 
         this.useLayout = 'square';
@@ -72,8 +75,42 @@ export default class PositionController {
                     row++;
                 }
             }
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds,true])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, true])
         }
+    }
+
+    layoutBubbleSet(bubbles) {
+        
+        if (!Array.isArray(bubbles) || bubbles.length < 0) {
+            return
+        }
+        let nodeIds = [];
+        bubbles.forEach((bubble, i) => {
+            const nodes = bubble.getOriginNodes();
+            if (nodes.length > 0) {
+               
+                let rowNum = Math.ceil(Math.sqrt(nodes.length));
+                let node1 = nodes[0];
+                let col = 0;
+                let row = 0;
+                for (let i = 0; i < nodes.length; i++) {
+                    let node = nodes[i];
+                    let nodeId = node.id;
+                    nodeIds.push(nodeId);
+                    node.x = node1.x + col * 100;
+                    node.y = node1.y + row * 100;
+                    col++;
+                    if (col >= rowNum) {
+                        col = 0;
+                        row++;
+                    }
+                }
+            }
+            bubble.reCompute();
+        });
+        console.log(nodeIds);
+        this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, true])
+
     }
 
     star(selectedNodes) {
@@ -137,7 +174,7 @@ export default class PositionController {
                     node.y = baseY + Math.cos(outsideRoate * index) * outsideR;
                 });
             }
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds,true])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, true])
         }
 
     }
@@ -157,7 +194,7 @@ export default class PositionController {
                 no.x = no1.x + Math.sin(ahd * i) * radius;
                 no.y = no1.y - radius + Math.cos(ahd * i) * radius;
             }
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds,true])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, true])
         }
 
     }
@@ -188,8 +225,8 @@ export default class PositionController {
                 for (let i = 0; i < nodeArray.length; i++) {
                     let no = nodeArray[i];
                     //用户交互锁？？？
-                    no.x = no1x + col * 150;
-                    no.y = no1y + row * 150;
+                    no.x = no1x + col * 100;
+                    no.y = no1y + row * 100;
                     col++;
                     if (col > rowNum) {
                         col = 0;
@@ -197,9 +234,9 @@ export default class PositionController {
                     }
                 }
                 let heightNum = parseInt(nodeArray.length / rowNum);
-                no1y = no1y + heightNum * 150 + 300;
+                no1y = no1y + heightNum * 100 + 200;
             });
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds,true])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, true])
         }
 
 
@@ -216,7 +253,7 @@ export default class PositionController {
                 node.x = no1.x + i * 150;
                 node.y = no1.y;
             });
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds,true])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, true])
         }
 
     }
@@ -232,7 +269,7 @@ export default class PositionController {
                 node.x = no1.x;
                 node.y = no1.y + i * 150;
             });
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds,true])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, true])
         }
 
     }
@@ -269,7 +306,7 @@ export default class PositionController {
             .force("link", d3.forceLink(linkST).distance(250))
             .force("center", d3.forceCenter(this.canvasCenter.x, this.canvasCenter.y))
         this.force.on("tick", () => {
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds,true])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, true])
         })
         let force = this.force;
         setTimeout(() => {
@@ -308,13 +345,13 @@ export default class PositionController {
             }, 5000);
         }, 200);
     }
-    
+
     hierarchy(rootNodes) {
         if (rootNodes.length > 0) {
 
             const data = BFSTree(rootNodes, this.netGraph.getNodes(), this.netGraph.getLinks())
-           
-            let allIds=[];
+
+            let allIds = [];
             for (let i = 0; i < data.nodes.length; i++) {
                 let nn1 = [];
                 const initx = rootNodes[i].x;
@@ -355,71 +392,67 @@ export default class PositionController {
                     node.x = nn1[i].x + initx;
                     node.y = nn1[i].y + inity;
                 })
-                allIds=[...allIds,...allNodeIds];
+                allIds = [...allIds, ...allNodeIds];
             }
 
-            this.netGraph.updateNodeSta
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [allIds,true])
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [allIds, true])
         }
     }
 
-    timeSequential() {  //时序布局
-        return
-        let mthis = this
-        let doctypes = ["document"].concat(this.docV);
-        let eventtypes = ["event"].concat(this.evV);
-        let docnodeids = [];
-        let eventnodeids = [];
-        let entitynodeids = [];
-        this.selectionId.forEach(item => {
-            let node = mthis.netchart.getNode(item);
-            if (node) {
-                if (doctypes.indexOf(node.data.Entity_type) > -1) {
-                    docnodeids.push(node.id);
-                } else if (eventtypes.indexOf(node.data.Entity_type) > -1) {
-                    eventnodeids.push(node.id);
-                } else {
-                    entitynodeids.push(node.id);
-                }
+    timeSequential(nodes) { // 时序布局
+        const mthis = this;
+        const docnodeids = [];
+        const eventnodeids = [];
+        const entitynodeids = [];
+        const nodeIds = [];
+        nodes.forEach(node => {
+            const data = node.data ? node.data : node;
+            const id = data.id;
+            nodeIds.push(id);
+            if (data.metaType === 'event') {
+                eventnodeids.push(id);
+            } else if (data.metaType === 'document') {
+                docnodeids.push(id);
+            } else if (data.metaType === 'entity') {
+                entitynodeids.push(id);
             }
         });
-        let datetype = "day"; //时序分度值
-        let mixed = true; //时序是否混合显示
-        let params = {
+        const datetype = 'day'; // 时序分度值
+        const mixed = true; // 时序是否混合显示
+        const params = {
             event_ids: eventnodeids,
             doc_ids: docnodeids,
             group_by: datetype,
             mix: mixed
-        }
+        };
         mthis.netWorkBackEnd.timeLineLayout(params, result => {
-            let baseX = 400 * (Math.random() - 0.5) + 200;
+            const baseX = 400 * (Math.random() - 0.5) + 200;
             let baseY = baseX;
             let pos = [0, 0];
-            //排布其他节点
+            // 排布其他节点
             if (entitynodeids.length > 0) {
                 pos = dynamicPos.getSquarePosition(baseX, baseY, entitynodeids);
 
                 entitynodeids.forEach((item, index) => {
-                    mthis.netchart.getNode(item)["x"] = pos[index][0];
-                    mthis.netchart.getNode(item)["y"] = pos[index][1];
+                    mthis.netGraph.getNode(item).x = pos[index][0];
+                    mthis.netGraph.getNode(item).y = pos[index][1];
                 });
             }
             baseY = baseY - 200;
             if (mixed) {
-                //混合排布
+                // 混合排布
                 Object.keys(result).forEach((item, index) => {
-                    let Xr = baseX + index * 150;
-                    result[item]["mix_ids"].forEach((it, ind) => {
-                        mthis.netchart.getNode(it)["x"] = Xr;
-                        mthis.netchart.getNode(it)["y"] = baseY - ind * 100;
+                    const Xr = baseX + index * 150;
+                    result[item].mix_ids.forEach((it, ind) => {
+                        mthis.netGraph.getNode(it).x = Xr;
+                        mthis.netGraph.getNode(it).y = baseY - ind * 100;
                     });
                 });
             } else {
                 // 非混合排布
             }
-        }, err => {
-            //   mthis.$Message.error("/doc/timeline接口异常！");
-        })
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, true])
+        });
     }
 
 

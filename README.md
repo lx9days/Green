@@ -40,6 +40,16 @@
     - [updateDim](#updatedim)
     - [lockNodes](#locknodes)
     - [unlockNodes](#unlocknodes)
+    - [updateNodeStatus](#updatenodestatus)
+    - [fitView](#fitview-1)
+    - [addBubbleSet](#addbubbleset)
+    - [removeBubbleSet](#removebubbleset)
+    - [layoutBubbleSet](#layoutbubbleset)
+    - [addFlowAnimation](#addflowanimation)
+    - [removeFlowAnimation](#removeflowanimation)
+    - [pauseFlowAnimation](#pauseflowanimation)
+    - [restartFlowAnimation](#restartflowanimation)
+    - [getFlowAnimationIdByStatus](#getflowanimationidbystatus)
 
 
 ## API detail
@@ -278,3 +288,55 @@ netGraph.replaceStyle([
 `lockNodes(nodeIds)`可以用来根据指定的`id`来对结点进行锁定，锁定后`node`将不能够进行位置的改变，包括拖动和布局都不会对锁定的结点产生影响
 ### unlockNodes
 `unlockNodes(nodeIds)`根据指定的`id`来解除对`node`的锁定
+
+### updateNodeStatus
+`updateNodeStatus(nodeIds,status)`用来更新node的样式，`nodeIds`为将要进行更新的`node`的`id`,status为样式选项,用户就可以直接使用数字`0`,`1`,`2`,`3`也可以从`NetGraph`中导出`UNSELECTED`,`SELECTED`,`HIDE`,`HIGHLIGHT`进行使用
+
+### fitView
+`fitView(nodeIds)`用于元素自适应窗口大小，主要是对画布根据元素的数量已经元素是否超出可见区域对画布进行一定的缩放操作使用户能够看到数据的所有内容,当`nodeIds`为`null`时或者用户直接调用`fitView()`会将画布上的所有的元素进行窗口适配,如果`nodeIds`为`ID`数组那个自适应窗口的操作只会根据指定的元素进行
+
+### addBubbleSet
+`addBubbleSet(nodeIdArrays,colors,ids)`用于给一组元素添加域，用户需要指定每个域用包含的元素的`id`,每个域的背景颜色colors,以及每个人域的`id`,该方法会返回生成的所有的域的`id`数组，用户持有id后可以对该域进行其他操作例如删除指定的域
+>`nodeIdArrays`的形式应该时`[["id1","id2"],['id3','id4']]`的形式,其中每个子数组对应一个域。对于colors和ids正常情况用户可以指定和域相同数量，如果数量和生成的域的数量不一致,会自动生成color和id进行补充
+### removeBubbleSet
+`removeBubbleSet(ids)`该方法会删除id指定的域,如果用户不传递id或者传值为`null`会删除所有的域
+### layoutBubbleSet
+`layoutBubbleSet()`该方法会将每个BubbleSet为一个组，然后对每组分别进行矩形布局，默认使用第一个`node`的坐标作为起始位置
+### addFlowAnimation
+`addFlowAnimation(animations)`用于添加动画，数据格式如下,必须为动画的数组格式
+```javascript
+ [
+        {
+            "id": "flow_one",
+            "name": "abc",
+            "speed": 3,
+            "colour": "#fff",
+            "balls": {
+                "ball_001": {
+                    "size": 0.301,
+                    "link_id": "53f8614c746734f19f5b937f40b0c2abphone_write41dcc82234d534ce92c81d47c356c277",
+                    "direct": 1
+                },
+                "ball_002": {
+                    "size": 0.3,
+                    "link_id": "MG_6e0588043118888161aaa7278f91c878",
+                    "direct": -1
+                }
+            },
+            "order": [
+                [
+                    "ball_001",
+                    "ball_002"
+                ]
+            ]
+        }
+]
+```
+### removeFlowAnimation
+`removeFlowAnimation(flowIds)`根据用户提供的`flowid`数组来删除流动画,如果调用但是不传递参数会将所有的动画进行删除
+### pauseFlowAnimation
+`pauseFlowAnimation(flowIds)`根据用户提供的`flowid`数组来暂停流动画,如果调用但是不传递参数会将所有的动画进行暂停
+### restartFlowAnimation
+`restartFlowAnimation(flowIds)`根据用户提供的`flowid`数组来重启被暂停的流动画,如果调用但是不传递参数会将所有的动画重新开始
+### getFlowAnimationIdByStatus
+`getFlowAnimationIdByStatus(status)`根据用户指定的状态来获取流动画的id,用户利用id进行其他操作，如果调用但是不传递参数将会获取到所有动画的id

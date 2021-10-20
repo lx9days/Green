@@ -4,6 +4,7 @@ import PositionController from './controller/positioncontroller';
 import CanvasController from './controller/canvascontroller';
 import ElementController from './controller/elementcontroller';
 import EventController from './controller/eventcontroller';
+import AnimationController from "./controller/animationcontroller"
 
 //NetGraph为暴露出组件所有的功能，用户不应使用除此类中包含的其他函数
 export default class NetGraph {
@@ -20,15 +21,18 @@ export default class NetGraph {
         const positionController = new PositionController(this,{width:props.canvasProps.containerWidth,height:props.canvasProps.containerHeight});
         positionController.setLayout(props.layout)
         const styleController = new StyleController(props.style, this.dataController);
+        
         this.controller = {
             dataController,
             positionController,
             styleController,
             eventController,
             elementController: null,
-            canvasController: null
+            canvasController: null,
+            animationController:null,
         }
-        const canvasController = new CanvasController(this.props.canvasProps,eventController);
+        this.controller.animationController=new AnimationController(this.controller);
+        const canvasController = new CanvasController({...props.canvasProps,...props.constant},eventController);
         this.controller.canvasController = canvasController;
         const elementController = new ElementController(this.controller);
         this.controller.elementController = elementController;
@@ -73,6 +77,9 @@ export default class NetGraph {
     getNodes(nodeIds = null) {
         return this.controller.elementController.getNodes(nodeIds);
 
+    }
+    getNode(id){
+        return this.controller.elementController.getNode(id);
     }
     getIdMapNode(){
         return this.controller.elementController.idMapNode;
@@ -327,6 +334,7 @@ export default class NetGraph {
      * @returns 所有域的id数组
      */
     addBubbleSet(nodeIdArrays,colors,ids){
+
         return this.controller.elementController.addBubbleSet(nodeIdArrays,colors,ids);
     }
     /**
@@ -336,6 +344,67 @@ export default class NetGraph {
      */
     removeBubbleSet(ids){
         return this.controller.elementController.removeBubbleSet(ids);
+    }
+
+    /**
+     * 自动将每个域进行矩形布局
+     */
+    layoutBubbleSet(){
+        this.controller.elementController.layoutBubbleSet();
+    }
+
+    /**
+     * 添加动画
+     * @param {Array} animations 动画数组
+     */
+    addFlowAnimation(animations){
+        this.controller.animationController.addFlowAnimation(animations);
+    }
+
+    /**
+     * 根据流的id来删除动画,没有参数删除所有
+     * @param {Array} flowIds 流动画id数组
+     */
+    removeFlowAnimation(flowIds){
+        if(Array.isArray(flowIds)){
+            this.controller.animationController.removeFlowAnimation(flowIds);
+        }else{
+            this.controller.animationController.removeFlowAnimation(null);
+        }
+    }
+
+    /**
+     * 暂停流动画,没有参数暂停所有
+     * @param {Array} flowIds 流动画id数组
+     */
+    pauseFlowAnimation(flowIds){
+        if(Array.isArray(flowIds)){
+            this.controller.animationController.pauseFlowAnimation(flowIds);
+        }else{
+            this.controller.animationController.pauseFlowAnimation(null);
+        }
+    }
+
+    /**
+     * 根据id重新启动动画,没有参数重启所有
+     * @param {Array} flowIds 流动画id数组
+     */
+    restartFlowAnimation(flowIds){
+        if(Array.isArray(flowIds)){
+            this.controller.animationController.restartFlowAnimation(flowIds);
+        }else{
+            this.controller.animationController.restartFlowAnimation(null);
+        }
+    }
+
+    /**
+     * 根据状态获取流动画的id,没有参数获取所有
+     * @param {'pause','running'} status 流动画的状态
+     * @returns id 数组
+     */
+    getFlowAnimationIdByStatus(status){
+        return this.controller.animationController.getAnimationIdByStatus(status)
+
     }
 
     
