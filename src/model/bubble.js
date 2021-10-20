@@ -7,11 +7,11 @@ export default class Bubble {
         if (Array.isArray(color)) {
             this.color = color
         } else {
-            const backgroundColorRGB = hexRgb(color);
+            const colorRGB = hexRgb(color);
             this.color = [100, 111, 111, 160];
-            this.color[0] = backgroundColorRGB.red;
-            this.color[1] = backgroundColorRGB.green;
-            this.color[2] = backgroundColorRGB.blue;
+            this.color[0] = colorRGB.red;
+            this.color[1] = colorRGB.green;
+            this.color[2] = colorRGB.blue;
         }
 
         this.renderbackgrounds = renderBackgrounds;

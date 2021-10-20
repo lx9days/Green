@@ -9,6 +9,7 @@ export default class RenderLine {
         this.sourcePosition = [0, 0];
         this.targetPosition = [0, 0];
         this.origionElement = element;
+        this.origionElement._line=this;
         this.offset=offset;
         this.status=element.getStatus();
         this.style = {

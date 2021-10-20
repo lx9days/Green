@@ -1,9 +1,17 @@
-
+import hexRgb from 'hex-rgb';
 export default class FlowAnimation {
     constructor(params) {
         this.id = params.id;
         this.orderArrays = params.order;
-        this.color = params.color;
+        if (Array.isArray(params.color)) {
+            this.color = params.color;
+        } else {
+            const colorRGB = hexRgb(params.color);
+            this.color = [100, 111, 111, 160];
+            this.color[0] = colorRGB.red;
+            this.color[1] = colorRGB.green;
+            this.color[2] = colorRGB.blue;
+        }
         this.name = params.name;
         this.time = params.speed * 1000;
         this.unitTime = 40;
@@ -11,7 +19,7 @@ export default class FlowAnimation {
         this.ballBaseSize = 30;
         this.timer = [];
         this.mapFlowBalls = new Map();
-        this.status = 'pause'
+        this.status ='';//''未初始化，'running','pause','ready'
     }
 
     addFlowBall(flowBall) {
@@ -54,41 +62,50 @@ export default class FlowAnimation {
         return this.order
     }
     run(controller) {
-        if(this.status==="running"){
+        if (this.status === "running") {
             return
         }
         const num = this.baseTime / this.time;
         let p = 0;
         const mapFlowBalls = this.mapFlowBalls
+        const animationId = this.id
 
         function intervalFunc(ballIds) {
             for (let j = ballIds.length - 1; j >= 0; j--) {
                 const ballId = ballIds[j];
-
-                const flowBall = mapFlowBalls[ballId];
-                const startNode = flowBall.getStartNode();
-                const endNode = flowBall.getEndNode();
-                const dValueX = endNode.x - startNode.x;
-                const dValueY = endNode.y - startNode.y
+                const flowBall = mapFlowBalls.get(animationId + "_" + ballId);
+                const startPos = flowBall.getStartPos();
+                const endPos = flowBall.getEndPos();
+                const dValueX = endPos[0] - startPos[0];
+                const dValueY = endPos[1] - startPos[1]
                 const dValueUnitX = dValueX / num;
                 const dValueUnitY = dValueY / num;
                 const pNum = p % num;
-                flowBall.currentPos[0] = startNode.x + pNum * dValueUnitX;
-                flowBall.currentPos[1] = startNode.y + pNum * dValueUnitY;
+                flowBall.currentPos[0] = startPos[0] + pNum * dValueUnitX;
+                flowBall.currentPos[1] = startPos[1] + pNum * dValueUnitY;
             }
             p++;
             controller.updateAmination();
         }
         this.orderArrays.forEach(ballIds => {
-            this.timer.push(setInterval(intervalFunc,this.unitTime,ballIds))
+            this.timer.push(setInterval(intervalFunc, this.unitTime, ballIds))
         });
-        this.status="running"
+        this.status = "running"
 
 
     }
-    stop() {
+    pause() {
         this.closeInterval();
-        this.timer=[];
-        this.status="pause"
+        this.timer = [];
+        this.status = "pause"
+    }
+    stop(){
+        this.closeInterval();
+        this.timer = [];
+        this.status = ""
+        this.clearFlowBall();
+    }
+    getStatus(){
+        return this.status;
     }
 }

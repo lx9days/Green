@@ -165,7 +165,7 @@ export default class CanvasController {
         const styleFlag = this.updateFlag.style;
         const positionFlag = this.updateFlag.position;
         const invalidIcon = this.invalidIncons
-        const fallbackUrl = "/src/img1/a0.png"
+        const fallbackUrl = this.props.defaultUrl
         const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderBubble } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
@@ -184,6 +184,7 @@ export default class CanvasController {
 
         }
         let animationLayer = null;
+        let animationTrigger=Math.random();
         if (this.animationData.length > 0) {
             animationLayer = new ScatterplotLayer({
                 id: 'animation-layer',
@@ -194,7 +195,7 @@ export default class CanvasController {
                 getRadius: d => d.radius,
                 getFillColor: d => d.color,
                 updateTriggers:{
-                    getPosition:Math.random(),
+                    getPosition:animationTrigger,
                 }
             })
         }
@@ -652,7 +653,8 @@ export default class CanvasController {
 
         const zoom = this.props.zoom;
         const invalidIcon = this.invalidIncons
-        const fallbackUrl = "/src/img1/a0.png"
+        console.log(this.props)
+        const fallbackUrl = this.props.defaultUrl
         const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
@@ -1068,7 +1070,7 @@ export default class CanvasController {
             this.updateRenderGraph();
         }
     }
-    unpateAmination(){
+    updateAmination(){
         this.updateRenderGraph();
     }
 

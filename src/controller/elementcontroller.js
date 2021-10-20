@@ -443,10 +443,9 @@ export default class ElementController {
 
     getNode(id){
         if(id){
-            return this.idMapNode(id);
-        }else{
-            throw new Error("argument is invalid")
+            return this.idMapNode.get(id);
         }
+        return null;
     }
 
 
@@ -463,6 +462,12 @@ export default class ElementController {
         } else {
             return this.links;
         }
+    }
+    getLink(linkId){
+        if(linkId){
+            return this.idMapLink.get(linkId)
+        }
+        return null;
     }
 
     getGraph() {

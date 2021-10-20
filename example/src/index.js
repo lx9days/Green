@@ -142,10 +142,17 @@ function draw(rawData) {
             container: 'container',
             maxZoom: 4,
             minZoom: -4,
+            // nodeHighlightColor:'#d9d9d9',
+            // nodeHighlightOpacity:0.5,
+            // lineHighlightColor:'#ffd53f',
+            // lineHighlightOpacity:0.5
+        },
+        constant:{
             nodeHighlightColor:'#d9d9d9',
             nodeHighlightOpacity:0.5,
             lineHighlightColor:'#ffd53f',
-            lineHighlightOpacity:0.5
+            lineHighlightOpacity:0.5,
+            defaultUrl:'/src/img1/a2.png'
         },
         layout: 'square',
         data: data,
@@ -482,6 +489,20 @@ function draw(rawData) {
     });
     document.getElementById("layoutBubble").addEventListener("click",()=>{
         netGraph.layoutBubbleSet();
+    });
+    document.getElementById("addAnimation").addEventListener("click",()=>{
+        axios.get("/src/animation.json").then((res)=>{
+            netGraph.addFlowAnimation(res.data.data)
+        })
+    });
+    document.getElementById("pauseAnimation").addEventListener("click",()=>{
+        netGraph.pauseFlowAnimation(["flow_one"]);
+    });
+    document.getElementById("restartAnimation").addEventListener("click",()=>{
+        netGraph.restartFlowAnimation(["flow_one"]);
+    })
+    document.getElementById("removeAnimation").addEventListener("click",()=>{
+        netGraph.removeFlowAnimation(["flow_two"])
     })
 }
 //draw();

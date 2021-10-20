@@ -45,6 +45,11 @@
     - [addBubbleSet](#addbubbleset)
     - [removeBubbleSet](#removebubbleset)
     - [layoutBubbleSet](#layoutbubbleset)
+    - [addFlowAnimation](#addflowanimation)
+    - [removeFlowAnimation](#removeflowanimation)
+    - [pauseFlowAnimation](#pauseflowanimation)
+    - [restartFlowAnimation](#restartflowanimation)
+    - [getFlowAnimationIdByStatus](#getflowanimationidbystatus)
 
 
 ## API detail
@@ -297,4 +302,41 @@ netGraph.replaceStyle([
 `removeBubbleSet(ids)`该方法会删除id指定的域,如果用户不传递id或者传值为`null`会删除所有的域
 ### layoutBubbleSet
 `layoutBubbleSet()`该方法会将每个BubbleSet为一个组，然后对每组分别进行矩形布局，默认使用第一个`node`的坐标作为起始位置
-
+### addFlowAnimation
+`addFlowAnimation(animations)`用于添加动画，数据格式如下,必须为动画的数组格式
+```javascript
+ [
+        {
+            "id": "flow_one",
+            "name": "abc",
+            "speed": 3,
+            "colour": "#fff",
+            "balls": {
+                "ball_001": {
+                    "size": 0.301,
+                    "link_id": "53f8614c746734f19f5b937f40b0c2abphone_write41dcc82234d534ce92c81d47c356c277",
+                    "direct": 1
+                },
+                "ball_002": {
+                    "size": 0.3,
+                    "link_id": "MG_6e0588043118888161aaa7278f91c878",
+                    "direct": -1
+                }
+            },
+            "order": [
+                [
+                    "ball_001",
+                    "ball_002"
+                ]
+            ]
+        }
+]
+```
+### removeFlowAnimation
+`removeFlowAnimation(flowIds)`根据用户提供的`flowid`数组来删除流动画,如果调用但是不传递参数会将所有的动画进行删除
+### pauseFlowAnimation
+`pauseFlowAnimation(flowIds)`根据用户提供的`flowid`数组来暂停流动画,如果调用但是不传递参数会将所有的动画进行暂停
+### restartFlowAnimation
+`restartFlowAnimation(flowIds)`根据用户提供的`flowid`数组来重启被暂停的流动画,如果调用但是不传递参数会将所有的动画重新开始
+### getFlowAnimationIdByStatus
+`getFlowAnimationIdByStatus(status)`根据用户指定的状态来获取流动画的id,用户利用id进行其他操作，如果调用但是不传递参数将会获取到所有动画的id
