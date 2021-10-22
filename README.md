@@ -301,7 +301,7 @@ netGraph.replaceStyle([
 ### removeBubbleSet
 `removeBubbleSet(ids)`该方法会删除id指定的域,如果用户不传递id或者传值为`null`会删除所有的域
 ### layoutBubbleSet
-`layoutBubbleSet()`该方法会将每个BubbleSet为一个组，然后对每组分别进行矩形布局，默认使用第一个`node`的坐标作为起始位置
+`layoutBubbleSet(ids)`该方法会将每个BubbleSet为一个组，然后对每组分别进行矩形布局，默认使用第一个`node`的坐标作为起始位置,如果传递一个bubbleset 的id 数组只会对指定的域进行矩形布局，如果不传递参数会对所有的域进行矩形布局
 ### addFlowAnimation
 `addFlowAnimation(animations)`用于添加动画，数据格式如下,必须为动画的数组格式
 ```javascript

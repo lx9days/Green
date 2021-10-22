@@ -349,8 +349,13 @@ export default class NetGraph {
     /**
      * 自动将每个域进行矩形布局
      */
-    layoutBubbleSet(){
-        this.controller.elementController.layoutBubbleSet();
+    layoutBubbleSet(ids){
+        if(Array.isArray(ids)){
+            this.controller.elementController.layoutBubbleSet(ids);
+        }else{
+            this.controller.elementController.layoutBubbleSet(null);
+        }
+        
     }
 
     /**

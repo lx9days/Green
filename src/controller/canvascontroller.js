@@ -653,7 +653,6 @@ export default class CanvasController {
 
         const zoom = this.props.zoom;
         const invalidIcon = this.invalidIncons
-        console.log(this.props)
         const fallbackUrl = this.props.defaultUrl
         const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
