@@ -1223,9 +1223,19 @@ export default class ElementController {
         return this.renderObject.renderBubble.map(v=>v.id)
     }
 
-    layoutBubbleSet(){
-        console.log("layout")
-        this.controller.positionController.layoutBubbleSet(Array.from(this.bubbleInfo.bubbles.values()));
+    layoutBubbleSet(ids){
+        if(ids){
+            const bubbles=[];
+            ids.forEach(id=>{
+                if(this.bubbleInfo.bubbles.has(id)){
+                    bubbles.push(this.bubbleInfo.bubbles.get(id));
+                }
+            });
+            this.controller.positionController.layoutBubbleSet(bubbles);
+        }else{
+            this.controller.positionController.layoutBubbleSet(Array.from(this.bubbleInfo.bubbles.values()));
+        }
+        
     }
 
     rebuildBubble(){
