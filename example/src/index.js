@@ -482,14 +482,15 @@ function draw(rawData) {
     });
     document.getElementById("addBubble").addEventListener("click",()=>{
         const nodeIds=netGraph.getSelectedNodes().map(v=>v.id);
-       netGraph.addBubbleSet([nodeIds,["b001","b002","b003","b004","b005","b006","b007"]],["#d7473a","#4ea79b"],["one","two"]);
+       netGraph.addBubbleSet([nodeIds,["b001","b002","b003","b004","b005","b006","b007"]],["#d7473a","#4ea79b"],"one");
+    });
+    document.getElementById("layoutBubble").addEventListener("click",()=>{
+        netGraph.layoutBubbleSet(["one"]);
     });
     document.getElementById("removeBubble").addEventListener("click",()=>{
         console.log(netGraph.removeBubbleSet(["one"]));
     });
-    document.getElementById("layoutBubble").addEventListener("click",()=>{
-        netGraph.layoutBubbleSet(["two"]);
-    });
+   
     document.getElementById("addAnimation").addEventListener("click",()=>{
         axios.get("/src/animation.json").then((res)=>{
             netGraph.addFlowAnimation(res.data.data)
@@ -502,7 +503,7 @@ function draw(rawData) {
         netGraph.restartFlowAnimation(["flow_one"]);
     })
     document.getElementById("removeAnimation").addEventListener("click",()=>{
-        netGraph.removeFlowAnimation(["flow_two"])
+        netGraph.removeFlowAnimation()
     })
 }
 //draw();

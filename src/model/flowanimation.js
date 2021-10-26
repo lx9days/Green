@@ -7,14 +7,14 @@ export default class FlowAnimation {
             this.color = params.color;
         } else {
             const colorRGB = hexRgb(params.color);
-            this.color = [100, 111, 111, 160];
+            this.color = [100, 111, 111, 255];
             this.color[0] = colorRGB.red;
             this.color[1] = colorRGB.green;
             this.color[2] = colorRGB.blue;
         }
         this.name = params.name;
         this.time = params.speed * 1000;
-        this.unitTime = 40;
+        this.unitTime = 10;
         this.baseTime = 300000;
         this.ballBaseSize = 30;
         this.timer = [];

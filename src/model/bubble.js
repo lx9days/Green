@@ -1,8 +1,8 @@
 import { BubbleSet, PointPath, BSplineShapeGenerator, ShapeSimplifier } from '../helper/bubbleset';
 import hexRgb from 'hex-rgb';
 export default class Bubble {
-    constructor(originNodes, renderBackgrounds, color, id) {
-        this.id = id
+    constructor(originNodes, renderBackgrounds, color, region) {
+        this.region = region;
         this.originNodes = originNodes;
         if (Array.isArray(color)) {
             this.color = color

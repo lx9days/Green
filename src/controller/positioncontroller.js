@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-//import * as d3Simple from "d3-force-sampled"
+import * as d3Simple from "d3-force-sampled"
 //import NetWorkBackEnd from './network_backend';
 import { BFSTree } from '../helper/util'
 import dynamicPos from '../helper/dynamicPosition';
@@ -79,34 +79,53 @@ export default class PositionController {
         }
     }
 
-    layoutBubbleSet(bubbles) {
-        
-        if (!Array.isArray(bubbles) || bubbles.length < 0) {
+    layoutBubbleSet(regions) {
+
+        if (!Array.isArray(regions) || regions.length < 0) {
             return
         }
         let nodeIds = [];
-        bubbles.forEach((bubble, i) => {
-            const nodes = bubble.getOriginNodes();
-            if (nodes.length > 0) {
-               
-                let rowNum = Math.ceil(Math.sqrt(nodes.length));
-                let node1 = nodes[0];
-                let col = 0;
-                let row = 0;
-                for (let i = 0; i < nodes.length; i++) {
-                    let node = nodes[i];
-                    let nodeId = node.id;
-                    nodeIds.push(nodeId);
-                    node.x = node1.x + col * 100;
-                    node.y = node1.y + row * 100;
-                    col++;
-                    if (col >= rowNum) {
-                        col = 0;
-                        row++;
+        
+        regions.forEach((region, i) => {
+            const bubbles = region.getBubbles();
+            const curPos = {x:0,y:0};
+            bubbles.forEach((bubble, ind) => {
+                const nodes = bubble.getOriginNodes();
+                if (nodes.length > 0) {
+
+                    let rowNum = Math.ceil(Math.sqrt(nodes.length));
+                    let node1 = nodes[0];
+                    let col = 0;
+                    let row = 0;
+                    for (let i = 0; i < nodes.length; i++) {
+                        let node = nodes[i];
+                        let nodeId = node.id;
+                        nodeIds.push(nodeId);
+                        if (ind === 0) {
+                            node.x = node1.x + col * 100;
+                            node.y = node1.y + row * 100;
+                        }else{
+                            node.x = curPos.x + col * 100;
+                            node.y = curPos.y + row * 100;
+                        }
+
+                        col++;
+                        if (col >= rowNum) {
+                            col = 0;
+                            row++;
+                        }
                     }
+                    if(ind===0){
+                        curPos.x=node1.x+(rowNum+1)*100;
+                        curPos.y=node1.y;
+                    }else{
+                        curPos.x=curPos.x+(rowNum+1)*100;
+                    }
+
                 }
-            }
-            bubble.reCompute();
+                bubble.reCompute();
+            });
+
         });
         this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, false])
 

@@ -9,6 +9,7 @@ import RenderMark from '../model/rendermark';
 import RenderLabel from '../model/renderlabel';
 import { autoFitView } from '../helper/util';
 import Bubble from '../model/bubble';
+import BubbleRegion from '../model/bubbleregion';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -81,10 +82,7 @@ export default class ElementController {
     }
     //初始化数据结构
     _init(controller) {
-        this.bubbleInfo = {
-            hasBubble: false,
-            bubbles: new Map(),
-        }
+        
         this.nodes = new Array();
         this.links = new Array();
         this.controller = controller;
@@ -94,6 +92,8 @@ export default class ElementController {
         this.nodeRenderMap = new Map();// node id 映射该node 对应的所有的 renderobj
         this.linkRenderMap = new Map();// link id 映射该link 对应的所有的 renderobj
         this.characterSet = new Set();//保存textlayer的字符
+
+        this.idMapRegion=new Map();
 
         this.renderObject = {
             renderBackgrounds: new Array(),
@@ -1159,18 +1159,9 @@ export default class ElementController {
         }
     }
 
-    addBubbleSet(nodeIdArrays, colors, ids = null) {
-        if (Array.isArray(ids)) {
-            if (ids.length < nodeIdArrays.length) {
-                for (let i = ids.length; i < nodeIdArrays.length; i++) {
-                    ids.push(uuidv4());
-                }
-            }
-        } else {
-            ids = [];
-            for (let i = 0; i < nodeIdArrays.length; i++) {
-                ids.push(uuidv4())
-            }
+    addBubbleSet(nodeIdArrays, colors, id = null) {
+        if(!id){
+            id=uuidv4();
         }
         if (!Array.isArray(nodeIdArrays) || !Array.isArray(colors)) {
             throw new Error('invalid argument')
@@ -1180,6 +1171,7 @@ export default class ElementController {
                 colors.push("#fff");
             }
         }
+        const bubbleRegion=new BubbleRegion(id)
         nodeIdArrays.forEach((nodeIds, i) => {
             const backgrounds = [];
             nodeIds.forEach(id => {
@@ -1192,58 +1184,60 @@ export default class ElementController {
                     })
                 }
             })
-            const bubble = new Bubble(this.getNodes(nodeIds), backgrounds, colors[i],ids[i]);
-            this.bubbleInfo.bubbles.set(ids[i], bubble);
+            const bubble = new Bubble(this.getNodes(nodeIds), backgrounds, colors[i],bubbleRegion);
             bubble.setIndex(this.renderObject.renderBubble.length);
-            this.renderObject.renderBubble.push(bubble)
+            this.renderObject.renderBubble.push(bubble);
+            bubbleRegion.addBubble(bubble);
         });
+        this.idMapRegion.set(id,bubbleRegion);
         this.controller.canvasController.updateRenderObject({bubble:true});
-        return ids;
+        return id;
     }
 
     removeBubbleSet(ids=null){
-        if(this.bubbleInfo.bubbles.size===0){
+        if(this.idMapRegion.size<=0){
             return [];
         }
         if(Array.isArray(ids)){
             ids.forEach(id=>{
-                const bubble=this.bubbleInfo.bubbles.get(id);
-                const index=this.renderObject.renderBubble.indexOf(bubble);
-                
-                if(index>=0){
-                    this.renderObject.renderBubble.splice(index,1);
-                    this.bubbleInfo.bubbles.delete(id);
-                }
-                
+               this.idMapRegion.delete(id);
             })
+            const renderBubbles=[];
+            for(const region of this.idMapRegion.values()){
+                renderBubbles.push(...region.getBubbles());
+            }
+            this.renderObject.renderBubble=renderBubbles;
         }else{
-            this.bubbleInfo.bubbles=new Map();
+            this.idMapRegion=new Map();
             this.renderObject.renderBubble=new Array();
         }
         this.controller.canvasController.updateRenderObject({bubble:true});
-        return this.renderObject.renderBubble.map(v=>v.id)
+        return Array.from(this.idMapRegion.keys());
     }
 
     layoutBubbleSet(ids){
         if(ids){
-            const bubbles=[];
+            const regions=[];
             ids.forEach(id=>{
-                if(this.bubbleInfo.bubbles.has(id)){
-                    bubbles.push(this.bubbleInfo.bubbles.get(id));
+                if(this.idMapRegion.has(id)){
+                    regions.push(this.idMapRegion.get(id));
                 }
             });
-            this.controller.positionController.layoutBubbleSet(bubbles);
+            this.controller.positionController.layoutBubbleSet(regions);
         }else{
-            this.controller.positionController.layoutBubbleSet(Array.from(this.bubbleInfo.bubbles.values()));
+            this.controller.positionController.layoutBubbleSet(Array.from(this.idMapRegion.values()));
         }
         
     }
 
     rebuildBubble(){
-        if(this.bubbleInfo.bubbles.size>0){
-            for(const key of this.bubbleInfo.bubbles){
-                key[1].reCompute()
-            }
+        if(this.idMapRegion.size>0){
+           for(const region of this.idMapRegion.values()){
+               const bubbles=region.getBubbles();
+               bubbles.forEach(bubble=>{
+                   bubble.reCompute();
+               })
+           }
         }
     }
 
