@@ -22,6 +22,7 @@ export default class CanvasController {
         this.updateFlag = {
             position: 0,
             style: 0,
+            bubble:0,
         }
         this.animationData = [];
 
@@ -164,6 +165,7 @@ export default class CanvasController {
         const zoom = this.props.zoom;
         const styleFlag = this.updateFlag.style;
         const positionFlag = this.updateFlag.position;
+        const bubbleFlag=this.updateFlag.bubble;
         const invalidIcon = this.invalidIncons
         const fallbackUrl = this.props.defaultUrl
         const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderBubble } = this.renderObject;
@@ -178,7 +180,8 @@ export default class CanvasController {
                 getPolygon: d => d.polygon,
                 getFillColor: d => d.color,
                 updateTriggers: {
-                    getPolygon: positionFlag,
+                    getPolygon: positionFlag+bubbleFlag,
+
                 },
             });
 
@@ -1054,7 +1057,7 @@ export default class CanvasController {
     }
 
 
-    updateRenderObject({ renderObject, position, style }) {
+    updateRenderObject({ renderObject, position, style ,bubble}) {
         if (renderObject) {
             this.renderObject = renderObject;
             this.renderGraph();
@@ -1065,6 +1068,9 @@ export default class CanvasController {
 
             if (style) {
                 this.updateFlag.style = Math.random();
+            }
+            if(bubble){
+                this.updateFlag.bubble=Math.random();
             }
             this.updateRenderGraph();
         }

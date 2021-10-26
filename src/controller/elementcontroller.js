@@ -1209,6 +1209,7 @@ export default class ElementController {
             ids.forEach(id=>{
                 const bubble=this.bubbleInfo.bubbles.get(id);
                 const index=this.renderObject.renderBubble.indexOf(bubble);
+                
                 if(index>=0){
                     this.renderObject.renderBubble.splice(index,1);
                     this.bubbleInfo.bubbles.delete(id);
@@ -1219,7 +1220,7 @@ export default class ElementController {
             this.bubbleInfo.bubbles=new Map();
             this.renderObject.renderBubble=new Array();
         }
-        this.controller.canvasController.updateRenderObject({});
+        this.controller.canvasController.updateRenderObject({bubble:true});
         return this.renderObject.renderBubble.map(v=>v.id)
     }
 

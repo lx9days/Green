@@ -108,8 +108,7 @@ export default class PositionController {
             }
             bubble.reCompute();
         });
-        console.log(nodeIds);
-        this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, true])
+        this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, false])
 
     }
 
