@@ -1197,7 +1197,7 @@ export default class ElementController {
             bubble.setIndex(this.renderObject.renderBubble.length);
             this.renderObject.renderBubble.push(bubble)
         });
-        this.controller.canvasController.updateRenderObject({});
+        this.controller.canvasController.updateRenderObject({bubble:true});
         return ids;
     }
 
