@@ -488,7 +488,7 @@ function draw(rawData) {
         console.log(netGraph.removeBubbleSet(["one"]));
     });
     document.getElementById("layoutBubble").addEventListener("click",()=>{
-        netGraph.layoutBubbleSet();
+        netGraph.layoutBubbleSet(["two"]);
     });
     document.getElementById("addAnimation").addEventListener("click",()=>{
         axios.get("/src/animation.json").then((res)=>{
