@@ -335,7 +335,7 @@ export default class NetGraph {
      */
     addBubbleSet(nodeIdArrays,colors,id){
 
-        return this.controller.elementController.addBubbleSet(nodeIdArrays,colors,ids);
+        return this.controller.elementController.addBubbleSet(nodeIdArrays,colors,id);
     }
     /**
      *  删除指定的域
