@@ -187,8 +187,9 @@ export default class CanvasController {
 
         }
         let animationLayer = null;
-        let animationTrigger=Math.random();
+        
         if (this.animationData.length > 0) {
+            let animationTrigger=Math.random();
             animationLayer = new ScatterplotLayer({
                 id: 'animation-layer',
                 data: this.animationData,
@@ -1186,6 +1187,10 @@ export default class CanvasController {
     }
 
     updateAnimationData(animationData) {
+
         this.animationData = animationData;
+        if(this.animationData.length<=0){
+           this.updateRenderGraph();
+        }
     }
 }
