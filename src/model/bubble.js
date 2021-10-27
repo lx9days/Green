@@ -1,4 +1,5 @@
 import { BubbleSet, PointPath, BSplineShapeGenerator, ShapeSimplifier } from '../helper/bubbleset';
+import { isRGBA, rgbaStr2Array } from '../helper/util';
 import hexRgb from 'hex-rgb';
 export default class Bubble {
     constructor(originNodes, renderBackgrounds, color, region) {
@@ -7,11 +8,15 @@ export default class Bubble {
         if (Array.isArray(color)) {
             this.color = color
         } else {
-            const colorRGB = hexRgb(color);
-            this.color = [100, 111, 111, 160];
-            this.color[0] = colorRGB.red;
-            this.color[1] = colorRGB.green;
-            this.color[2] = colorRGB.blue;
+            if (isRGBA(color)) {
+                this.color = rgbaStr2Array(color)
+            } else {
+                const colorRGB = hexRgb(color);
+                this.color = [100, 111, 111, 255];
+                this.color[0] = colorRGB.red;
+                this.color[1] = colorRGB.green;
+                this.color[2] = colorRGB.blue;
+            }
         }
 
         this.renderbackgrounds = renderBackgrounds;
