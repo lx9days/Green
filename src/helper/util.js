@@ -306,12 +306,12 @@ function svgPathToPolygon(path){
 }
 
 function isRGBA(str){
-    return str.startsWith(str.trim())
+    return str.trim().toLowerCase().startsWith("rgba(");
 }
 
 function rgbaStr2Array(str){
     const resArray=[];
-    let tempStr=str.trim()
+    let tempStr=str.trim().toLowerCase();
     let leftIndex=tempStr.indexOf("(");
     let rightIndex=tempStr.indexOf(")");
     tempStr=tempStr.substring(leftIndex+1,rightIndex);
