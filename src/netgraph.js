@@ -330,10 +330,10 @@ export default class NetGraph {
      * 用户通过指定id、颜色、域id生成对应的域
      * @param {Array<Array>} nodeIdArrays node Id 数组的数组
      * @param {Array}} colors 不同域的颜色
-     * @param {Array} ids 每个域的id
+     * @param {String} id 域的id
      * @returns 所有域的id数组
      */
-    addBubbleSet(nodeIdArrays,colors,ids){
+    addBubbleSet(nodeIdArrays,colors,id){
 
         return this.controller.elementController.addBubbleSet(nodeIdArrays,colors,ids);
     }

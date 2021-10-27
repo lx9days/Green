@@ -1,4 +1,5 @@
 import hexRgb from 'hex-rgb';
+import { isRGBA, rgbaStr2Array } from '../helper/util';
 export default class FlowAnimation {
     constructor(params) {
         this.id = params.id;
@@ -6,15 +7,20 @@ export default class FlowAnimation {
         if (Array.isArray(params.color)) {
             this.color = params.color;
         } else {
-            const colorRGB = hexRgb(params.color);
-            this.color = [100, 111, 111, 255];
-            this.color[0] = colorRGB.red;
-            this.color[1] = colorRGB.green;
-            this.color[2] = colorRGB.blue;
+            if(isRGBA(params.color)){
+                this.color=rgbaStr2Array(params.color)
+            }else{
+                const colorRGB = hexRgb(params.color);
+                this.color = [100, 111, 111, 255];
+                this.color[0] = colorRGB.red;
+                this.color[1] = colorRGB.green;
+                this.color[2] = colorRGB.blue;
+            }
+           
         }
         this.name = params.name;
         this.time = params.speed * 1000;
-        this.unitTime = 40;
+        this.unitTime = 10;
         this.baseTime = 300000;
         this.ballBaseSize = 30;
         this.timer = [];

@@ -304,4 +304,29 @@ function svgPathToPolygon(path){
     });
     return polygons;
 }
-export { generatePolygon, getInteractionData, generateLinkLocation, isFunction, computePolygon, BFSTree, autoFitView ,svgPathToPolygon}
+
+function isRGBA(str){
+    return str.startsWith(str.trim())
+}
+
+function rgbaStr2Array(str){
+    const resArray=[];
+    let tempStr=str.trim()
+    let leftIndex=tempStr.indexOf("(");
+    let rightIndex=tempStr.indexOf(")");
+    tempStr=tempStr.substring(leftIndex+1,rightIndex);
+    const spileArray=tempStr.split(",");
+    if(spileArray.length===4){
+        spileArray.forEach((v,i)=>{
+            if(i!==3){
+                resArray.push(parseFloat(v));
+            }else{
+                resArray.push(parseFloat(v)*255);
+            }
+        })
+    }else{
+        throw new Error("not a rgba formt color");
+    }
+    return resArray;
+}
+export { generatePolygon, getInteractionData, generateLinkLocation, isFunction, computePolygon, BFSTree, autoFitView ,svgPathToPolygon,isRGBA,rgbaStr2Array}

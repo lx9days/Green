@@ -296,8 +296,8 @@ netGraph.replaceStyle([
 `fitView(nodeIds)`用于元素自适应窗口大小，主要是对画布根据元素的数量已经元素是否超出可见区域对画布进行一定的缩放操作使用户能够看到数据的所有内容,当`nodeIds`为`null`时或者用户直接调用`fitView()`会将画布上的所有的元素进行窗口适配,如果`nodeIds`为`ID`数组那个自适应窗口的操作只会根据指定的元素进行
 
 ### addBubbleSet
-`addBubbleSet(nodeIdArrays,colors,ids)`用于给一组元素添加域，用户需要指定每个域用包含的元素的`id`,每个域的背景颜色colors,以及每个人域的`id`,该方法会返回生成的所有的域的`id`数组，用户持有id后可以对该域进行其他操作例如删除指定的域
->`nodeIdArrays`的形式应该时`[["id1","id2"],['id3','id4']]`的形式,其中每个子数组对应一个域。对于colors和ids正常情况用户可以指定和域相同数量，如果数量和生成的域的数量不一致,会自动生成color和id进行补充
+`addBubbleSet(nodeIdArrays,colors,id)`用于给一组元素添加域，用户需要指定每个域用包含的元素的`id`,每个域的背景颜色colors,以及每个人域的`id`,该方法会返回生成的所有的域的`id`数组，用户持有id后可以对该域进行其他操作例如删除指定的域
+>`nodeIdArrays`的形式应该时`[["id1","id2"],['id3','id4']]`的形式,其中每个子数组对应一个域的区域。对于colors正常情况用户可以指定和域的区域相同数量，如果数量和生成的域的区域的数量不一致,会自动生成color进行补充
 ### removeBubbleSet
 `removeBubbleSet(ids)`该方法会删除id指定的域,如果用户不传递id或者传值为`null`会删除所有的域
 ### layoutBubbleSet
