@@ -14,7 +14,7 @@ export default class FlowAnimation {
         }
         this.name = params.name;
         this.time = params.speed * 1000;
-        this.unitTime = 40;
+        this.unitTime = 10;
         this.baseTime = 300000;
         this.ballBaseSize = 30;
         this.timer = [];
