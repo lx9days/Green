@@ -142,17 +142,34 @@ function draw(rawData) {
             container: 'container',
             maxZoom: 4,
             minZoom: -4,
-            // nodeHighlightColor:'#d9d9d9',
-            // nodeHighlightOpacity:0.5,
-            // lineHighlightColor:'#ffd53f',
-            // lineHighlightOpacity:0.5
         },
         constant:{
             nodeHighlightColor:'#d9d9d9',
             nodeHighlightOpacity:0.5,
             lineHighlightColor:'#ffd53f',
             lineHighlightOpacity:0.5,
-            defaultUrl:'/src/img1/a2.png'
+            // defaultUrl:'/src/img1/a2.png',
+            defaultUrlMap:{
+                "human":'/src/img1/a100.png',
+                "entity":'/src/img1/a101.png',
+                "animal":"/src/img1/a103.png",
+                "default":"/src/img1/a102.png",
+            },
+            defaultUrlFunc:(d)=>{
+                if(d.data.subType){
+                    return d.data.subType;
+                }else{
+                    if(d.data.type){
+                        return d.data.type;
+                    }else{
+                        if(d.data.metaType){
+                            return d.data.metaType;
+                        }else{
+                            return 'default';
+                        }
+                    }
+                }
+            }
         },
         layout: 'square',
         data: data,

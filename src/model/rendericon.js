@@ -21,6 +21,12 @@ export default class RenderIcon{
         this._generatePosition();
     }
 
+    get data(){
+        return this.origionElement.data;
+    }
+
+    
+
     rebuild(){
         this._generateStyle();
         this._generatePosition();

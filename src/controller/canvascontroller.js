@@ -167,7 +167,8 @@ export default class CanvasController {
         const positionFlag = this.updateFlag.position;
         const bubbleFlag=this.updateFlag.bubble;
         const invalidIcon = this.invalidIncons
-        const fallbackUrl = this.props.defaultUrl
+        const defaultUrlMap = this.props.defaultUrlMap;
+        const defaultUrlFunc=this.props.defaultUrlFunc;
         const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderBubble } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
@@ -229,7 +230,9 @@ export default class CanvasController {
             getPosition: d => d.position,
             positionFormat: 'XY',
             getIcon: d => ({
-                url: invalidIcon.has(d.url) ? fallbackUrl : d.url,
+                url: invalidIcon.has(d.url) ? function(d){
+                    return defaultUrlMap[defaultUrlFunc(d)];
+                }(d) : d.url,
                 width: d.style.iconHeight,
                 height: d.style.iconHeight,
                 anchorX: 0,
@@ -463,6 +466,9 @@ export default class CanvasController {
         const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
+        const invalidIcon = this.invalidIncons;
+        const defaultUrlMap=this.props.defaultUrlMap;
+        const defaultUrlFunc=this.props.defaultUrlFunc;
 
         const lineLayer = new LineLayer({
             id: 'line-layer',
@@ -487,7 +493,9 @@ export default class CanvasController {
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
             getIcon: d => ({
-                url: d.url,
+                url: invalidIcon.has(d.url) ? function(d){
+                    return defaultUrlMap[defaultUrlFunc(d)];
+                }() : d.url,
                 width: d.style.iconHeight,
                 height: d.style.iconHeight,
                 anchorX: 0,
@@ -656,11 +664,13 @@ export default class CanvasController {
 
 
         const zoom = this.props.zoom;
-        const invalidIcon = this.invalidIncons
-        const fallbackUrl = this.props.defaultUrl
+        const invalidIcon = this.invalidIncons;
         const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
+
+        const defaultUrlMap=this.props.defaultUrlMap;
+        const defaultUrlFunc=this.props.defaultUrlFunc;
 
         let animationLayer = null;
         if (this.animationData.length > 0) {
@@ -702,7 +712,10 @@ export default class CanvasController {
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
             getIcon: d => ({
-                url: invalidIcon.has(d.url) ? fallbackUrl : d.url,
+                url: invalidIcon.has(d.url) ? function(d){
+                    console.log(d)
+                    return defaultUrlMap[defaultUrlFunc(d)];
+                }(d) : d.url,
                 width: d.style.iconHeight,
                 height: d.style.iconHeight,
                 anchorX: 0,
