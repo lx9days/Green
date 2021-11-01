@@ -123,4 +123,23 @@ export default class AnimationController{
         }
         
     }
+
+    addFusionAnimation(data){
+        if(data.record&&data.record.length===2){
+            let delRecord=null;
+            let addRecord=null;
+            data.record.forEach(record=>{
+                if(record["method"]==="del_node"){
+                    delRecord=record;
+                }
+                if(record["method"]==="add_node"){
+                    addRecord=record;
+                }
+            });
+        }
+    }
+
+    runFusionAnimation(delRecord,addRecord){
+        
+    }
 }

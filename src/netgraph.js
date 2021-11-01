@@ -412,6 +412,14 @@ export default class NetGraph {
 
     }
 
+    addFusionAnimation(data){
+        if(data){
+            this.controller.animationController.addFusionAnimation(data);
+        }
+    }
+
+
+
     
     
 }

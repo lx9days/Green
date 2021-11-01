@@ -1,5 +1,5 @@
 import axios from 'axios';
-import NetGraph,{HIGHLIGHT,SELECTED,UNSELECTED} from '../../src/index';
+import NetGraph, { HIGHLIGHT, SELECTED, UNSELECTED } from '../../src/index';
 
 const debug = false;
 
@@ -9,13 +9,13 @@ axios.get('/src/auto_500.json').then((res) => {
     const links = res.data.links;
 
     nodes.forEach((node, i) => {
-        node.img = '/src/img1/b' + 0 + '.png';
+        node.img = '/src/img1/b' + i + '.png';
     });
-    console.log("nodelength",nodes.length);
-    console.log("linklength",links.length);
-   // const nodes=[]
+    console.log("nodelength", nodes.length);
+    console.log("linklength", links.length);
+    // const nodes=[]
     const data = {
-        nodes:nodes,
+        nodes: nodes,
         links,
     }
     draw(data);
@@ -56,8 +56,8 @@ function draw(rawData) {
                     id: 'a006',
                     name: '是',
                     img: '/src/img1/a1.png',
-                    type:'human',
-                    ca:false,
+                    type: 'human',
+                    ca: false,
                 },
                 {
                     id: 'a007',
@@ -74,57 +74,57 @@ function draw(rawData) {
                     id: 'a009',
                     name: '是',
                     img: '/src/img1/a4.png'
-                },{
+                }, {
                     id: 'a0010',
                     name: '是',
                     img: '/src/img1/a4.png'
                 }
             ],
-            links:[
+            links: [
                 {
-                    id:'link1',
+                    id: 'link1',
                     type: '但是',
                     from: 'a001',
                     to: 'a002',
-                },{
-                    id:'link2',
+                }, {
+                    id: 'link2',
                     type: '但是',
                     from: 'a001',
                     to: 'a003',
-                },{
-                    id:'link3',
+                }, {
+                    id: 'link3',
                     type: '但是',
                     from: 'a001',
                     to: 'a004',
-                },{
-                    id:'link4',
+                }, {
+                    id: 'link4',
                     type: '但是',
                     from: 'a001',
                     to: 'a005',
                 },
                 {
-                    id:'link5',
+                    id: 'link5',
                     type: '但是',
                     from: 'a001',
                     to: 'a006',
                 },
                 {
-                    id:'link6',
+                    id: 'link6',
                     type: '但是',
                     from: 'a001',
                     to: 'a007',
-                },{
-                    id:'link7',
+                }, {
+                    id: 'link7',
                     type: '但是',
                     from: 'a001',
                     to: 'a008',
-                },{
-                    id:'link8',
+                }, {
+                    id: 'link8',
                     type: '但是',
                     from: 'a001',
                     to: 'a009',
-                },{
-                    id:'link9',
+                }, {
+                    id: 'link9',
                     type: '但是',
                     from: 'a001',
                     to: 'a0010',
@@ -143,28 +143,28 @@ function draw(rawData) {
             maxZoom: 4,
             minZoom: -4,
         },
-        constant:{
-            nodeHighlightColor:'#d9d9d9',
-            nodeHighlightOpacity:0.5,
-            lineHighlightColor:'#ffd53f',
-            lineHighlightOpacity:0.5,
+        constant: {
+            nodeHighlightColor: '#d9d9d9',
+            nodeHighlightOpacity: 0.5,
+            lineHighlightColor: '#ffd53f',
+            lineHighlightOpacity: 0.5,
             // defaultUrl:'/src/img1/a2.png',
-            defaultUrlMap:{
-                "human":'/src/img1/a100.png',
-                "entity":'/src/img1/a101.png',
-                "animal":"/src/img1/a103.png",
-                "default":"/src/img1/a102.png",
+            defaultUrlMap: {
+                "human": '/src/img1/a100.png',
+                "entity": '/src/img1/a101.png',
+                "animal": "/src/img1/a103.png",
+                "default": "/src/img1/a102.png",
             },
-            defaultUrlFunc:(d)=>{
-                if(d.data.subType){
+            defaultUrlFunc: (d) => {
+                if (d.data.subType) {
                     return d.data.subType;
-                }else{
-                    if(d.data.type){
+                } else {
+                    if (d.data.type) {
                         return d.data.type;
-                    }else{
-                        if(d.data.metaType){
+                    } else {
+                        if (d.data.metaType) {
                             return d.data.metaType;
-                        }else{
+                        } else {
                             return 'default';
                         }
                     }
@@ -179,8 +179,8 @@ function draw(rawData) {
                 style: {
                     'width': 45,
                     'height': 45,
-                    'background-width':62,
-                    'background-height':62,
+                    'background-width': 62,
+                    'background-height': 62,
                     'url': (d) => d.data.img,
                     'opacity': 1,
                     'background-color': '#ffd53f',
@@ -193,13 +193,13 @@ function draw(rawData) {
                     'font-size': 16,
                     'text': (d) => d.data.name,
                     'shape': 'rect',
-                    'highlight-color':"#Fff0BC",
-                    'highlight-opacity':0.8,
-                    "label-style":{
-                        'url':'/src/img1/a3.png',
-                        'width':15,
-                        'height':15,
-                        'position':'left-top',
+                    'highlight-color': "#Fff0BC",
+                    'highlight-opacity': 0.8,
+                    "label-style": {
+                        'url': '/src/img1/a3.png',
+                        'width': 15,
+                        'height': 15,
+                        'position': 'left-top',
                     }
                 }
             },
@@ -210,53 +210,54 @@ function draw(rawData) {
                     'line-color': '#456456',
                     'line-opacity': 1,
                     'text-opacity': 1,
-                    'text-color':"#456456",
+                    'text-color': "#456456",
                     'font-size': 10,
                     'text': (d) => d.data.type,
-                    'direct':(d)=>d.data.direct
+                    'direct': (d) => d.data.direct
                 }
             },
             {
-                selector:'node.fff',
-                style:{
+                selector: 'node.fff',
+                style: {
                     'background-color': '#fff',
                 }
             }
             ,
             {
-                selector:"link.selected",
+                selector: "link.selected",
                 style: {
                     'line-color': '#fff',
                 }
             }
         ]
     });
-    let timeout=null
 
-    netGraph.addEventListener('canvasMouseDown',(e)=>{
-        timeout=setTimeout(()=>{
+    
+    let timeout = null;
+    netGraph.addEventListener('canvasMouseDown', (e) => {
+        timeout = setTimeout(() => {
             netGraph.showBrushArea()
-        },2000)
+        }, 2000)
     });
-    netGraph.addEventListener('canvasMouseUp',(e)=>{
-        if(timeout){
+    netGraph.addEventListener('canvasMouseUp', (e) => {
+        if (timeout) {
             clearTimeout(timeout)
         }
     })
-    netGraph.addEventListener('canvasMouseMove',(e)=>{
-        if(timeout){
+    netGraph.addEventListener('canvasMouseMove', (e) => {
+        if (timeout) {
             clearTimeout(timeout)
         }
     })
 
 
     netGraph.addEventListener('nodeClick', (object, e) => {
-        console.log(object.object.id,e);
-        netGraph.updateNodeStatus([object.object.id],SELECTED)
+        console.log(object.object.id, e);
+        netGraph.updateNodeStatus([object.object.id], SELECTED)
         //netGraph.replaceData();
     });
     netGraph.addEventListener('nodeClickWithCtrl', (info, e) => {
-        netGraph.addClassForNode(['a005'],['fff','class2'])
+        netGraph.addClassForNode(['a005'], ['fff', 'class2'])
         console.log('nodeClickWithCtrl');
     });
 
@@ -264,7 +265,7 @@ function draw(rawData) {
         console.log('lineClick');
     });
     netGraph.addEventListener('canvasRightClick', (info, e) => {
-       // console.log(netGraph.exportCanvasAsBase64())
+        // console.log(netGraph.exportCanvasAsBase64())
         console.log('canvas right click')
     })
     netGraph.addEventListener('lineClickWithCtrl', (o, e) => {
@@ -296,7 +297,7 @@ function draw(rawData) {
     })
 
     netGraph.addEventListener('brush', (nodeIds) => {
-        netGraph.updateNodeStatus(nodeIds,SELECTED)
+        netGraph.updateNodeStatus(nodeIds, SELECTED)
     });
 
 
@@ -322,8 +323,8 @@ function draw(rawData) {
             style: {
                 'width': 60,
                 'height': 60,
-                'background-width':100,
-                'background-height':70,
+                'background-width': 100,
+                'background-height': 70,
                 'url': (d) => d.data.img,
                 'opacity': 1,
                 'background-color': '#ffd53f',
@@ -336,8 +337,8 @@ function draw(rawData) {
                 'font-size': 16,
                 'text': (d) => d.data.name,
                 'shape': 'rect',
-                'highlight-color':"#Fff0BC",
-                'highlight-opacity':0.5
+                'highlight-color': "#Fff0BC",
+                'highlight-opacity': 0.5
             }
         },]);
     });
@@ -355,7 +356,7 @@ function draw(rawData) {
     document.getElementById('brush').addEventListener('click', () => {
 
         netGraph.showBrushArea();
-        
+
     });
 
     // new NetworkChart({
@@ -366,23 +367,23 @@ function draw(rawData) {
     //     },
     //     ...
     //   });
-    let isGroup=false;
+    let isGroup = false;
     document.getElementById('groupDrag').addEventListener('click', () => {
-       
+
         netGraph.setGroupDrag(!isGroup)
-        isGroup=!isGroup
+        isGroup = !isGroup
     });
 
 
     document.getElementById('addClass').addEventListener('click', () => {
         netGraph.addClassForNode(['5c2f3ba4d6943955a3b823e8518babd4'], ['fff']);
-       // netGraph.updateStyle();
+        // netGraph.updateStyle();
     })
 
 
-    document.getElementById('updateLinkStyle').addEventListener('click',()=>{
+    document.getElementById('updateLinkStyle').addEventListener('click', () => {
 
-       
+
         // netGraph.addStyle([{
         //     selector:"link.selected",
         //     style: {
@@ -390,29 +391,29 @@ function draw(rawData) {
         //     }
         // }],false);
 
-        netGraph.addClassForLink(['MG_8cb555585f988b72b61bd42c7ebe4b5f'],['selected'])
+        netGraph.addClassForLink(['MG_8cb555585f988b72b61bd42c7ebe4b5f'], ['selected'])
 
 
     })
 
-    document.getElementById("lockNode").addEventListener("click",()=>{
+    document.getElementById("lockNode").addEventListener("click", () => {
         netGraph.lockNodes(["3ded00b898c73c11a72558530859568d"])
     })
-    document.getElementById("unlockNode").addEventListener("click",()=>{
+    document.getElementById("unlockNode").addEventListener("click", () => {
         netGraph.unlockNodes(["3ded00b898c73c11a72558530859568d"])
     });
-    document.getElementById("alterStatus").addEventListener("click",()=>{
+    document.getElementById("alterStatus").addEventListener("click", () => {
         const selectedNodes = netGraph.getNodes();
         const selectedNodeIds = new Array();
         selectedNodes.map((v, i) => {
             selectedNodeIds.push(v.getId());
         });
-        netGraph.updateNodeStatus(selectedNodeIds,UNSELECTED)
+        netGraph.updateNodeStatus(selectedNodeIds, UNSELECTED)
     });
-    document.getElementById("replaceData").addEventListener("click",()=>{
+    document.getElementById("replaceData").addEventListener("click", () => {
 
         netGraph.replaceData({
-            nodes:[],
+            nodes: [],
         })
         console.log(netGraph.getNodes(["a001"]))
         console.log(netGraph.getLinks())
@@ -470,26 +471,26 @@ function draw(rawData) {
         })
     });
 
-    document.getElementById("treeLayout").addEventListener("click",()=>{
-        netGraph.setNodeLayout('hierarchy',["2786b7455ff93ce7ad0fc4a4cfe5bd21","61c90e594b88372f8fa3217c150656f0"]);
+    document.getElementById("treeLayout").addEventListener("click", () => {
+        netGraph.setNodeLayout('hierarchy', ["2786b7455ff93ce7ad0fc4a4cfe5bd21", "61c90e594b88372f8fa3217c150656f0"]);
     });
-    document.getElementById("zoom").addEventListener("click",()=>{
-        let zoomNum=netGraph.getZoom();
+    document.getElementById("zoom").addEventListener("click", () => {
+        let zoomNum = netGraph.getZoom();
         console.log(zoomNum)
-        zoomNum+=0.4;
-        if(zoomNum>4){
-            zoomNum=-3;
+        zoomNum += 0.4;
+        if (zoomNum > 4) {
+            zoomNum = -3;
         }
         netGraph.setZoom(zoomNum)
     });
-    document.getElementById("scroll").addEventListener("click",()=>{
+    document.getElementById("scroll").addEventListener("click", () => {
         netGraph.scrollIntoView("3ded00b898c73c11a72558530859568d");
     });
-    document.getElementById("fitView").addEventListener("click",()=>{
+    document.getElementById("fitView").addEventListener("click", () => {
         netGraph.fitView(null);
     })
 
-    document.getElementById("auto").addEventListener("click",()=>{
+    document.getElementById("auto").addEventListener("click", () => {
         const selectedNodes = netGraph.getSelectedNodes();
         const selectedNodeIds = new Array();
         selectedNodes.map((v, i) => {
@@ -497,29 +498,31 @@ function draw(rawData) {
         });
         netGraph.setNodeLayout('auto');
     });
-    document.getElementById("addBubble").addEventListener("click",()=>{
-        const nodeIds=netGraph.getSelectedNodes().map(v=>v.id);
-       netGraph.addBubbleSet([nodeIds,["b001","b002","b003","b004","b005","b006","b007"]],["#d7473a","#4ea79b"],"one");
+    document.getElementById("addBubble").addEventListener("click", () => {
+        const nodeIds = netGraph.getSelectedNodes().map(v => v.id);
+        netGraph.addBubbleSet([nodeIds, ["b001", "b002", "b003", "b004", "b005", "b006", "b007"]], ["#d7473a", "#4ea79b"], "one");
     });
-    document.getElementById("layoutBubble").addEventListener("click",()=>{
+    document.getElementById("layoutBubble").addEventListener("click", () => {
         netGraph.layoutBubbleSet(["one"]);
     });
-    document.getElementById("removeBubble").addEventListener("click",()=>{
+    document.getElementById("removeBubble").addEventListener("click", () => {
         console.log(netGraph.removeBubbleSet(["one"]));
     });
-   
-    document.getElementById("addAnimation").addEventListener("click",()=>{
-        axios.get("/src/animation.json").then((res)=>{
+
+    document.getElementById("addAnimation").addEventListener("click", () => {
+        axios.get("/src/animation.json").then((res) => {
             netGraph.addFlowAnimation(res.data.data)
         })
     });
-    document.getElementById("pauseAnimation").addEventListener("click",()=>{
+    document.getElementById("pauseAnimation").addEventListener("click", () => {
         netGraph.pauseFlowAnimation(["flow_one"]);
     });
-    document.getElementById("restartAnimation").addEventListener("click",()=>{
+    document.getElementById("restartAnimation").addEventListener("click", () => {
         netGraph.restartFlowAnimation(["flow_one"]);
     })
-    document.getElementById("removeAnimation").addEventListener("click",()=>{
+    document.getElementById("removeAnimation").addEventListener("click", () => {
+       
+
         netGraph.removeFlowAnimation()
     })
 }

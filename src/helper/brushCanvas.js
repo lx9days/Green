@@ -32,6 +32,8 @@ export default class BrushCanvas {
     _initDeck() {
         const container = document.getElementById(this.props.container);
         this.canvas = document.createElement('canvas');
+        this.canvas.width=this.props.width;
+        this.canvas.height=this.props.height;
         container.appendChild(this.canvas);
         const viewState = this.props.viewState;
         this.gl = this.canvas.getContext('webgl2');
@@ -58,9 +60,11 @@ export default class BrushCanvas {
                 x:0,
                 y:0,
                 id: 'globalView',
-                width: this.props.width,
-                height: this.props.height,
+                width: '100%',
+                height: '100%',
             }),
+            width: this.props.width,
+            height: this.props.height,
             controller: false,
             initialViewState: viewState,
             getCursor:()=>"crosshair",

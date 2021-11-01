@@ -495,7 +495,7 @@ export default class CanvasController {
             getIcon: d => ({
                 url: invalidIcon.has(d.url) ? function(d){
                     return defaultUrlMap[defaultUrlFunc(d)];
-                }() : d.url,
+                }(d) : d.url,
                 width: d.style.iconHeight,
                 height: d.style.iconHeight,
                 anchorX: 0,
@@ -508,9 +508,6 @@ export default class CanvasController {
                 },
                 getSize: d => d.style.iconSize * (2 ** zoom),
             },
-            onIconError: () => {
-                console.log(arguments)
-            }
         });
         const rectBackgroundLayer = new PolygonLayer({
             id: 'rect-background-layer',
@@ -1007,7 +1004,7 @@ export default class CanvasController {
             this.eventController.fire('nodeDraging', [info, e]);
             setTimeout(() => {
                 this.dragDoune = false;
-            }, 220)
+            }, 100)
         }
 
         return true;
@@ -1205,5 +1202,6 @@ export default class CanvasController {
         if(this.animationData.length<=0){
            this.updateRenderGraph();
         }
+       
     }
 }
