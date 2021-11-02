@@ -412,9 +412,23 @@ export default class NetGraph {
 
     }
 
+    /**
+     * 创建消融动画 
+     * @param {Object} data 用户生成消融动画的数据
+     */
     addFusionAnimation(data){
         if(data){
             this.controller.animationController.addFusionAnimation(data);
+        }
+    }
+
+    /**
+     * 替换默认url映射
+     * @param {Map} defalutUrlMap 默认UrlMap
+     */
+    replaceDefaultUrlMap(defalutUrlMap){
+        if(defalutUrlMap){
+            this.controller.canvasController.replaceDefaultUrlMap(defalutUrlMap);
         }
     }
 

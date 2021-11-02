@@ -710,7 +710,6 @@ export default class CanvasController {
             getPosition: d => d.position,
             getIcon: d => ({
                 url: invalidIcon.has(d.url) ? function(d){
-                    console.log(d)
                     return defaultUrlMap[defaultUrlFunc(d)];
                 }(d) : d.url,
                 width: d.style.iconHeight,
@@ -1071,7 +1070,6 @@ export default class CanvasController {
     updateRenderObject({ renderObject, position, style ,bubble}) {
         if (renderObject) {
             this.renderObject = renderObject;
-            console.log(renderObject);
             this.renderGraph();
         } else {
             if (position) {
@@ -1183,9 +1181,6 @@ export default class CanvasController {
         if (isNeedUpdate) {
             this.updateRenderGraph();
         }
-
-
-
     }
 
     scrollIntoView(target) {
@@ -1203,6 +1198,10 @@ export default class CanvasController {
         if(this.animationData.length<=0){
            this.updateRenderGraph();
         }
-       
+    }
+
+    replaceDefaultUrlMap(defaultUrlMap){
+        this.props.defaultUrlMap=defaultUrlMap;
+        this.renderGraph();
     }
 }
