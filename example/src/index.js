@@ -532,7 +532,9 @@ function draw(rawData) {
                 method:"add_node",
                 params:[
                     {
-                        id:"80b55436e31238928e1b753b2611485c",
+                        id:"80b55436e31238928e1b753b2611485c", 
+                        name: '你哈',
+                        img: '/src/img1/a10.png',
                     }
                 ]
             }]

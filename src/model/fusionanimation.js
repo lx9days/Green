@@ -29,7 +29,7 @@ export default class FusionAnimation {
                     node.data = this.saveParams;
                 }
             })
-            controller.fusionElements(this.deleteNodes[0].id === this.saveNode ? this.deleteNodes[1].id : this.saveNode,this.saveNode);
+            controller.fusionElements(this.deleteNodes[0].id === this.saveNode ? this.deleteNodes[1].id : this.deleteNodes[0].id,this.saveNode);
         }
 
         function intervalFunc(deleteNodes) {

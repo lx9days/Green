@@ -1246,16 +1246,19 @@ export default class ElementController {
         if (!this.nodeRenderMap.has(updateId)) {
             return;
         }
-        const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs } = this.nodeRenderMap.get(id);
+        const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs } = this.nodeRenderMap.get(updateId);
         iconObjs.forEach((iconObj) => {
             iconObj.rebuild();
         });
+        console.log(iconObjs);
         backgroundObjs.forEach((borderObj) => {
             borderObj.rebuild();
         });
         textObjs.forEach((textObj) => {
             textObj.rebuild();
+            this._generateCharSet(textObj.text);
         });
+        this.renderObject.charSet=Array.from(this.characterSet);
         markObjs.forEach(mark => {
             mark.rebuild();
         });
