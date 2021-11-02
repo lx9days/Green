@@ -126,19 +126,27 @@ export default class AnimationController{
     }
 
     addFusionAnimation(data){
-        if(data.record&&data.record.length===2){
-            let delRecord=null;
-            let addRecord=null;
+        if(data.record&&data.record.length>=2){
+            let delNodeRecord=null;
+            let addNodeRecord=null;
+            let delLinkRecord=null;
+            let addLinkRecord=null;
             data.record.forEach(record=>{
                 if(record["method"]==="del_node"){
-                    delRecord=record;
+                    delNodeRecord=record;
                 }
                 if(record["method"]==="add_node"){
-                    addRecord=record;
+                    addNodeRecord=record;
+                }
+                if(record["method"]==="del_link"){
+                    delLinkRecord=record;
+                }
+                if(record["method"]==="add_link"){
+                    addLinkRecord=record;
                 }
             });
             const deleteNodes=[];
-            delRecord.params.forEach((id)=>{
+            delNodeRecord.params.forEach((id)=>{
                 const node=this.controller.elementController.getNode(id);
                 if(node){
                     deleteNodes.push(node);
@@ -146,7 +154,13 @@ export default class AnimationController{
                     throw new Error("cannot find node id:"+id);
                 }
             });
-            const fusionAnimation=new FusionAnimation({deleteNodes,saveNode:addRecord.params[0].id,saveParams:addRecord.params[0]});
+            const params={
+                deleteNodes,
+                saveNode:addNodeRecord.params[0],
+                deleteLinkIds:delLinkRecord.params,
+                addLinkData:addLinkRecord.params
+            }
+            const fusionAnimation=new FusionAnimation(params);
             fusionAnimation.run(this.controller.elementController);
         }
     }

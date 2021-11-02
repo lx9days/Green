@@ -6,7 +6,8 @@ export default class FusionAnimation {
         this.timer = null;
         this.deleteNodes = params.deleteNodes;
         this.saveNode = params.saveNode;
-        this.saveParams = params.saveParams;
+        this.deleteLinkIds=params.deleteLinkIds;
+        this.addLinkData=params.addLinkData;
         this.status = "";
     }
 
@@ -25,11 +26,17 @@ export default class FusionAnimation {
                 clearInterval(this.timer);
             }
             this.deleteNodes.forEach(node => {
-                if (node.id === this.saveNode) {
-                    node.data = this.saveParams;
+                if (node.id === this.saveNode.id) {
+                    node.data = this.saveNode;
                 }
-            })
-            controller.fusionElements(this.deleteNodes[0].id === this.saveNode ? this.deleteNodes[1].id : this.deleteNodes[0].id,this.saveNode);
+            });
+            const fusionParams={
+                deleteNodeId:this.deleteNodes[0].id === this.saveNode.id ? this.deleteNodes[1].id : this.deleteNodes[0].id,
+                saveNodeId:this.saveNode.id,
+                deleteLinkIds:this.deleteLinkIds,
+                addLinkData:this.addLinkData,
+            }
+            controller.fusionElements(fusionParams);
         }
 
         function intervalFunc(deleteNodes) {

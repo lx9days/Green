@@ -9,7 +9,7 @@ axios.get('/src/auto_500.json').then((res) => {
     const links = res.data.links;
 
     nodes.forEach((node, i) => {
-        node.img = '/src/img1/b' + i + '.png';
+        node.img = '/src/img1/a' + i + '.png';
     });
     console.log("nodelength", nodes.length);
     console.log("linklength", links.length);
@@ -541,6 +541,20 @@ function draw(rawData) {
                         img: '/src/img1/a10.png',
                     }
                 ]
+            }, {
+                method: "del_link",
+                params: ["MG_8209bb0a976600ee8f4be8749c1eb78c", "MG_794dbaf446bae70c486720216e4b5747", "MG_d52a6fa1404fd8b43464beeb16c8f85b"],
+            }, {
+                method: "add_link",
+                params: [{
+                    "direct": true,
+                    "e_type": 0,
+                    "from": "80b55436e31238928e1b753b2611485c",
+                    "id": "fjsdlkjflksdjflkjds",
+                    "to": "1f56770072803b819da91b3ae1f2a6c4",
+                    "type": "玩的接口",
+                    "undirected_type": "set_off"
+                }]
             }]
         }
         netGraph.addFusionAnimation(data);
@@ -555,7 +569,6 @@ function draw(rawData) {
         })
     })
 }
-//draw();
 
 
 
