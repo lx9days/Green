@@ -1,5 +1,6 @@
 import FlowAnimation from "../model/flowanimation";
 import FlowBall from "../model/flowball";
+import FusionAnimation from "../model/fusionanimation";
 
 export default class AnimationController{
     constructor(controller){
@@ -136,10 +137,17 @@ export default class AnimationController{
                     addRecord=record;
                 }
             });
+            const deleteNodes=[];
+            delRecord.params.forEach((id)=>{
+                const node=this.controller.elementController.getNode(id);
+                if(node){
+                    deleteNodes.push(node);
+                }else{
+                    throw new Error("cannot find node id:"+id);
+                }
+            });
+            const fusionAnimation=new FusionAnimation({deleteNodes,saveNode:addRecord.params[0].id,saveParams:addRecord.params[0]});
+            fusionAnimation.run(this.controller.elementController);
         }
-    }
-
-    runFusionAnimation(delRecord,addRecord){
-        
     }
 }

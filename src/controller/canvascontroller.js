@@ -1071,6 +1071,7 @@ export default class CanvasController {
     updateRenderObject({ renderObject, position, style ,bubble}) {
         if (renderObject) {
             this.renderObject = renderObject;
+            console.log(renderObject);
             this.renderGraph();
         } else {
             if (position) {

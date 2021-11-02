@@ -82,7 +82,7 @@ export default class ElementController {
     }
     //初始化数据结构
     _init(controller) {
-        
+
         this.nodes = new Array();
         this.links = new Array();
         this.controller = controller;
@@ -93,7 +93,7 @@ export default class ElementController {
         this.linkRenderMap = new Map();// link id 映射该link 对应的所有的 renderobj
         this.characterSet = new Set();//保存textlayer的字符
 
-        this.idMapRegion=new Map();
+        this.idMapRegion = new Map();
 
         this.renderObject = {
             renderBackgrounds: new Array(),
@@ -257,7 +257,7 @@ export default class ElementController {
             });
         }
         this.renderObject.charSet = Array.from(this.characterSet);
-        this.controller.canvasController.updateRenderObject({renderObject:this.renderObject});
+        this.controller.canvasController.updateRenderObject({ renderObject: this.renderObject });
 
 
 
@@ -441,8 +441,8 @@ export default class ElementController {
         }
     }
 
-    getNode(id){
-        if(id){
+    getNode(id) {
+        if (id) {
             return this.idMapNode.get(id);
         }
         return null;
@@ -463,8 +463,8 @@ export default class ElementController {
             return this.links;
         }
     }
-    getLink(linkId){
-        if(linkId){
+    getLink(linkId) {
+        if (linkId) {
             return this.idMapLink.get(linkId)
         }
         return null;
@@ -506,7 +506,7 @@ export default class ElementController {
             }
         });
         this.updateNodeStatus(nodeIds, 2);
-        this.controller.canvasController.updateRenderObject({style:1});
+        this.controller.canvasController.updateRenderObject({ style: 1 });
     }
     /**
      * 根据node id 删除 node
@@ -652,7 +652,7 @@ export default class ElementController {
             });
             this._removeRenderObjectForLink(linkIds);
         }
-        this.controller.canvasController.updateRenderObject({renderObject:this.renderObject});
+        this.controller.canvasController.updateRenderObject({ renderObject: this.renderObject });
 
     }
     //隐藏node
@@ -745,7 +745,7 @@ export default class ElementController {
                 this.updateLinkStatus(Array.from(idsSet), status);
             }
         }
-        this.controller.canvasController.updateRenderObject({style:1});
+        this.controller.canvasController.updateRenderObject({ style: 1 });
 
     }
     /**
@@ -995,7 +995,7 @@ export default class ElementController {
                 }
             }
         }
-        this.controller.canvasController.updateRenderObject({style:1});
+        this.controller.canvasController.updateRenderObject({ style: 1 });
 
     }
 
@@ -1008,7 +1008,7 @@ export default class ElementController {
 
 
     updateEntityPosition(nodeIds = null, layout = false) {
-        
+
         if (nodeIds) {
             const needUpdateLinks = [];
             nodeIds.forEach((id) => {
@@ -1087,12 +1087,12 @@ export default class ElementController {
             });
         }
         this.rebuildBubble()
-        
+
         if (!layout) {
-            this.controller.canvasController.updateRenderObject({position:1});
+            this.controller.canvasController.updateRenderObject({ position: 1 });
         } else {
             //修改todo
-            this.controller.canvasController.updateRenderObject({position:1});
+            this.controller.canvasController.updateRenderObject({ position: 1 });
             this.fitView(nodeIds)
         }
 
@@ -1160,8 +1160,8 @@ export default class ElementController {
     }
 
     addBubbleSet(nodeIdArrays, colors, id = null) {
-        if(!id){
-            id=uuidv4();
+        if (!id) {
+            id = uuidv4();
         }
         if (!Array.isArray(nodeIdArrays) || !Array.isArray(colors)) {
             throw new Error('invalid argument')
@@ -1171,7 +1171,7 @@ export default class ElementController {
                 colors.push("#fff");
             }
         }
-        const bubbleRegion=new BubbleRegion(id)
+        const bubbleRegion = new BubbleRegion(id)
         nodeIdArrays.forEach((nodeIds, i) => {
             const backgrounds = [];
             nodeIds.forEach(id => {
@@ -1184,61 +1184,88 @@ export default class ElementController {
                     })
                 }
             })
-            const bubble = new Bubble(this.getNodes(nodeIds), backgrounds, colors[i],bubbleRegion);
+            const bubble = new Bubble(this.getNodes(nodeIds), backgrounds, colors[i], bubbleRegion);
             bubble.setIndex(this.renderObject.renderBubble.length);
             this.renderObject.renderBubble.push(bubble);
             bubbleRegion.addBubble(bubble);
         });
-        this.idMapRegion.set(id,bubbleRegion);
-        this.controller.canvasController.updateRenderObject({bubble:true});
+        this.idMapRegion.set(id, bubbleRegion);
+        this.controller.canvasController.updateRenderObject({ bubble: true });
         return id;
     }
 
-    removeBubbleSet(ids=null){
-        if(this.idMapRegion.size<=0){
+    removeBubbleSet(ids = null) {
+        if (this.idMapRegion.size <= 0) {
             return [];
         }
-        if(Array.isArray(ids)){
-            ids.forEach(id=>{
-               this.idMapRegion.delete(id);
+        if (Array.isArray(ids)) {
+            ids.forEach(id => {
+                this.idMapRegion.delete(id);
             })
-            const renderBubbles=[];
-            for(const region of this.idMapRegion.values()){
+            const renderBubbles = [];
+            for (const region of this.idMapRegion.values()) {
                 renderBubbles.push(...region.getBubbles());
             }
-            this.renderObject.renderBubble=renderBubbles;
-        }else{
-            this.idMapRegion=new Map();
-            this.renderObject.renderBubble=new Array();
+            this.renderObject.renderBubble = renderBubbles;
+        } else {
+            this.idMapRegion = new Map();
+            this.renderObject.renderBubble = new Array();
         }
-        this.controller.canvasController.updateRenderObject({bubble:true});
+        this.controller.canvasController.updateRenderObject({ bubble: true });
         return Array.from(this.idMapRegion.keys());
     }
 
-    layoutBubbleSet(ids){
-        if(ids){
-            const regions=[];
-            ids.forEach(id=>{
-                if(this.idMapRegion.has(id)){
+    layoutBubbleSet(ids) {
+        if (ids) {
+            const regions = [];
+            ids.forEach(id => {
+                if (this.idMapRegion.has(id)) {
                     regions.push(this.idMapRegion.get(id));
                 }
             });
             this.controller.positionController.layoutBubbleSet(regions);
-        }else{
+        } else {
             this.controller.positionController.layoutBubbleSet(Array.from(this.idMapRegion.values()));
         }
-        
+
     }
 
-    rebuildBubble(){
-        if(this.idMapRegion.size>0){
-           for(const region of this.idMapRegion.values()){
-               const bubbles=region.getBubbles();
-               bubbles.forEach(bubble=>{
-                   bubble.reCompute();
-               })
-           }
+    rebuildBubble() {
+        if (this.idMapRegion.size > 0) {
+            for (const region of this.idMapRegion.values()) {
+                const bubbles = region.getBubbles();
+                bubbles.forEach(bubble => {
+                    bubble.reCompute();
+                })
+            }
         }
+    }
+
+    fusionElements(deleteId, updateId) {
+
+        if (!this.nodeRenderMap.has(updateId)) {
+            return;
+        }
+        const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs } = this.nodeRenderMap.get(updateId);
+        iconObjs.forEach((iconObj) => {
+            iconObj.rebuild();
+        });
+        console.log(iconObjs);
+        backgroundObjs.forEach((borderObj) => {
+            borderObj.rebuild();
+        });
+        textObjs.forEach((textObj) => {
+            textObj.rebuild();
+            this._generateCharSet(textObj.text);
+        });
+        this.renderObject.charSet=Array.from(this.characterSet);
+        markObjs.forEach(mark => {
+            mark.rebuild();
+        });
+        labelObjs.forEach(label => {
+            label.rebuild();
+        });
+        this.removeNodes([deleteId]);
     }
 
 }
