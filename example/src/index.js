@@ -9,7 +9,7 @@ axios.get('/src/auto_500.json').then((res) => {
     const links = res.data.links;
 
     nodes.forEach((node, i) => {
-        node.img = '/src/img1/a' + i + '.png';
+        node.img = '/src/img1/b' + i + '.png';
     });
     console.log("nodelength", nodes.length);
     console.log("linklength", links.length);
@@ -523,23 +523,36 @@ function draw(rawData) {
     document.getElementById("removeAnimation").addEventListener("click", () => {
         netGraph.removeFlowAnimation()
     });
-    document.getElementById("addFusion").addEventListener("click",()=>{
-        const data={
-            record:[{
-                method:"del_node",
-                params:["01cc378b0ebe3ad6b82c4a13e0767d47","80b55436e31238928e1b753b2611485c"]
-            },{
-                method:"add_node",
-                params:[
+
+
+    document.getElementById("addFusion").addEventListener("click", () => {
+
+
+        const data = {
+            record: [{
+                method: "del_node",
+                params: ["01cc378b0ebe3ad6b82c4a13e0767d47", "80b55436e31238928e1b753b2611485c"]
+            }, {
+                method: "add_node",
+                params: [
                     {
-                        id:"80b55436e31238928e1b753b2611485c", 
+                        id: "80b55436e31238928e1b753b2611485c",
                         name: '你哈',
                         img: '/src/img1/a10.png',
                     }
                 ]
             }]
         }
-        netGraph.addFusionAnimation(data)
+        netGraph.addFusionAnimation(data);
+    });
+
+    document.getElementById("updateUrlMap").addEventListener("click", () => {
+        netGraph.replaceDefaultUrlMap({
+            "human": '/src/img1/a104.png',
+            "entity": '/src/img1/a106.png',
+            "animal": "/src/img1/a105.png",
+            "default": "/src/img1/a107.png",
+        })
     })
 }
 //draw();

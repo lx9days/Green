@@ -50,6 +50,8 @@
     - [pauseFlowAnimation](#pauseflowanimation)
     - [restartFlowAnimation](#restartflowanimation)
     - [getFlowAnimationIdByStatus](#getflowanimationidbystatus)
+    - [addFusionAnimation](#addfusionanimation)
+    - [replaceDefaultUrlMap](#replacedefaulturlmap)
 
 
 ## API detail
@@ -340,3 +342,32 @@ netGraph.replaceStyle([
 `restartFlowAnimation(flowIds)`根据用户提供的`flowid`数组来重启被暂停的流动画,如果调用但是不传递参数会将所有的动画重新开始
 ### getFlowAnimationIdByStatus
 `getFlowAnimationIdByStatus(status)`根据用户指定的状态来获取流动画的id,用户利用id进行其他操作，如果调用但是不传递参数将会获取到所有动画的id
+### addFusionAnimation
+`addFusionAnimation(data)`创建一个消融动画，将两个结点合并成一个,数据格式如下:
+```javascript
+  const data = {
+            record: [{
+                method: "del_node",
+                params: ["01cc378b0ebe3ad6b82c4a13e0767d47", "80b55436e31238928e1b753b2611485c"]
+            }, {
+                method: "add_node",
+                params: [
+                    {
+                        id: "80b55436e31238928e1b753b2611485c",
+                        name: '你哈',
+                        img: '/src/img1/a10.png',
+                    }
+                ]
+            }]
+        }
+```
+### replaceDefaultUrlMap
+`replaceDefaultUrlMap(defaultUrlMap)`将已有的默认的类型-》url的映射使用罪行的defaultUrlMap进行替换，并立即生效。输入数据格式如下：
+```javascript
+{
+    "human": '/src/img1/a104.png',
+    "entity": '/src/img1/a106.png',
+    "animal": "/src/img1/a105.png",
+    "default": "/src/img1/a107.png",
+}
+```

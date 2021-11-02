@@ -1250,7 +1250,6 @@ export default class ElementController {
         iconObjs.forEach((iconObj) => {
             iconObj.rebuild();
         });
-        console.log(iconObjs);
         backgroundObjs.forEach((borderObj) => {
             borderObj.rebuild();
         });
