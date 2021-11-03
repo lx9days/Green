@@ -9,7 +9,7 @@ axios.get('/src/auto_500.json').then((res) => {
     const links = res.data.links;
 
     nodes.forEach((node, i) => {
-        node.img = '/src/img1/a' + i + '.png';
+        node.img = '/src/img1/b' + i + '.png';
     });
     console.log("nodelength", nodes.length);
     console.log("linklength", links.length);

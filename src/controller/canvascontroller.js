@@ -22,7 +22,7 @@ export default class CanvasController {
         this.updateFlag = {
             position: 0,
             style: 0,
-            bubble:0,
+            bubble: 0,
         }
         this.animationData = [];
 
@@ -165,10 +165,10 @@ export default class CanvasController {
         const zoom = this.props.zoom;
         const styleFlag = this.updateFlag.style;
         const positionFlag = this.updateFlag.position;
-        const bubbleFlag=this.updateFlag.bubble;
+        const bubbleFlag = this.updateFlag.bubble;
         const invalidIcon = this.invalidIncons
         const defaultUrlMap = this.props.defaultUrlMap;
-        const defaultUrlFunc=this.props.defaultUrlFunc;
+        const defaultUrlFunc = this.props.defaultUrlFunc;
         const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderBubble } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
@@ -181,16 +181,16 @@ export default class CanvasController {
                 getPolygon: d => d.polygon,
                 getFillColor: d => d.color,
                 updateTriggers: {
-                    getPolygon: positionFlag+bubbleFlag,
+                    getPolygon: positionFlag + bubbleFlag,
 
                 },
             });
 
         }
         let animationLayer = null;
-        
+
         if (this.animationData.length > 0) {
-            let animationTrigger=Math.random();
+            let animationTrigger = Math.random();
             animationLayer = new ScatterplotLayer({
                 id: 'animation-layer',
                 data: this.animationData,
@@ -199,8 +199,8 @@ export default class CanvasController {
                 getPosition: d => d.currentPos,
                 getRadius: d => d.radius,
                 getFillColor: d => d.color,
-                updateTriggers:{
-                    getPosition:animationTrigger,
+                updateTriggers: {
+                    getPosition: animationTrigger,
                 }
             })
         }
@@ -230,7 +230,7 @@ export default class CanvasController {
             getPosition: d => d.position,
             positionFormat: 'XY',
             getIcon: d => ({
-                url: invalidIcon.has(d.url) ? function(d){
+                url: invalidIcon.has(d.url) ? function (d) {
                     return defaultUrlMap[defaultUrlFunc(d)];
                 }(d) : d.url,
                 width: d.style.iconHeight,
@@ -243,7 +243,7 @@ export default class CanvasController {
             updateTriggers: {
                 getPosition: positionFlag,
                 getSize: zoom,
-                getIcon: invalidIcon,
+                getIcon: invalidIcon.size,
             }
         });
 
@@ -445,12 +445,12 @@ export default class CanvasController {
                 getSize: zoom,
             }
         });
-        if (renderBubble.length > 0&&this.animationData.length>0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer,animationLayer, markLayer] });
-        }else if(renderBubble.length>0){
+        if (renderBubble.length > 0 && this.animationData.length > 0) {
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+        } else if (renderBubble.length > 0) {
             this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
-        }else if(this.animationData.length>0){
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer,animationLayer, markLayer] });
+        } else if (this.animationData.length > 0) {
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
         } else {
             this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
         }
@@ -467,8 +467,8 @@ export default class CanvasController {
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
         const invalidIcon = this.invalidIncons;
-        const defaultUrlMap=this.props.defaultUrlMap;
-        const defaultUrlFunc=this.props.defaultUrlFunc;
+        const defaultUrlMap = this.props.defaultUrlMap;
+        const defaultUrlFunc = this.props.defaultUrlFunc;
 
         const lineLayer = new LineLayer({
             id: 'line-layer',
@@ -493,7 +493,7 @@ export default class CanvasController {
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
             getIcon: d => ({
-                url: invalidIcon.has(d.url) ? function(d){
+                url: invalidIcon.has(d.url) ? function (d) {
                     return defaultUrlMap[defaultUrlFunc(d)];
                 }(d) : d.url,
                 width: d.style.iconHeight,
@@ -507,6 +507,7 @@ export default class CanvasController {
                     return d.position;
                 },
                 getSize: d => d.style.iconSize * (2 ** zoom),
+                
             },
         });
         const rectBackgroundLayer = new PolygonLayer({
@@ -666,8 +667,11 @@ export default class CanvasController {
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
 
-        const defaultUrlMap=this.props.defaultUrlMap;
-        const defaultUrlFunc=this.props.defaultUrlFunc;
+        const styleFlag = this.updateFlag.style;
+        const positionFlag = this.updateFlag.position;
+
+        const defaultUrlMap = this.props.defaultUrlMap;
+        const defaultUrlFunc = this.props.defaultUrlFunc;
 
         let animationLayer = null;
         if (this.animationData.length > 0) {
@@ -679,12 +683,12 @@ export default class CanvasController {
                 getPosition: d => d.currentPos,
                 getRadius: d => d.radius,
                 getFillColor: d => d.color,
-                updateTriggers:{
-                    getPosition:Math.random(),
+                updateTriggers: {
+                    getPosition: Math.random(),
                 }
             })
         }
-        
+
 
         const lineLayer = new LineLayer({
             id: 'line-layer',
@@ -697,8 +701,8 @@ export default class CanvasController {
             getTargetPosition: d => d.targetPosition,
             getColor: d => d.style.lineColor,
             updateTriggers: {
-                getSourcePosition: d => d.sourcePosition,
-                getTargetPosition: d => d.targetPosition,
+                getSourcePosition: positionFlag,
+                getTargetPosition: positionFlag,
             },
             onClick: this.lineClickHandler,
         });
@@ -709,7 +713,7 @@ export default class CanvasController {
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
             getIcon: d => ({
-                url: invalidIcon.has(d.url) ? function(d){
+                url: invalidIcon.has(d.url) ? function (d) {
                     return defaultUrlMap[defaultUrlFunc(d)];
                 }(d) : d.url,
                 width: d.style.iconHeight,
@@ -721,15 +725,11 @@ export default class CanvasController {
             getColor: d => d.style.iconColor,
 
             updateTriggers: {
-                getPosition: d => {
-                    return d.position;
-                },
-                getSize: d => d.style.iconSize * (2 ** zoom),
-                getIcon: invalidIcon
+                getPosition:positionFlag,
+                getSize:  zoom,
+                getIcon: invalidIcon.size
             },
-            onIconError: ({ url }) => {
-                this.invalidIncons.set(url, true)
-            }
+            onIconError: this.onIconErrorHander,
         });
 
         // const circleEdge = new ScatterplotLayer({
@@ -845,13 +845,8 @@ export default class CanvasController {
             filled: true,
             stroked: true,
             updateTriggers: {
-                getFillColor: (d) => {
-                    if (d.status === 2) {
-                        return d.style.backgroundColor;
-                    } else {
-                        return [255, 255, 255, 0];
-                    }
-                },
+                getPolygon: positionFlag,
+                getFillColor: styleFlag,
             }
         });
 
@@ -873,10 +868,8 @@ export default class CanvasController {
             characterSet: charSet,
             getColor: (d) => d.style.textColor,
             updateTriggers: {
-                getPosition: d => {
-                    return d.position;
-                },
-                getSize: d => d.style.textSize * (2 ** zoom)
+                getPosition:positionFlag,
+                getSize: zoom
             }
         });
 
@@ -942,22 +935,19 @@ export default class CanvasController {
             }),
             getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
             updateTriggers: {
-                getPosition: d => {
-                    return d.position;
-                },
-                getSize: d => d.style.iconSize * (2 ** zoom),
+                getPosition: positionFlag,
+                getSize:  zoom,
             },
             onIconError: () => {
                 console.log(arguments)
             }
         })
-        if(this.animationData.length>0){
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer,animationLayer, markLayer] });
-        }else{
-           
+        if (this.animationData.length > 0) {
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+        } else {
             this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
         }
-    
+
 
     }
 
@@ -1068,7 +1058,7 @@ export default class CanvasController {
     }
 
 
-    updateRenderObject({ renderObject, position, style ,bubble}) {
+    updateRenderObject({ renderObject, position, style, bubble }) {
         if (renderObject) {
             this.renderObject = renderObject;
             this.renderGraph();
@@ -1080,13 +1070,13 @@ export default class CanvasController {
             if (style) {
                 this.updateFlag.style = Math.random();
             }
-            if(bubble){
-                this.updateFlag.bubble=Math.random();
+            if (bubble) {
+                this.updateFlag.bubble = Math.random();
             }
             this.updateRenderGraph();
         }
     }
-    updateAmination(){
+    updateAmination() {
         this.updateRenderGraph();
     }
 
@@ -1196,13 +1186,13 @@ export default class CanvasController {
     updateAnimationData(animationData) {
 
         this.animationData = animationData;
-        if(this.animationData.length<=0){
-           this.updateRenderGraph();
+        if (this.animationData.length <= 0) {
+            this.updateRenderGraph();
         }
     }
 
-    replaceDefaultUrlMap(defaultUrlMap){
-        this.props.defaultUrlMap=defaultUrlMap;
+    replaceDefaultUrlMap(defaultUrlMap) {
+        this.props.defaultUrlMap = defaultUrlMap;
         this.renderGraph();
     }
 }
