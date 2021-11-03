@@ -954,6 +954,7 @@ export default class CanvasController {
         if(this.animationData.length>0){
             this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer,animationLayer, markLayer] });
         }else{
+           
             this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
         }
     
@@ -1032,7 +1033,7 @@ export default class CanvasController {
     }
 
     pickObject(pickField) {
-        const pickedObjects = this.deck.pickObjects({ x: pickField.startX, y: pickField.startY, width: pickField.width, height: pickField.height, layerIds: ['icon-layer'] });
+        const pickedObjects = this.deck.pickObjects({ x: pickField.startX, y: pickField.startY, width: pickField.width, height: pickField.height, layerIds: ['mark-layer'] });
         const nodeIds = new Set();
         if (pickedObjects && pickedObjects.length > 0) {
             pickedObjects.forEach((obj) => {

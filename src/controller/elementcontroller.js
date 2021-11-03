@@ -512,7 +512,7 @@ export default class ElementController {
      * 根据node id 删除 node
      * @param {id} nodeIds 
      */
-    removeNodes(nodeIds) {
+    removeNodes(nodeIds, update = true) {
 
         if (nodeIds && nodeIds.length > 0) {
             const linkIds = new Set();
@@ -543,8 +543,9 @@ export default class ElementController {
                 }
             });
             this._removeRenderObjectForNode(nodeIds);
-            this.removeLinks(Array.from(linkIds));
-
+            if (update) {
+                this.removeLinks(Array.from(linkIds));
+            }
         }
     }
     /**
@@ -632,28 +633,31 @@ export default class ElementController {
         return null;
     }
     //删除 link
-    removeLinks(linkIds) {
+    removeLinks(linkIds, update = true) {
         if (linkIds && linkIds.length > 0) {
             const deletedLinks = new Array();
             linkIds.forEach((id) => {
                 const link = this.idMapLink.get(id);
-                const sourceNode = this.idMapNode.get(link.source.id);
-                if (sourceNode) {
-                    sourceNode.removeSourceLink(link);
+                if (link) {
+                    const sourceNode = this.idMapNode.get(link.source.id);
+                    if (sourceNode) {
+                        sourceNode.removeSourceLink(link);
+                    }
+                    const targetNode = this.idMapNode.get(link.target.id);
+                    if (targetNode) {
+                        targetNode.removeTargetLink(link);
+                    }
+                    const index = this.links.indexOf(link);
+                    deletedLinks.push(link);
+                    this.links.splice(index, 1);
+                    this.idMapLink.delete(id);
                 }
-                const targetNode = this.idMapNode.get(link.target.id);
-                if (targetNode) {
-                    targetNode.removeTargetLink(link);
-                }
-                const index = this.links.indexOf(link);
-                deletedLinks.push(link);
-                this.links.splice(index, 1);
-                this.idMapLink.delete(id);
             });
-            this._removeRenderObjectForLink(linkIds);
+            this._removeRenderObjectForLink(deletedLinks.map(link=>link.id));
         }
-        this.controller.canvasController.updateRenderObject({ renderObject: this.renderObject });
-
+        if (update) {
+            this.controller.canvasController.updateRenderObject({ renderObject: this.renderObject });
+        }
     }
     //隐藏node
     hideNodes(nodeIds) {
@@ -1241,12 +1245,9 @@ export default class ElementController {
         }
     }
 
-    fusionElements(deleteId, updateId) {
+    fusionElements({ deleteNodeId, saveNodeId, deleteLinkIds, addLinkData }) {
 
-        if (!this.nodeRenderMap.has(updateId)) {
-            return;
-        }
-        const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs } = this.nodeRenderMap.get(updateId);
+        const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs } = this.nodeRenderMap.get(saveNodeId);
         iconObjs.forEach((iconObj) => {
             iconObj.rebuild();
         });
@@ -1257,14 +1258,24 @@ export default class ElementController {
             textObj.rebuild();
             this._generateCharSet(textObj.text);
         });
-        this.renderObject.charSet=Array.from(this.characterSet);
+        this.renderObject.charSet = Array.from(this.characterSet);
         markObjs.forEach(mark => {
             mark.rebuild();
         });
         labelObjs.forEach(label => {
             label.rebuild();
         });
-        this.removeNodes([deleteId]);
+        this.removeNodes([deleteNodeId], false);
+        if (Array.isArray(deleteLinkIds) && deleteLinkIds.length > 0) {
+            this.removeLinks(deleteLinkIds, false);
+        }
+        if(Array.isArray(addLinkData)&&addLinkData.length>0){
+            this.controller.dataController.addData({links:addLinkData});
+            const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData(), 'add');
+            this.controller.styleController.mountAllStyleToElement(newNodeArray, newLinkArray);
+            this._parseElements(newNodeArray, newLinkArray, 'part');
+        }
+
     }
 
 }
