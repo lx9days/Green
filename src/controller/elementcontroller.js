@@ -1012,7 +1012,6 @@ export default class ElementController {
 
 
     updateEntityPosition(nodeIds = null, layout = false) {
-
         if (nodeIds) {
             const needUpdateLinks = [];
             nodeIds.forEach((id) => {

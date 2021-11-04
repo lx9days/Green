@@ -23,6 +23,8 @@ export default class CanvasController {
             position: 0,
             style: 0,
             bubble: 0,
+            icon:0,
+            iconTimer:null,
         }
         this.animationData = [];
 
@@ -166,6 +168,7 @@ export default class CanvasController {
         const styleFlag = this.updateFlag.style;
         const positionFlag = this.updateFlag.position;
         const bubbleFlag = this.updateFlag.bubble;
+        const iconFlag=this.updateFlag.icon;
         const invalidIcon = this.invalidIncons
         const defaultUrlMap = this.props.defaultUrlMap;
         const defaultUrlFunc = this.props.defaultUrlFunc;
@@ -229,21 +232,28 @@ export default class CanvasController {
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
             positionFormat: 'XY',
-            getIcon: d => ({
-                url: invalidIcon.has(d.url) ? function (d) {
-                    return defaultUrlMap[defaultUrlFunc(d)];
-                }(d) : d.url,
-                width: d.style.iconHeight,
-                height: d.style.iconHeight,
-                anchorX: 0,
-                anchorY: 0,
-            }),
+            getIcon:d => {
+                let url=null;
+                if(invalidIcon.has(d.url)){
+                    let type=defaultUrlFunc(d);
+                    url=defaultUrlMap[type];
+                }else{
+                    url=d.url;
+                }
+                return {
+                    url: url,
+                    width: d.style.iconHeight,
+                    height: d.style.iconHeight,
+                    anchorX: 0,
+                    anchorY: 0,
+                }
+            },
             onIconError: this.onIconErrorHander,
             getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
             updateTriggers: {
                 getPosition: positionFlag,
                 getSize: zoom,
-                getIcon: invalidIcon.size,
+                getIcon: iconFlag,
             }
         });
 
@@ -669,6 +679,7 @@ export default class CanvasController {
 
         const styleFlag = this.updateFlag.style;
         const positionFlag = this.updateFlag.position;
+        const iconFlag=this.updateFlag.icon;
 
         const defaultUrlMap = this.props.defaultUrlMap;
         const defaultUrlFunc = this.props.defaultUrlFunc;
@@ -712,22 +723,29 @@ export default class CanvasController {
             pickable: true,
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
-            getIcon: d => ({
-                url: invalidIcon.has(d.url) ? function (d) {
-                    return defaultUrlMap[defaultUrlFunc(d)];
-                }(d) : d.url,
-                width: d.style.iconHeight,
-                height: d.style.iconHeight,
-                anchorX: 0,
-                anchorY: 0,
-            }),
+            getIcon: d => {
+                let url=null;
+                if(invalidIcon.has(d.url)){
+                    let type=defaultUrlFunc(d);
+                    url=defaultUrlMap[type];
+                }else{
+                    url=d.url;
+                }
+                return {
+                    url: url,
+                    width: d.style.iconHeight,
+                    height: d.style.iconHeight,
+                    anchorX: 0,
+                    anchorY: 0,
+                }
+            },
             getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
             getColor: d => d.style.iconColor,
 
             updateTriggers: {
                 getPosition:positionFlag,
                 getSize:  zoom,
-                getIcon: invalidIcon.size
+                getIcon: iconFlag,
             },
             onIconError: this.onIconErrorHander,
         });
@@ -977,8 +995,17 @@ export default class CanvasController {
         this.eventController.fire('nodeDragStart', [info, e]);
         return true;
     }
-    _iconErrorHander({ url }) {
+    _iconErrorHander({ url}) {
         this.invalidIncons.set(url, true);
+        if(this.updateFlag.iconTimer){
+            clearTimeout(this.updateFlag.iconTimer);
+            this.updateFlag.iconTimer=null;
+        }
+        this.updateFlag.iconTimer=setTimeout(()=>{
+            this.updateFlag.icon=Math.random();
+            this.updateRenderGraph()
+        },1000);
+        
     }
 
 
