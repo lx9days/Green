@@ -248,12 +248,6 @@ function autoFitView(nodes, viewSize) {
     let target = [minX + originWidth / 2, minY + originHeight / 2];
     let zoom = null
     if (originWidth < viewSize[0] && originHeight < viewSize[1]) {
-
-        // if (originWidth / viewSize[0] < originHeight / viewSize[1]) {
-        //     zoom = viewSize[1] / originHeight;
-        // } else {
-        //     zoom = viewSize[0] / originWidth;
-        // }
         zoom=0;
 
     } else if (originWidth < viewSize[0]) {
@@ -269,9 +263,6 @@ function autoFitView(nodes, viewSize) {
             zoom = -Math.log2(originHeight / viewSize[1]);
         }
     }
-    // if(zoom!=0){
-    //     zoom -= 0.18;
-    // }
     if(isNaN(target[0])){
         target[0]=viewSize[0]/2;
     }
@@ -286,15 +277,12 @@ function autoFitView(nodes, viewSize) {
 }
 
 function svgPathToPolygon(path){
-    
     const mesh = svgMesh3d(path,{
         normalize:false
     });
     const positions=mesh.positions;
-    
     const cells=mesh.cells;
     const polygons=new Array(cells.length);
-    
     cells.forEach((cell,i)=>{
         const polygon=new Array(3);
         polygon[0]=positions[cell[0]];
@@ -329,4 +317,25 @@ function rgbaStr2Array(str){
     }
     return resArray;
 }
-export { generatePolygon, getInteractionData, generateLinkLocation, isFunction, computePolygon, BFSTree, autoFitView ,svgPathToPolygon,isRGBA,rgbaStr2Array}
+function dashLine(start,end,dashStep) {
+    let result=new Array();
+    let dashCount=dashStep.length;
+    result.push([start[0],start[1]]);
+    let dx=(end[0]-start[0]);
+    let dy=(end[1]-start[1]);
+    let slope=dy/dx;
+    let distRemaining=Math.sqrt(dx*dx+dy*dy);
+    let dashIndex=0;
+    while(distRemaining>=0.1&&dashIndex<10000){
+        let dashLength=dashStep[dashIndex++%dashCount];
+        if(dashLength===0) dashLength=0.001;
+        if(dashLength>distRemaining) dashLength=distRemaining;
+        let xStep=Math.sqrt(dashLength*dashLength/(1+slope*slope));
+        start[0]+=xStep;
+        start[1]+=slope*xStep;
+        result.push([start[0],start[1]]);
+        distRemaining-=dashLength;
+    }
+    return result;
+}
+export { generatePolygon, getInteractionData, generateLinkLocation, isFunction, computePolygon, BFSTree, autoFitView ,svgPathToPolygon,isRGBA,rgbaStr2Array,dashLine}
