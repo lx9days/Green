@@ -210,6 +210,13 @@ function draw(rawData) {
                     'line-color': '#456456',
                     'line-opacity': 1,
                     'text-opacity': 1,
+                    'line-style':(d)=>{
+                        if(d.data.direct){
+                            return 'solid'
+                        }else{
+                            return 'dash'
+                        }
+                    },
                     'text-color': "#456456",
                     'font-size': 10,
                     'text': (d) => d.data.type,

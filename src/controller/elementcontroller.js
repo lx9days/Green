@@ -33,7 +33,6 @@ export default class ElementController {
         } else {
             this._parseParams('all', nodeIds);
         }
-
     }
 
     /**
@@ -46,7 +45,6 @@ export default class ElementController {
         } else {
             this._parseParams('add')
         }
-
     }
 
     _parseParams(flag, nodeIds) {
@@ -1123,7 +1121,9 @@ export default class ElementController {
                     label.reLocation();
                 })
             });
+            const needReLocationDashLine=[];
             needUpdateLinks.forEach(link => {
+                needReLocationDashLine.push(link.id);
                 const linkRenders = this.linkRenderMap.get(link.id);
                 const { polygonObjs, textObjs, lineObjs, dashLineObjs } = linkRenders;
                 polygonObjs.forEach((polygonObj) => {
@@ -1137,8 +1137,9 @@ export default class ElementController {
                 });
                 dashLineObjs.forEach(dashLineObj => {
                     dashLineObj.reLocation();
-                })
+                });
             });
+            this._reLocationRenderDashLine(needReLocationDashLine);
 
         } else {
             const {
@@ -1171,6 +1172,7 @@ export default class ElementController {
             renderLabels.forEach(label => {
                 label.reLocation();
             });
+            this._reLocationRenderDashLine();
         }
         this.rebuildBubble()
 

@@ -323,16 +323,28 @@ function dashLine(start,end,dashStep) {
     result.push([start[0],start[1]]);
     let dx=(end[0]-start[0]);
     let dy=(end[1]-start[1]);
-    let slope=dy/dx;
+    let slope=0;
+    if(dx!==0){
+        slope=dy/dx;
+    }else{
+        slope=null;
+    }
     let distRemaining=Math.sqrt(dx*dx+dy*dy);
     let dashIndex=0;
     while(distRemaining>=0.1&&dashIndex<10000){
         let dashLength=dashStep[dashIndex++%dashCount];
         if(dashLength===0) dashLength=0.001;
         if(dashLength>distRemaining) dashLength=distRemaining;
-        let xStep=Math.sqrt(dashLength*dashLength/(1+slope*slope));
-        start[0]+=xStep;
-        start[1]+=slope*xStep;
+        let xStep=0;
+        if(slope!==null){
+            xStep=Math.sqrt(dashLength*dashLength/(1+slope*slope));
+        }
+        start[0]+=(Math.sign(dx)*xStep);
+        if(slope===null){
+            start[1]+=Math.sign(dy)*dashLength;
+        }else{
+            start[1]+=slope*(Math.sign(dx)*xStep);
+        }
         result.push([start[0],start[1]]);
         distRemaining-=dashLength;
     }

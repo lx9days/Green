@@ -1,34 +1,38 @@
 import hexRgb from 'hex-rgb';
-import { isFunction,generateLinkLocation,dashLine} from '../helper/util';
+import { isFunction, generateLinkLocation, dashLine } from '../helper/util';
 import RenderDashLine from './renderdashline';
 
-export default class DashLine{
-    constructor(renderLine,){
-        this.id=renderLine.id;
-        this.origionElement=renderLine.origionElement;
-        this.sourcePosition=[renderLine.sourcePosition[0],renderLine.sourcePosition[1]];
-        this.targetPosition=[renderLine.targetPosition[0],renderLine.targetPosition[1]];
-        this.origionElement._line=this;
-        this.offset=renderLine.offset;
-        this.status=renderLine.status;
-        this.style={
+export default class DashLine {
+    constructor(renderLine,) {
+        this.id = renderLine.id;
+        this.origionElement = renderLine.origionElement;
+        this.sourcePosition = [renderLine.sourcePosition[0], renderLine.sourcePosition[1]];
+        this.targetPosition = [renderLine.targetPosition[0], renderLine.targetPosition[1]];
+        this.origionElement._line = this;
+        this.offset = renderLine.offset;
+        this.status = renderLine.status;
+        this.style = {
             ...renderLine.style,
-            dashStep:[10,5]
+            dashStep: [10, 5]
         }
-        this.renderDashLines=[];
+        this.renderDashLines = [];
         this._generateDash()
     }
     /**
      * 重构style和position
      */
-     rebuild(){
+    rebuild() {
         this._generateStyle();
         this._generatePosition();
         this._generateDash();
     }
 
-    _generateDash(){
-        const dashArray=dashLine(this.sourcePosition,this.targetPosition,this.dashStep);
+    _generateDash() {
+
+        const dashArray = dashLine(this.sourcePosition, this.targetPosition, this.style.dashStep);
+        if (dashArray.length % 2 === 1) {
+            dashArray.splice(dashArray.length - 2, 1);
+        }
         let i=0;
         while(i<this.renderDashLines.length&&i<dashArray.length/2){
             this.renderDashLines[i].reConstructor(this,dashArray[i*2],dashArray[i*2+1]);
@@ -45,27 +49,27 @@ export default class DashLine{
         }
     }
 
-    getRenderDashLine(){
+    getRenderDashLine() {
         return this.renderDashLines;
     }
 
     /**
      * 重构position
      */
-    reLocation(){
+    reLocation() {
         this._generatePosition();
         this._generateDash();
     }
-    
+
     /**
      * 更新状态
      */
-    updateStatus(){
-        this.status=this.origionElement.getStatus();
+    updateStatus() {
+        this.status = this.origionElement.getStatus();
     }
 
-    _generatePosition(){
-        generateLinkLocation(this.origionElement,this.offset,this);
+    _generatePosition() {
+        generateLinkLocation(this.origionElement, this.offset, this);
     }
 
 
@@ -105,6 +109,12 @@ export default class DashLine{
                         }
                         break;
                     case 'line-style':
+                        const lineStyleObj = style[item];
+                        if (isFunction(lineStyleObj)) {
+                            this.style.lineStyle = lineStyleObj(this.origionElement);
+                        } else {
+                            this.style.lineStyle = lineStyleObj;
+                        }
                         break;
                     case 'from-arrow-color':
                         const sourceArrowColorObj = style[item];
@@ -169,11 +179,11 @@ export default class DashLine{
                     case 'to-arrow-scale':
                         break;
                     case 'direct':
-                        const directObj=style[item];
-                        if(isFunction(directObj)){
-                            this.style.direct=directObj(this.origionElement)
-                        }else{
-                            this.style.direct=true;
+                        const directObj = style[item];
+                        if (isFunction(directObj)) {
+                            this.style.direct = directObj(this.origionElement)
+                        } else {
+                            this.style.direct = true;
                         }
                         break;
                     default:
@@ -182,6 +192,6 @@ export default class DashLine{
                 }
             }
         });
-        this.style.lineColor[3]=this.style.lineOpacity*255;
+        this.style.lineColor[3] = this.style.lineOpacity * 255;
     }
 }

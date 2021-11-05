@@ -94,6 +94,12 @@ export default class RenderLine {
                         }
                         break;
                     case 'line-style':
+                        const lineStyleObj=style[item];
+                        if(isFunction(lineStyleObj)){
+                            this.style.lineStyle=lineStyleObj(this.origionElement);
+                        }else{
+                            this.style.lineStyle=lineStyleObj;
+                        }
                         break;
                     case 'from-arrow-color':
                         const sourceArrowColorObj = style[item];

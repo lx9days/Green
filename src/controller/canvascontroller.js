@@ -172,7 +172,7 @@ export default class CanvasController {
         const invalidIcon = this.invalidIncons
         const defaultUrlMap = this.props.defaultUrlMap;
         const defaultUrlFunc = this.props.defaultUrlFunc;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderBubble } = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderBubble,renderDashLine } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
         let bubbleLayer = null
@@ -222,6 +222,22 @@ export default class CanvasController {
                 getSourcePosition: positionFlag,
                 getTargetPosition: positionFlag,
                 getColor: styleFlag,
+            },
+            onClick: this.lineClickHandler,
+        });
+        const dashLineLayer = new LineLayer({
+            id: 'dash-line-layer',
+            data: renderDashLine.filter(() => true),
+            autoHighlight: true,
+            highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
+            pickable: true,
+            getWidth: d => d.style.lineWidth,
+            getSourcePosition: d => d.sourcePosition,
+            getTargetPosition: d => d.targetPosition,
+            getColor: d => d.style.lineColor,
+            updateTriggers: {
+                getSourcePosition: positionFlag,
+                getTargetPosition: positionFlag,
             },
             onClick: this.lineClickHandler,
         });
@@ -456,13 +472,13 @@ export default class CanvasController {
             }
         });
         if (renderBubble.length > 0 && this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
         } else if (renderBubble.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
         } else if (this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
         } else {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
         }
 
 
@@ -473,7 +489,7 @@ export default class CanvasController {
 
     renderLockNode() {
         const zoom = this.props.zoom;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels } = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels,renderDashLine } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
         const invalidIcon = this.invalidIncons;
@@ -493,6 +509,22 @@ export default class CanvasController {
             updateTriggers: {
                 getSourcePosition: d => d.sourcePosition,
                 getTargetPosition: d => d.targetPosition,
+            },
+            onClick: this.lineClickHandler,
+        });
+        const dashLineLayer = new LineLayer({
+            id: 'dash-line-layer',
+            data: renderDashLine.filter(() => true),
+            autoHighlight: true,
+            highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
+            pickable: true,
+            getWidth: d => d.style.lineWidth,
+            getSourcePosition: d => d.sourcePosition,
+            getTargetPosition: d => d.targetPosition,
+            getColor: d => d.style.lineColor,
+            updateTriggers: {
+                getSourcePosition: positionFlag,
+                getTargetPosition: positionFlag,
             },
             onClick: this.lineClickHandler,
         });
@@ -666,14 +698,14 @@ export default class CanvasController {
             }
         })
 
-        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
     }
     renderGraph() {
 
 
         const zoom = this.props.zoom;
         const invalidIcon = this.invalidIncons;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels } = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels ,renderDashLine} = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
 
@@ -704,6 +736,22 @@ export default class CanvasController {
         const lineLayer = new LineLayer({
             id: 'line-layer',
             data: renderLines.filter(() => true),
+            autoHighlight: true,
+            highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
+            pickable: true,
+            getWidth: d => d.style.lineWidth,
+            getSourcePosition: d => d.sourcePosition,
+            getTargetPosition: d => d.targetPosition,
+            getColor: d => d.style.lineColor,
+            updateTriggers: {
+                getSourcePosition: positionFlag,
+                getTargetPosition: positionFlag,
+            },
+            onClick: this.lineClickHandler,
+        });
+        const dashLineLayer = new LineLayer({
+            id: 'dash-line-layer',
+            data: renderDashLine.filter(() => true),
             autoHighlight: true,
             highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
             pickable: true,
@@ -961,9 +1009,9 @@ export default class CanvasController {
             }
         })
         if (this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
         } else {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
         }
 
 
