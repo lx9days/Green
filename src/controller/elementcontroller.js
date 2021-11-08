@@ -7,10 +7,11 @@ import RenderPolygon from '../model/renderpolygon';
 import RenderText from '../model/rendertext';
 import RenderMark from '../model/rendermark';
 import RenderLabel from '../model/renderlabel';
-import { autoFitView } from '../helper/util';
+import { autoFitView, dashLine } from '../helper/util';
 import Bubble from '../model/bubble';
 import BubbleRegion from '../model/bubbleregion';
 import { v4 as uuidv4 } from 'uuid';
+import DashLine from '../model/dashline';
 
 /**
  * ElementController 主要用于创建Node Link并将style 挂载到 Node Link 上，然后计算 Node Link 的位置
@@ -32,7 +33,6 @@ export default class ElementController {
         } else {
             this._parseParams('all', nodeIds);
         }
-
     }
 
     /**
@@ -45,7 +45,6 @@ export default class ElementController {
         } else {
             this._parseParams('add')
         }
-
     }
 
     _parseParams(flag, nodeIds) {
@@ -104,6 +103,7 @@ export default class ElementController {
             renderPolygon: new Array(),
             renderMark: new Array(),
             renderBubble: new Array(),
+            renderDashLine: new Array(),
             charSet: null
         }
     }
@@ -121,6 +121,7 @@ export default class ElementController {
                 renderPolygon: new Array(),
                 renderMark: new Array(),
                 renderBubble: new Array(),
+                renderDashLine: new Array(),
                 charSet: null
             }
             nodeArray.forEach((node) => {
@@ -175,7 +176,8 @@ export default class ElementController {
             const linkRenders = {
                 polygonObjs: new Array(),
                 textObjs: new Array(),
-                lineObjs: new Array()
+                lineObjs: new Array(),
+                dashLineObjs: new Array(),
             }
             const sourceRenderBackground = this.nodeRenderMap.get(link.source.id).backgroundObjs[0];
             const targetRenderBackground = this.nodeRenderMap.get(link.target.id).backgroundObjs[0];
@@ -196,7 +198,12 @@ export default class ElementController {
             const offset = { sourceOffset, targetOffset }
 
             const renderLine = new RenderLine(link, offset);
-            linkRenders.lineObjs.push(renderLine);
+            if (renderLine.style.lineStyle === 'solid') {
+                linkRenders.lineObjs.push(renderLine);
+            } else {
+                linkRenders.dashLineObjs.push(new DashLine(renderLine));
+            }
+
 
             if (renderLine.style.direct) {
                 linkRenders.polygonObjs.push(new RenderPolygon(link, 'target', offset));
@@ -224,6 +231,7 @@ export default class ElementController {
             renderPolygon: new Array(),
             renderMark: new Array(),
             renderBubble: new Array(),
+            renderDashLine: new Array(),
             charSet: null
         }
         for (const nodeIdKey of this.nodeRenderMap.keys()) {
@@ -254,6 +262,9 @@ export default class ElementController {
             });
             linkRenders.lineObjs.forEach((lineObj) => {
                 this.renderObject.renderLines.push(lineObj);
+            });
+            linkRenders.dashLineObjs.forEach(dashLineObj => {
+                this.renderObject.renderDashLine.push(...dashLineObj.getRenderDashLine());
             });
         }
         this.renderObject.charSet = Array.from(this.characterSet);
@@ -616,8 +627,62 @@ export default class ElementController {
                         this.renderObject.renderText.splice(index, 1);
                     }
                 });
+
+
                 this.linkRenderMap.delete(id);
+            });
+            this._updateRenderObjectDashLine();
+        }
+    }
+
+    _updateRenderObjectDashLine() {
+        this.renderObject.renderDashLine = new Array();
+        for (const { dashLineObjs } of this.linkRenderMap.values()) {
+            dashLineObjs.forEach(dashLine => {
+                this.renderObject.renderDashLine.push(...dashLine.getRenderDashLine());
             })
+        }
+    }
+
+    _reBuildRenderDashLine(ids = null) {
+        if (ids) {
+            ids.forEach(id => {
+                const { dashLineObjs } = this.linkRenderMap.get(id);
+
+                dashLineObjs.forEach(dashLine => {
+                    dashLine.rebuild();
+                })
+            });
+            this._updateRenderObjectDashLine();
+        } else {
+            this.renderObject.renderDashLine = new Array();
+            for (const { dashLineObjs } of this.linkRenderMap.values()) {
+                dashLineObjs.forEach(dashLine => {
+                    dashLine.rebuild();
+                    this.renderObject.renderDashLine.push(...dashLine.getRenderDashLine());
+                })
+            }
+        }
+
+    }
+    _reLocationRenderDashLine(ids = null) {
+        if (ids) {
+            ids.forEach(id => {
+                const { dashLineObjs } = this.linkRenderMap.get(id);
+
+                dashLineObjs.forEach(dashLine => {
+                    dashLine.reLocation();
+                })
+            });
+            this._updateRenderObjectDashLine();
+        } else {
+            this.renderObject.renderDashLine = new Array();
+            for (const { dashLineObjs } of this.linkRenderMap.values()) {
+                dashLineObjs.forEach(dashLine => {
+                    dashLine.reLocation();
+                    this.renderObject.renderDashLine.push(...dashLine.getRenderDashLine());
+                })
+            }
         }
     }
 
@@ -653,7 +718,7 @@ export default class ElementController {
                     this.idMapLink.delete(id);
                 }
             });
-            this._removeRenderObjectForLink(deletedLinks.map(link=>link.id));
+            this._removeRenderObjectForLink(deletedLinks.map(link => link.id));
         }
         if (update) {
             this.controller.canvasController.updateRenderObject({ renderObject: this.renderObject });
@@ -773,6 +838,9 @@ export default class ElementController {
                 renderObjects.polygonObjs.forEach((polygon) => {
                     polygon.updateStatus();
                 });
+                renderObjects.dashLineObjs.forEach(dashLine => {
+                    dashLine.updateStatus()
+                })
             })
         }
     }
@@ -921,7 +989,7 @@ export default class ElementController {
             renderLabels.forEach(label => {
                 label.rebuild();
             });
-
+            this._reBuildRenderDashLine();
         }
         if (params && params.link) {
             if (params.linkIds && params.linkIds.length > 0) {
@@ -929,7 +997,7 @@ export default class ElementController {
                     if (!this.linkRenderMap.has(id)) {
                         return;
                     }
-                    const { polygonObjs, textObjs, lineObjs } = this.linkRenderMap.get(id);
+                    const { polygonObjs, textObjs, lineObjs, dashLineObjs } = this.linkRenderMap.get(id);
                     polygonObjs.forEach((polygonObj) => {
                         polygonObj.rebuild();
                     });
@@ -938,11 +1006,16 @@ export default class ElementController {
                     });
                     lineObjs.forEach((lineObj) => {
                         lineObj.rebuild();
-                    })
+                    });
+                    dashLineObjs.forEach(dashLineObj => {
+                        dashLineObj.rebuild();
+                    });
+                    this._updateRenderObjectDashLine();
+
                 })
             } else {
                 for (const key of this.nodeRenderMap.keys()) {
-                    const { polygonObjs, textObjs, lineObjs } = this.linkRenderMap.get(key);
+                    const { polygonObjs, textObjs, lineObjs, dashLineObjs } = this.linkRenderMap.get(key);
                     polygonObjs.forEach((polygonObj) => {
                         polygonObj.rebuild();
                     });
@@ -951,7 +1024,11 @@ export default class ElementController {
                     });
                     lineObjs.forEach((lineObj) => {
                         lineObj.rebuild();
-                    })
+                    });
+                    dashLineObjs.forEach(dashLineObj => {
+                        dashLineObj.rebuild();
+                    });
+                    this._updateRenderObjectDashLine();
                 }
             }
         }
@@ -1044,9 +1121,11 @@ export default class ElementController {
                     label.reLocation();
                 })
             });
+            const needReLocationDashLine=[];
             needUpdateLinks.forEach(link => {
+                needReLocationDashLine.push(link.id);
                 const linkRenders = this.linkRenderMap.get(link.id);
-                const { polygonObjs, textObjs, lineObjs } = linkRenders;
+                const { polygonObjs, textObjs, lineObjs, dashLineObjs } = linkRenders;
                 polygonObjs.forEach((polygonObj) => {
                     polygonObj.reLocation();
                 });
@@ -1055,8 +1134,13 @@ export default class ElementController {
                 });
                 lineObjs.forEach((lineObj) => {
                     lineObj.reLocation();
-                })
-            })
+                });
+                dashLineObjs.forEach(dashLineObj => {
+                    dashLineObj.reLocation();
+                });
+            });
+            this._reLocationRenderDashLine(needReLocationDashLine);
+
         } else {
             const {
                 renderBackgrounds,
@@ -1088,6 +1172,7 @@ export default class ElementController {
             renderLabels.forEach(label => {
                 label.reLocation();
             });
+            this._reLocationRenderDashLine();
         }
         this.rebuildBubble()
 
@@ -1268,8 +1353,8 @@ export default class ElementController {
         if (Array.isArray(deleteLinkIds) && deleteLinkIds.length > 0) {
             this.removeLinks(deleteLinkIds, false);
         }
-        if(Array.isArray(addLinkData)&&addLinkData.length>0){
-            this.controller.dataController.addData({links:addLinkData});
+        if (Array.isArray(addLinkData) && addLinkData.length > 0) {
+            this.controller.dataController.addData({ links: addLinkData });
             const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData(), 'add');
             this.controller.styleController.mountAllStyleToElement(newNodeArray, newLinkArray);
             this._parseElements(newNodeArray, newLinkArray, 'part');

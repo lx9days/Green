@@ -1,60 +1,75 @@
 import hexRgb from 'hex-rgb';
-import { isFunction,generateLinkLocation} from '../helper/util';
+import { isFunction, generateLinkLocation, dashLine } from '../helper/util';
+import RenderDashLine from './renderdashline';
 
-
-//渲染line 对应deck中的linelayer
-export default class RenderLine {
-    constructor(element,offset) {
-        this.id = element.getId();
-        this.sourcePosition = [0, 0];
-        this.targetPosition = [0, 0];
-        this.origionElement = element;
-        this.origionElement._line=this;
-        this.offset=offset;
-        this.status=element.getStatus();
+export default class DashLine {
+    constructor(renderLine,) {
+        this.id = renderLine.id;
+        this.origionElement = renderLine.origionElement;
+        this.sourcePosition = [renderLine.sourcePosition[0], renderLine.sourcePosition[1]];
+        this.targetPosition = [renderLine.targetPosition[0], renderLine.targetPosition[1]];
+        this.origionElement._line = this;
+        this.offset = renderLine.offset;
+        this.status = renderLine.status;
         this.style = {
-            lineWidth: 1,
-            lineColor: [255, 255, 255, 255],
-            lineStyle: 'solid',
-            lineOpacity: 1,
-            sourceArrowColor: [255, 255, 255, 255],
-            sourceArrowShape: 'none',
-            sourceArrowFill: 'filled',
-            sourceArrowScale: 1,
-            targetArrowColor: [255, 255, 255, 255],
-            targetArrowShape: 'none',
-            targetArrowFill: 'filled',
-            targetArrowScale: 1,
-            direct:true,
+            ...renderLine.style,
+            dashStep: [10, 5]
         }
-        this._generateStyle();
-        this._generatePosition();
+        this.renderDashLines = [];
+        this._generateDash()
     }
-
     /**
      * 重构style和position
      */
-    rebuild(){
+    rebuild() {
         this._generateStyle();
         this._generatePosition();
+        this._generateDash();
+    }
+
+    _generateDash() {
+
+        const dashArray = dashLine(this.sourcePosition, this.targetPosition, this.style.dashStep);
+        if (dashArray.length % 2 === 1) {
+            dashArray.splice(dashArray.length - 2, 1);
+        }
+        let i=0;
+        while(i<this.renderDashLines.length&&i<dashArray.length/2){
+            this.renderDashLines[i].reConstructor(this,dashArray[i*2],dashArray[i*2+1]);
+            i++;
+        }
+        if(i<this.renderDashLines.length){
+            this.renderDashLines.splice(dashArray.length/2);
+        }
+        if(i<dashArray.length/2){
+            while(i<dashArray.length/2){
+                this.renderDashLines.push(new RenderDashLine(this,dashArray[i*2],dashArray[i*2+1]));
+                i++;
+            }
+        }
+    }
+
+    getRenderDashLine() {
+        return this.renderDashLines;
     }
 
     /**
      * 重构position
      */
-    reLocation(){
+    reLocation() {
         this._generatePosition();
+        this._generateDash();
     }
-    
+
     /**
      * 更新状态
      */
-    updateStatus(){
-        this.status=this.origionElement.getStatus();
+    updateStatus() {
+        this.status = this.origionElement.getStatus();
     }
 
-    _generatePosition(){
-        generateLinkLocation(this.origionElement,this.offset,this);
+    _generatePosition() {
+        generateLinkLocation(this.origionElement, this.offset, this);
     }
 
 
@@ -94,11 +109,11 @@ export default class RenderLine {
                         }
                         break;
                     case 'line-style':
-                        const lineStyleObj=style[item];
-                        if(isFunction(lineStyleObj)){
-                            this.style.lineStyle=lineStyleObj(this.origionElement);
-                        }else{
-                            this.style.lineStyle=lineStyleObj;
+                        const lineStyleObj = style[item];
+                        if (isFunction(lineStyleObj)) {
+                            this.style.lineStyle = lineStyleObj(this.origionElement);
+                        } else {
+                            this.style.lineStyle = lineStyleObj;
                         }
                         break;
                     case 'from-arrow-color':
@@ -164,11 +179,11 @@ export default class RenderLine {
                     case 'to-arrow-scale':
                         break;
                     case 'direct':
-                        const directObj=style[item];
-                        if(isFunction(directObj)){
-                            this.style.direct=directObj(this.origionElement)
-                        }else{
-                            this.style.direct=true;
+                        const directObj = style[item];
+                        if (isFunction(directObj)) {
+                            this.style.direct = directObj(this.origionElement)
+                        } else {
+                            this.style.direct = true;
                         }
                         break;
                     default:
@@ -177,6 +192,6 @@ export default class RenderLine {
                 }
             }
         });
-        this.style.lineColor[3]=this.style.lineOpacity*255;
+        this.style.lineColor[3] = this.style.lineOpacity * 255;
     }
 }
