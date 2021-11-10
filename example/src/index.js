@@ -172,7 +172,7 @@ function draw(rawData) {
             }
         },
         layout: 'square',
-        data: data,
+        data: {nodes:[],links:[]},
         style: [
             {
                 selector: 'node',
@@ -221,6 +221,11 @@ function draw(rawData) {
                     'font-size': 10,
                     'text': (d) => d.data.type,
                     'direct': (d) => d.data.direct
+                }
+            },{
+                selector:'link.color',
+                style:{
+                    'line-color':'fff',
                 }
             },
             {
@@ -384,6 +389,7 @@ function draw(rawData) {
 
     document.getElementById('addClass').addEventListener('click', () => {
         netGraph.addClassForNode(['5c2f3ba4d6943955a3b823e8518babd4'], ['fff']);
+        netGraph.addClassForLink(['7b1120b4debb38148a41d06fa25f2b8aphone_write41dcc82234d534ce92c81d47c356c277'],['color'])
         // netGraph.updateStyle();
     })
 
@@ -428,54 +434,59 @@ function draw(rawData) {
 
 
     document.getElementById('add').addEventListener('click', () => {
-        netGraph.addData({
-            nodes: [
-                {
-                    id: 'b001',
-                    name: '是1',
-                    img: '/src/img1/a5.png'
-                },
-                {
-                    id: 'b002',
-                    name: '是2',
-                    img: '/src/img1/a6.png'
-                },
-                {
-                    id: 'b003',
-                    name: '是7',
-                    img: '/src/img1/a4.png'
-                },
-                {
-                    id: 'b004',
-                    name: '是3',
-                    img: '/src/img1/a8.png'
-                },
-                {
-                    id: 'b005',
-                    name: '是4',
-                    img: '/src/img1/a9.png'
-                },
-                {
-                    id: 'b006',
-                    name: '是5',
-                    img: '/src/img1/a10.png'
-                },
-                {
-                    id: 'b007',
-                    name: '是6',
-                    img: '/src/img1/a11.png'
-                }
+        netGraph.addData({nodes:[
+           { id:'dssd',
+            name:'fsd',
+            img:'/src/img1/a5.png'}
+        ]})
+        // netGraph.addData({
+        //     nodes: [
+        //         {
+        //             id: 'b001',
+        //             name: '是1',
+        //             img: '/src/img1/a5.png'
+        //         },
+        //         {
+        //             id: 'b002',
+        //             name: '是2',
+        //             img: '/src/img1/a6.png'
+        //         },
+        //         {
+        //             id: 'b003',
+        //             name: '是7',
+        //             img: '/src/img1/a4.png'
+        //         },
+        //         {
+        //             id: 'b004',
+        //             name: '是3',
+        //             img: '/src/img1/a8.png'
+        //         },
+        //         {
+        //             id: 'b005',
+        //             name: '是4',
+        //             img: '/src/img1/a9.png'
+        //         },
+        //         {
+        //             id: 'b006',
+        //             name: '是5',
+        //             img: '/src/img1/a10.png'
+        //         },
+        //         {
+        //             id: 'b007',
+        //             name: '是6',
+        //             img: '/src/img1/a11.png'
+        //         }
 
-            ],
-            links: [
-                {
-                    id: 'lk01',
-                    type: 'cm',
-                    from: 'b004',
-                    to: 'b001',
-                }
-            ]
-        })
+        //     ],
+        //     links: [
+        //         {
+        //             id: 'lk01',
+        //             type: 'cm',
+        //             from: 'b004',
+        //             to: 'b001',
+        //         }
+        //     ]
+        // })
     });
 
     document.getElementById("treeLayout").addEventListener("click", () => {
