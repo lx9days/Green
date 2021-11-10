@@ -238,6 +238,7 @@ export default class CanvasController {
             updateTriggers: {
                 getSourcePosition: positionFlag,
                 getTargetPosition: positionFlag,
+                getColor:styleFlag,
             },
             onClick: this.lineClickHandler,
         });
@@ -414,14 +415,16 @@ export default class CanvasController {
             filled: true,
             stroked: true,
             getLineWidth: 1,
-            getLineColor: d => d.style.polyonColor,
+            getLineColor: d => d.style.polygonFillColor,
             getPolygon: d => {
                 return d.polygon;
             },
             positionFormat: 'XY',
             getFillColor: (d) => d.style.polygonFillColor,
             updateTriggers: {
-                getPolygon: positionFlag
+                getPolygon: positionFlag,
+                getFillColor:styleFlag,
+                getLineColor:styleFlag,
             }
         });
         const markRGB = hexRgb(this.props.nodeHighlightColor);
@@ -746,6 +749,7 @@ export default class CanvasController {
             updateTriggers: {
                 getSourcePosition: positionFlag,
                 getTargetPosition: positionFlag,
+                getColor:styleFlag,
             },
             onClick: this.lineClickHandler,
         });
@@ -762,6 +766,7 @@ export default class CanvasController {
             updateTriggers: {
                 getSourcePosition: positionFlag,
                 getTargetPosition: positionFlag,
+                getColor:styleFlag,
             },
             onClick: this.lineClickHandler,
         });
@@ -947,11 +952,14 @@ export default class CanvasController {
             stroked: true,
             positionFormat: 'XY',
             getLineWidth: 1,
-            getLineColor: d => d.style.polyonColor,
+            getLineColor: d => d.style.polygonFillColor,
             getPolygon: d => {
                 return d.polygon;
             },
             getFillColor: (d) => d.style.polygonFillColor,
+            updateTriggers:{
+                getFillColor:styleFlag,
+            }
         });
         const markRGB = hexRgb(this.props.nodeHighlightColor);
         const markOpactiy = this.props.nodeHighlightOpacity;
