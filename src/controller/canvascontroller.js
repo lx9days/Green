@@ -498,6 +498,10 @@ export default class CanvasController {
         const invalidIcon = this.invalidIncons;
         const defaultUrlMap = this.props.defaultUrlMap;
         const defaultUrlFunc = this.props.defaultUrlFunc;
+        const styleFlag = this.updateFlag.style;
+        const positionFlag = this.updateFlag.position;
+        const bubbleFlag = this.updateFlag.bubble;
+        const iconFlag=this.updateFlag.icon;
 
         const lineLayer = new LineLayer({
             id: 'line-layer',

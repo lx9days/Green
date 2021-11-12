@@ -9,7 +9,7 @@ axios.get('/src/auto_500.json').then((res) => {
     const links = res.data.links;
 
     nodes.forEach((node, i) => {
-        node.img = '/src/img1/b' + i + '.png';
+        node.img = '/src/img1/a' + i + '.png';
     });
     console.log("nodelength", nodes.length);
     console.log("linklength", links.length);
@@ -172,7 +172,7 @@ function draw(rawData) {
             }
         },
         layout: 'square',
-        data: {nodes:[],links:[]},
+        data:data,
         style: [
             {
                 selector: 'node',
@@ -196,7 +196,7 @@ function draw(rawData) {
                     'highlight-color': "#Fff0BC",
                     'highlight-opacity': 0.8,
                     "label-style": {
-                        'url': '/src/img1/a3.png',
+                        'url': '/src/img1/images.png',
                         'width': 15,
                         'height': 15,
                         'position': 'left-top',
@@ -225,7 +225,8 @@ function draw(rawData) {
             },{
                 selector:'link.color',
                 style:{
-                    'line-color':'fff',
+                    'line-color':'#fff',
+                    'text-color':'#aaa'
                 }
             },
             {
@@ -434,59 +435,59 @@ function draw(rawData) {
 
 
     document.getElementById('add').addEventListener('click', () => {
-        netGraph.addData({nodes:[
-           { id:'dssd',
-            name:'fsd',
-            img:'/src/img1/a5.png'}
-        ]})
-        // netGraph.addData({
-        //     nodes: [
-        //         {
-        //             id: 'b001',
-        //             name: '是1',
-        //             img: '/src/img1/a5.png'
-        //         },
-        //         {
-        //             id: 'b002',
-        //             name: '是2',
-        //             img: '/src/img1/a6.png'
-        //         },
-        //         {
-        //             id: 'b003',
-        //             name: '是7',
-        //             img: '/src/img1/a4.png'
-        //         },
-        //         {
-        //             id: 'b004',
-        //             name: '是3',
-        //             img: '/src/img1/a8.png'
-        //         },
-        //         {
-        //             id: 'b005',
-        //             name: '是4',
-        //             img: '/src/img1/a9.png'
-        //         },
-        //         {
-        //             id: 'b006',
-        //             name: '是5',
-        //             img: '/src/img1/a10.png'
-        //         },
-        //         {
-        //             id: 'b007',
-        //             name: '是6',
-        //             img: '/src/img1/a11.png'
-        //         }
+        // netGraph.addData({nodes:[
+        //    { id:'dssd',
+        //     name:'fsd',
+        //     img:'/src/img1/a5.png'}
+        // ]})
+        netGraph.addData({
+            nodes: [
+                {
+                    id: 'b001',
+                    name: '是1',
+                    img: '/src/img1/a5.png'
+                },
+                {
+                    id: 'b002',
+                    name: '是2',
+                    img: '/src/img1/a6.png'
+                },
+                {
+                    id: 'b003',
+                    name: '是7',
+                    img: '/src/img1/a4.png'
+                },
+                {
+                    id: 'b004',
+                    name: '是3',
+                    img: '/src/img1/a8.png'
+                },
+                {
+                    id: 'b005',
+                    name: '是4',
+                    img: '/src/img1/a9.png'
+                },
+                {
+                    id: 'b006',
+                    name: '是5',
+                    img: '/src/img1/a10.png'
+                },
+                {
+                    id: 'b007',
+                    name: '是6',
+                    img: '/src/img1/a11.png'
+                }
 
-        //     ],
-        //     links: [
-        //         {
-        //             id: 'lk01',
-        //             type: 'cm',
-        //             from: 'b004',
-        //             to: 'b001',
-        //         }
-        //     ]
-        // })
+            ],
+            links: [
+                {
+                    id: 'lk01',
+                    type: 'cm',
+                    from: 'b004',
+                    to: 'b001',
+                }
+            ]
+        })
     });
 
     document.getElementById("treeLayout").addEventListener("click", () => {
