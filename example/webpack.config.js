@@ -3,13 +3,14 @@ const webpack=require('webpack');
 const HtmlWebpackPlugin=require('html-webpack-plugin');
 const {CleanWebpackPlugin} =require('clean-webpack-plugin');
 const privatePlugin=require('@babel/plugin-proposal-private-methods');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 
 module.exports={
     entry:{
         main:"./src/index.js"
     },
-    mode:"production",
+    mode:"development",
     devtool:'source-map',
     output:{
         path:path.resolve(__dirname,'dist'),
@@ -70,6 +71,7 @@ module.exports={
             root:path.resolve(__dirname,'./')
         }),
         new webpack.HotModuleReplacementPlugin(),
+        new ESLintPlugin()
     ]
 
     

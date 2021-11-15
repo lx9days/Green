@@ -223,9 +223,9 @@ export default class ElementController {
 
     _generateRenderObjs() {
         console.log(this.renderObject)
-        let cacheBubble=new Array()
-        if(this.renderObject.renderBubble.length>0){
-            cacheBubble=this.renderObject.renderBubble;
+        let cacheBubble = new Array()
+        if (this.renderObject.renderBubble.length > 0) {
+            cacheBubble = this.renderObject.renderBubble;
         }
         this.renderObject = {
             renderBackgrounds: new Array(),
@@ -895,6 +895,10 @@ export default class ElementController {
         }
     }
 
+    getNodeByStatus(status) {
+        return this.nodes.filter(node => node.status === status);
+    }
+
 
     /**
      * 更新node 的位置
@@ -924,8 +928,20 @@ export default class ElementController {
         if (!isGroup) {
             if (this.idMapNode.has(nodeIds[0])) {
                 const node = this.idMapNode.get(nodeIds[0]);
-                node.x = position.x;
-                node.y = position.y;
+                if (node.status === 2 || node.status === 4) {
+                    const deltaX = position.x - node.x;
+                    const deltaY = position.y - node.y;
+                    const needUpdateNodes = this.getNodeByStatus(node.status);
+                    nodeIds = needUpdateNodes.map(item => {
+                        item.x += deltaX;
+                        item.y += deltaY;
+                        return item.id;
+                    });
+                } else {
+                    node.x = position.x;
+                    node.y = position.y;
+                }
+
             }
         } else {
             if (this.idMapNode.has(nodeIds[0])) {
@@ -1126,7 +1142,7 @@ export default class ElementController {
                     label.reLocation();
                 })
             });
-            const needReLocationDashLine=[];
+            const needReLocationDashLine = [];
             needUpdateLinks.forEach(link => {
                 needReLocationDashLine.push(link.id);
                 const linkRenders = this.linkRenderMap.get(link.id);

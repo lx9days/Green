@@ -1,38 +1,38 @@
-import axios from 'axios';
+//import axios from 'axios';
 import NetGraph, { HIGHLIGHT, SELECTED, UNSELECTED } from '../../src/index';
 
 const debug = false;
-let isUpLoadFile=false;
+let isUpLoadFile = false;
 
-function readData(){
-    if(!window.File||!window.FileReader||!window.FileList||!window.Blob){
+function readData () {
+    if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
         return -1;
-    }else{
-        if(!isUpLoadFile){
+    } else {
+        if (!isUpLoadFile) {
             throw new Error("two files are needed");
         }
-        let input=document.getElementById("uploadFile");
-        let dataFile=input.files[0];
-        let dataFileReader=new FileReader();
+        let input = document.getElementById("uploadFile");
+        let dataFile = input.files[0];
+        let dataFileReader = new FileReader();
 
-        dataFileReader.onload=function(e){
-            let dataContent=e.target.result;
-            const data=JSON.parse(dataContent);
-            data.nodes.forEach((node,i)=>{
-                node.img='/src/img1/a'+i%10+'.png';
-            })
-            draw(data)
-        }
+        dataFileReader.onload = function (e) {
+            let dataContent = e.target.result;
+            const data = JSON.parse(dataContent);
+            data.nodes.forEach((node, i) => {
+                node.img = '/src/img1/a' + i % 10 + '.png';
+            });
+            draw(data);
+        };
         dataFileReader.readAsText(dataFile);
     }
 }
 
-document.getElementById("uploadFile").addEventListener("change",(e)=>{
-    if(e.target.files[0].name.lastIndexOf('.json')!==-1){
-        isUpLoadFile=true;
+document.getElementById("uploadFile").addEventListener("change", (e) => {
+    if (e.target.files[0].name.lastIndexOf('.json') !== -1) {
+        isUpLoadFile = true;
         readData();
     }
-})
+});
 
 // axios.get('/src/auto_500.json').then((res) => {
 //     const nodes = res.data.nodes;
@@ -50,7 +50,7 @@ document.getElementById("uploadFile").addEventListener("change",(e)=>{
 //     }
 //     draw(data);
 // })
-function draw(rawData) {
+function draw (rawData) {
     let data = null;
     if (!debug) {
         data = rawData;
@@ -161,7 +161,7 @@ function draw(rawData) {
                 }
             ]
 
-        }
+        };
     }
 
     const netGraph = new NetGraph({
@@ -202,7 +202,7 @@ function draw(rawData) {
             }
         },
         layout: 'square',
-        data:data,
+        data: data,
         style: [
             {
                 selector: 'node',
@@ -240,11 +240,11 @@ function draw(rawData) {
                     'line-color': '#456456',
                     'line-opacity': 1,
                     'text-opacity': 1,
-                    'line-style':(d)=>{
-                        if(d.data.direct){
-                            return 'solid'
-                        }else{
-                            return 'dash'
+                    'line-style': (d) => {
+                        if (d.data.direct) {
+                            return 'solid';
+                        } else {
+                            return 'dash';
                         }
                     },
                     'text-color': "#456456",
@@ -252,11 +252,11 @@ function draw(rawData) {
                     'text': (d) => d.data.type,
                     'direct': (d) => d.data.direct
                 }
-            },{
-                selector:'link.color',
-                style:{
-                    'line-color':'#fff',
-                    'text-color':'#aaa'
+            }, {
+                selector: 'link.color',
+                style: {
+                    'line-color': '#fff',
+                    'text-color': '#aaa'
                 }
             },
             {
@@ -279,28 +279,28 @@ function draw(rawData) {
     let timeout = null;
     netGraph.addEventListener('canvasMouseDown', (e) => {
         timeout = setTimeout(() => {
-            netGraph.showBrushArea()
-        }, 2000)
+            netGraph.showBrushArea();
+        }, 2000);
     });
     netGraph.addEventListener('canvasMouseUp', (e) => {
         if (timeout) {
-            clearTimeout(timeout)
+            clearTimeout(timeout);
         }
-    })
+    });
     netGraph.addEventListener('canvasMouseMove', (e) => {
         if (timeout) {
-            clearTimeout(timeout)
+            clearTimeout(timeout);
         }
-    })
+    });
 
 
     netGraph.addEventListener('nodeClick', (object, e) => {
         console.log(object.object.id, e);
-        netGraph.updateNodeStatus([object.object.id], SELECTED)
+        netGraph.updateNodeStatus([object.object.id], SELECTED);
         //netGraph.replaceData();
     });
     netGraph.addEventListener('nodeClickWithCtrl', (info, e) => {
-        netGraph.addClassForNode(['a005'], ['fff', 'class2'])
+        netGraph.addClassForNode(['a005'], ['fff', 'class2']);
         console.log('nodeClickWithCtrl');
     });
 
@@ -309,8 +309,8 @@ function draw(rawData) {
     });
     netGraph.addEventListener('canvasRightClick', (info, e) => {
         // console.log(netGraph.exportCanvasAsBase64())
-        console.log('canvas right click')
-    })
+        console.log('canvas right click');
+    });
     netGraph.addEventListener('lineClickWithCtrl', (o, e) => {
         console.log('lineClickWithCtrl');
     });
@@ -337,37 +337,37 @@ function draw(rawData) {
         //         'shape': 'rect',
         //     }
         // },]);
-    })
+    });
 
     netGraph.addEventListener('brush', (nodeIds) => {
-        netGraph.updateNodeStatus(nodeIds, SELECTED)
+        netGraph.updateNodeStatus(nodeIds, SELECTED);
     });
 
 
 
     netGraph.addEventListener('rightClick', () => {
 
-        console.log("rightClick")
-    })
+        console.log("rightClick");
+    });
     document.getElementById('remove').addEventListener('click', (e) => {
         const selectedNodes = netGraph.getSelectedNodes();
         const selectedNodeIds = new Array();
         selectedNodes.map((v, i) => {
             selectedNodeIds.push(v.getId());
-        })
+        });
         netGraph.removeNodes(selectedNodeIds);
     });
 
 
     document.getElementById('addStyle').addEventListener('click', () => {
-        const nodes=netGraph.getNodes();
-        let id='aaa'
-    
-        if(nodes.length>5){
-            id=nodes[4].id;
+        const nodes = netGraph.getNodes();
+        let id = 'aaa';
+
+        if (nodes.length > 5) {
+            id = nodes[4].id;
         }
         netGraph.addStyle([{
-            selector: 'node#'+id,
+            selector: 'node#' + id,
             style: {
                 'background-color': '#fff',
             }
@@ -399,24 +399,24 @@ function draw(rawData) {
     let isGroup = false;
     document.getElementById('groupDrag').addEventListener('click', () => {
 
-        netGraph.setGroupDrag(!isGroup)
-        isGroup = !isGroup
+        netGraph.setGroupDrag(!isGroup);
+        isGroup = !isGroup;
     });
 
 
     document.getElementById('addClass').addEventListener('click', () => {
-        const nodes=netGraph.getNodes();
-        const links=netGraph.getLinks();
-        if(nodes.length>0){
+        const nodes = netGraph.getNodes();
+        const links = netGraph.getLinks();
+        if (nodes.length > 0) {
             netGraph.addClassForNode([nodes[0].id], ['fff']);
         }
-        if(links.length>0){
-            netGraph.addClassForLink([links[0].id],['color'])
+        if (links.length > 0) {
+            netGraph.addClassForLink([links[0].id], ['color']);
         }
-        
-        
+
+
         // netGraph.updateStyle();
-    })
+    });
 
 
     document.getElementById('updateLinkStyle').addEventListener('click', () => {
@@ -429,30 +429,30 @@ function draw(rawData) {
         //     }
         // }],false);
 
-        const links=netGraph.getLinks();
+        const links = netGraph.getLinks();
 
-        if(links.length>3){
-            netGraph.addClassForLink([links[2].id], ['selected'])
+        if (links.length > 3) {
+            netGraph.addClassForLink([links[2].id], ['selected']);
         }
 
-        
 
 
-    })
+
+    });
 
     document.getElementById("lockNode").addEventListener("click", () => {
-        const nodes=netGraph.getNodes();
-        if(nodes.length>0){
+        const nodes = netGraph.getNodes();
+        if (nodes.length > 0) {
             netGraph.lockNodes([nodes[0].id]);
         }
-        
-    })
+
+    });
     document.getElementById("unlockNode").addEventListener("click", () => {
-        const nodes=netGraph.getNodes();
-        if(nodes.length>0){
+        const nodes = netGraph.getNodes();
+        if (nodes.length > 0) {
             netGraph.unlockNodes([nodes[0].id]);
         }
-        
+
     });
     document.getElementById("alterStatus").addEventListener("click", () => {
         const selectedNodes = netGraph.getNodes();
@@ -460,13 +460,13 @@ function draw(rawData) {
         selectedNodes.map((v, i) => {
             selectedNodeIds.push(v.getId());
         });
-        netGraph.updateNodeStatus(selectedNodeIds, UNSELECTED)
+        netGraph.updateNodeStatus(selectedNodeIds, UNSELECTED);
     });
     document.getElementById("replaceData").addEventListener("click", () => {
         netGraph.replaceData({
             nodes: [],
-        })
-    })
+        });
+    });
 
 
     document.getElementById('add').addEventListener('click', () => {
@@ -522,13 +522,13 @@ function draw(rawData) {
                     to: 'b001',
                 }
             ]
-        })
+        });
     });
 
     document.getElementById("treeLayout").addEventListener("click", () => {
-        const nodes=netGraph.getNodes();
+        const nodes = netGraph.getNodes();
 
-        if(nodes.length>10){
+        if (nodes.length > 10) {
             netGraph.setNodeLayout('hierarchy', [nodes[0].id, nodes[9].id]);
         }
 
@@ -536,23 +536,23 @@ function draw(rawData) {
     });
     document.getElementById("zoom").addEventListener("click", () => {
         let zoomNum = netGraph.getZoom();
-        console.log(zoomNum)
+        console.log(zoomNum);
         zoomNum += 0.4;
         if (zoomNum > 4) {
             zoomNum = -3;
         }
-        netGraph.setZoom(zoomNum)
+        netGraph.setZoom(zoomNum);
     });
     document.getElementById("scroll").addEventListener("click", () => {
-        const nodes=netGraph.getNodes();
-        if(nodes.length>0){
+        const nodes = netGraph.getNodes();
+        if (nodes.length > 0) {
             netGraph.scrollIntoView(nodes[0].id);
         }
         //netGraph.scrollIntoView("3ded00b898c73c11a72558530859568d");
     });
     document.getElementById("fitView").addEventListener("click", () => {
         netGraph.fitView(null);
-    })
+    });
 
     document.getElementById("auto").addEventListener("click", () => {
         const selectedNodes = netGraph.getSelectedNodes();
@@ -574,64 +574,64 @@ function draw(rawData) {
     });
 
     document.getElementById("addAnimation").addEventListener("click", () => {
-        const links=netGraph.getLinks();
-        if(links.length>5){
+        const links = netGraph.getLinks();
+        if (links.length > 5) {
 
-        
-        const anData={
-            "data": [
-                {
-                    "id": "flow_one",
-                    "name": "abc",
-                    "speed": 3,
-                    "colour": "rgba(255,255,255,1)",
-                    "balls": {
-                        "ball_001": {
-                            "size": 0.301,
-                            "link_id": links[0].id,
-                            "direct": 1
+
+            const anData = {
+                "data": [
+                    {
+                        "id": "flow_one",
+                        "name": "abc",
+                        "speed": 3,
+                        "colour": "rgba(255,255,255,1)",
+                        "balls": {
+                            "ball_001": {
+                                "size": 0.301,
+                                "link_id": links[0].id,
+                                "direct": 1
+                            },
+                            "ball_002": {
+                                "size": 0.3,
+                                "link_id": links[1].id,
+                                "direct": -1
+                            }
                         },
-                        "ball_002": {
-                            "size": 0.3,
-                            "link_id": links[1].id,
-                            "direct": -1
-                        }
-                    },
-                    "order": [
-                        [
-                            "ball_001",
-                            "ball_002"
+                        "order": [
+                            [
+                                "ball_001",
+                                "ball_002"
+                            ]
                         ]
-                    ]
-                },
-                {
-                    "id": "flow_two",
-                    "name": "abcd",
-                    "speed": 5,
-                    "colour": "rgba(255,0,255,1)",
-                    "balls": {
-                        "ball_003": {
-                            "size": 0.301,
-                            "link_id": links[2].id,
-                            "direct": 1
+                    },
+                    {
+                        "id": "flow_two",
+                        "name": "abcd",
+                        "speed": 5,
+                        "colour": "rgba(255,0,255,1)",
+                        "balls": {
+                            "ball_003": {
+                                "size": 0.301,
+                                "link_id": links[2].id,
+                                "direct": 1
+                            },
+                            "ball_004": {
+                                "size": 0.3,
+                                "link_id": links[3].id,
+                                "direct": -1
+                            }
                         },
-                        "ball_004": {
-                            "size": 0.3,
-                            "link_id": links[3].id,
-                            "direct": -1
-                        }
-                    },
-                    "order": [
-                        [
-                            "ball_003",
-                            "ball_004"
+                        "order": [
+                            [
+                                "ball_003",
+                                "ball_004"
+                            ]
                         ]
-                    ]
-                }
-            ]
+                    }
+                ]
+            };
+            netGraph.addFlowAnimation(anData.data);
         }
-        netGraph.addFlowAnimation(anData.data)
-    }
         // axios.get("/src/animation.json").then((res) => {
         //     netGraph.addFlowAnimation(res.data.data)
         // })
@@ -641,9 +641,9 @@ function draw(rawData) {
     });
     document.getElementById("restartAnimation").addEventListener("click", () => {
         netGraph.restartFlowAnimation(["flow_one"]);
-    })
+    });
     document.getElementById("removeAnimation").addEventListener("click", () => {
-        netGraph.removeFlowAnimation()
+        netGraph.removeFlowAnimation();
     });
 
 
@@ -678,7 +678,7 @@ function draw(rawData) {
                     "undirected_type": "set_off"
                 }]
             }]
-        }
+        };
         //netGraph.addFusionAnimation(data);
     });
 
@@ -688,7 +688,11 @@ function draw(rawData) {
             "entity": '/src/img1/a106.png',
             "animal": "/src/img1/a105.png",
             "default": "/src/img1/a107.png",
-        })
+        });
+    });
+
+    document.getElementById("highlight").addEventListener("click",()=>{
+        netGraph.updateNodeStatus(["01cc378b0ebe3ad6b82c4a13e0767d47","80b55436e31238928e1b753b2611485c"],HIGHLIGHT)
     })
 }
 
