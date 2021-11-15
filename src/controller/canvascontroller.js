@@ -8,6 +8,7 @@ import BrushCanvas from '../helper/brushCanvas';
 //     colorRed:[255,0,0]
 //     colorBlue
 // }
+const ICONDIM=60;
 export default class CanvasController {
     constructor(props, eventController) {
         this.props = props;
@@ -259,8 +260,8 @@ export default class CanvasController {
                 }
                 return {
                     url: url,
-                    width: 50,//d.style.iconHeight,
-                    height: 50,//d.style.iconHeight,
+                    width: ICONDIM,//d.style.iconHeight,
+                    height: ICONDIM,//d.style.iconHeight,
                     anchorX: 0,
                     anchorY: 0,
                 }
@@ -545,8 +546,8 @@ export default class CanvasController {
                 url: invalidIcon.has(d.url) ? function (d) {
                     return defaultUrlMap[defaultUrlFunc(d)];
                 }(d) : d.url,
-                width: 50,//d.style.iconHeight,
-                height: 50,//d.style.iconHeight,
+                width: ICONDIM,//d.style.iconHeight,
+                height: ICONDIM,//d.style.iconHeight,
                 anchorX: 0,
                 anchorY: 0,
             }),
@@ -807,8 +808,8 @@ export default class CanvasController {
                 }
                 return {
                     url: url,
-                    width: 50,//d.style.iconHeight,
-                    height: 50,//d.style.iconHeight,
+                    width: ICONDIM,//d.style.iconHeight,
+                    height: ICONDIM,//d.style.iconHeight,
                     anchorX: 0,
                     anchorY: 0,
                 }

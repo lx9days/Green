@@ -692,8 +692,8 @@ function draw (rawData) {
     });
 
     document.getElementById("highlight").addEventListener("click",()=>{
-        netGraph.updateNodeStatus(["01cc378b0ebe3ad6b82c4a13e0767d47","80b55436e31238928e1b753b2611485c"],HIGHLIGHT)
-    })
+        netGraph.updateNodeStatus(["01cc378b0ebe3ad6b82c4a13e0767d47","80b55436e31238928e1b753b2611485c"],HIGHLIGHT);
+    });
 }
 
 
