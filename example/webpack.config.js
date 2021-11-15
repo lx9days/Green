@@ -9,7 +9,7 @@ module.exports={
     entry:{
         main:"./src/index.js"
     },
-    mode:"development",
+    mode:"production",
     devtool:'source-map',
     output:{
         path:path.resolve(__dirname,'dist'),

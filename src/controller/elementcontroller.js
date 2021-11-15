@@ -222,6 +222,11 @@ export default class ElementController {
 
 
     _generateRenderObjs() {
+        console.log(this.renderObject)
+        let cacheBubble=new Array()
+        if(this.renderObject.renderBubble.length>0){
+            cacheBubble=this.renderObject.renderBubble;
+        }
         this.renderObject = {
             renderBackgrounds: new Array(),
             renderIcons: new Array(),
@@ -230,7 +235,7 @@ export default class ElementController {
             renderText: new Array(),
             renderPolygon: new Array(),
             renderMark: new Array(),
-            renderBubble: new Array(),
+            renderBubble: cacheBubble,
             renderDashLine: new Array(),
             charSet: null
         }

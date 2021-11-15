@@ -259,8 +259,8 @@ export default class CanvasController {
                 }
                 return {
                     url: url,
-                    width: d.style.iconHeight,
-                    height: d.style.iconHeight,
+                    width: 50,//d.style.iconHeight,
+                    height: 50,//d.style.iconHeight,
                     anchorX: 0,
                     anchorY: 0,
                 }
@@ -498,6 +498,10 @@ export default class CanvasController {
         const invalidIcon = this.invalidIncons;
         const defaultUrlMap = this.props.defaultUrlMap;
         const defaultUrlFunc = this.props.defaultUrlFunc;
+        const styleFlag = this.updateFlag.style;
+        const positionFlag = this.updateFlag.position;
+        const bubbleFlag = this.updateFlag.bubble;
+        const iconFlag=this.updateFlag.icon;
 
         const lineLayer = new LineLayer({
             id: 'line-layer',
@@ -541,8 +545,8 @@ export default class CanvasController {
                 url: invalidIcon.has(d.url) ? function (d) {
                     return defaultUrlMap[defaultUrlFunc(d)];
                 }(d) : d.url,
-                width: d.style.iconHeight,
-                height: d.style.iconHeight,
+                width: 50,//d.style.iconHeight,
+                height: 50,//d.style.iconHeight,
                 anchorX: 0,
                 anchorY: 0,
             }),
@@ -708,16 +712,33 @@ export default class CanvasController {
 
         const zoom = this.props.zoom;
         const invalidIcon = this.invalidIncons;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels ,renderDashLine} = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels ,renderDashLine,renderBubble} = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
 
         const styleFlag = this.updateFlag.style;
         const positionFlag = this.updateFlag.position;
         const iconFlag=this.updateFlag.icon;
+        const bubbleFlag = this.updateFlag.bubble;
 
         const defaultUrlMap = this.props.defaultUrlMap;
         const defaultUrlFunc = this.props.defaultUrlFunc;
+
+        let bubbleLayer = null
+        if (renderBubble.length > 0) {
+            bubbleLayer = new SolidPolygonLayer({
+                id: 'bubble-layer',
+                data: renderBubble,
+                positionFormat: 'XY',
+                getPolygon: d => d.polygon,
+                getFillColor: d => d.color,
+                updateTriggers: {
+                    getPolygon: positionFlag + bubbleFlag,
+
+                },
+            });
+
+        }
 
         let animationLayer = null;
         if (this.animationData.length > 0) {
@@ -786,8 +807,8 @@ export default class CanvasController {
                 }
                 return {
                     url: url,
-                    width: d.style.iconHeight,
-                    height: d.style.iconHeight,
+                    width: 50,//d.style.iconHeight,
+                    height: 50,//d.style.iconHeight,
                     anchorX: 0,
                     anchorY: 0,
                 }
@@ -1015,12 +1036,22 @@ export default class CanvasController {
             onIconError: () => {
                 console.log(arguments)
             }
-        })
-        if (this.animationData.length > 0) {
+        });
+
+        if (renderBubble.length > 0 && this.animationData.length > 0) {
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+        } else if (renderBubble.length > 0) {
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+        } else if (this.animationData.length > 0) {
             this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
         } else {
             this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
         }
+        // if (this.animationData.length > 0) {
+        //     this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+        // } else {
+        //     this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+        // }
 
 
     }
