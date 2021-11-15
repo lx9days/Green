@@ -1,4 +1,6 @@
 example/src/img1
+example/src/img2
 example/src/*.json
 example/src/*.zip
 node_modules
+example/dist

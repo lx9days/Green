@@ -2,24 +2,54 @@ import axios from 'axios';
 import NetGraph, { HIGHLIGHT, SELECTED, UNSELECTED } from '../../src/index';
 
 const debug = false;
+let isUpLoadFile=false;
 
+function readData(){
+    if(!window.File||!window.FileReader||!window.FileList||!window.Blob){
+        return -1;
+    }else{
+        if(!isUpLoadFile){
+            throw new Error("two files are needed");
+        }
+        let input=document.getElementById("uploadFile");
+        let dataFile=input.files[0];
+        let dataFileReader=new FileReader();
 
-axios.get('/src/auto_500.json').then((res) => {
-    const nodes = res.data.nodes;
-    const links = res.data.links;
-
-    nodes.forEach((node, i) => {
-        node.img = '/src/img1/a' + i + '.png';
-    });
-    console.log("nodelength", nodes.length);
-    console.log("linklength", links.length);
-    // const nodes=[]
-    const data = {
-        nodes: nodes,
-        links,
+        dataFileReader.onload=function(e){
+            let dataContent=e.target.result;
+            const data=JSON.parse(dataContent);
+            data.nodes.forEach((node,i)=>{
+                node.img='/src/img1/a'+i%10+'.png';
+            })
+            draw(data)
+        }
+        dataFileReader.readAsText(dataFile);
     }
-    draw(data);
+}
+
+document.getElementById("uploadFile").addEventListener("change",(e)=>{
+    if(e.target.files[0].name.lastIndexOf('.json')!==-1){
+        isUpLoadFile=true;
+        readData();
+    }
 })
+
+// axios.get('/src/auto_500.json').then((res) => {
+//     const nodes = res.data.nodes;
+//     const links = res.data.links;
+
+//     nodes.forEach((node, i) => {
+//         node.img = '/src/img1/a' + i%10 + '.png';
+//     });
+//     console.log("nodelength", nodes.length);
+//     console.log("linklength", links.length);
+//     // const nodes=[]
+//     const data = {
+//         nodes: nodes,
+//         links,
+//     }
+//     draw(data);
+// })
 function draw(rawData) {
     let data = null;
     if (!debug) {
@@ -320,7 +350,6 @@ function draw(rawData) {
         console.log("rightClick")
     })
     document.getElementById('remove').addEventListener('click', (e) => {
-        console.log(e);
         const selectedNodes = netGraph.getSelectedNodes();
         const selectedNodeIds = new Array();
         selectedNodes.map((v, i) => {
@@ -331,27 +360,16 @@ function draw(rawData) {
 
 
     document.getElementById('addStyle').addEventListener('click', () => {
+        const nodes=netGraph.getNodes();
+        let id='aaa'
+    
+        if(nodes.length>5){
+            id=nodes[4].id;
+        }
         netGraph.addStyle([{
-            selector: 'node#603b971bdf7a398786544ded42be0348',
+            selector: 'node#'+id,
             style: {
-                'width': 60,
-                'height': 60,
-                'background-width': 100,
-                'background-height': 70,
-                'url': (d) => d.data.img,
-                'opacity': 1,
-                'background-color': '#ffd53f',
-                'background-opacity': 1,
-                'border-width': 0,
-                'border-color': '#fff',
-                'border-opacity': 1,
-                'color': '#845624',
-                'text-opacity': 1,
-                'font-size': 16,
-                'text': (d) => d.data.name,
-                'shape': 'rect',
-                'highlight-color': "#Fff0BC",
-                'highlight-opacity': 0.5
+                'background-color': '#fff',
             }
         },]);
     });
@@ -367,9 +385,7 @@ function draw(rawData) {
     });
 
     document.getElementById('brush').addEventListener('click', () => {
-
         netGraph.showBrushArea();
-
     });
 
     // new NetworkChart({
@@ -389,8 +405,16 @@ function draw(rawData) {
 
 
     document.getElementById('addClass').addEventListener('click', () => {
-        netGraph.addClassForNode(['5c2f3ba4d6943955a3b823e8518babd4'], ['fff']);
-        netGraph.addClassForLink(['7b1120b4debb38148a41d06fa25f2b8aphone_write41dcc82234d534ce92c81d47c356c277'],['color'])
+        const nodes=netGraph.getNodes();
+        const links=netGraph.getLinks();
+        if(nodes.length>0){
+            netGraph.addClassForNode([nodes[0].id], ['fff']);
+        }
+        if(links.length>0){
+            netGraph.addClassForLink([links[0].id],['color'])
+        }
+        
+        
         // netGraph.updateStyle();
     })
 
@@ -405,16 +429,30 @@ function draw(rawData) {
         //     }
         // }],false);
 
-        netGraph.addClassForLink(['MG_8cb555585f988b72b61bd42c7ebe4b5f'], ['selected'])
+        const links=netGraph.getLinks();
+
+        if(links.length>3){
+            netGraph.addClassForLink([links[2].id], ['selected'])
+        }
+
+        
 
 
     })
 
     document.getElementById("lockNode").addEventListener("click", () => {
-        netGraph.lockNodes(["3ded00b898c73c11a72558530859568d"])
+        const nodes=netGraph.getNodes();
+        if(nodes.length>0){
+            netGraph.lockNodes([nodes[0].id]);
+        }
+        
     })
     document.getElementById("unlockNode").addEventListener("click", () => {
-        netGraph.unlockNodes(["3ded00b898c73c11a72558530859568d"])
+        const nodes=netGraph.getNodes();
+        if(nodes.length>0){
+            netGraph.unlockNodes([nodes[0].id]);
+        }
+        
     });
     document.getElementById("alterStatus").addEventListener("click", () => {
         const selectedNodes = netGraph.getNodes();
@@ -425,12 +463,9 @@ function draw(rawData) {
         netGraph.updateNodeStatus(selectedNodeIds, UNSELECTED)
     });
     document.getElementById("replaceData").addEventListener("click", () => {
-
         netGraph.replaceData({
             nodes: [],
         })
-        console.log(netGraph.getNodes(["a001"]))
-        console.log(netGraph.getLinks())
     })
 
 
@@ -491,7 +526,13 @@ function draw(rawData) {
     });
 
     document.getElementById("treeLayout").addEventListener("click", () => {
-        netGraph.setNodeLayout('hierarchy', ["2786b7455ff93ce7ad0fc4a4cfe5bd21", "61c90e594b88372f8fa3217c150656f0"]);
+        const nodes=netGraph.getNodes();
+
+        if(nodes.length>10){
+            netGraph.setNodeLayout('hierarchy', [nodes[0].id, nodes[9].id]);
+        }
+
+        //netGraph.setNodeLayout('hierarchy', ["2786b7455ff93ce7ad0fc4a4cfe5bd21", "61c90e594b88372f8fa3217c150656f0"]);
     });
     document.getElementById("zoom").addEventListener("click", () => {
         let zoomNum = netGraph.getZoom();
@@ -503,7 +544,11 @@ function draw(rawData) {
         netGraph.setZoom(zoomNum)
     });
     document.getElementById("scroll").addEventListener("click", () => {
-        netGraph.scrollIntoView("3ded00b898c73c11a72558530859568d");
+        const nodes=netGraph.getNodes();
+        if(nodes.length>0){
+            netGraph.scrollIntoView(nodes[0].id);
+        }
+        //netGraph.scrollIntoView("3ded00b898c73c11a72558530859568d");
     });
     document.getElementById("fitView").addEventListener("click", () => {
         netGraph.fitView(null);
@@ -519,7 +564,7 @@ function draw(rawData) {
     });
     document.getElementById("addBubble").addEventListener("click", () => {
         const nodeIds = netGraph.getSelectedNodes().map(v => v.id);
-        netGraph.addBubbleSet([nodeIds, ["b001", "b002", "b003", "b004", "b005", "b006", "b007"]], ["#d7473a", "#4ea79b"], "one");
+        netGraph.addBubbleSet([nodeIds], ["#d7473a"], "one");
     });
     document.getElementById("layoutBubble").addEventListener("click", () => {
         netGraph.layoutBubbleSet(["one"]);
@@ -529,9 +574,67 @@ function draw(rawData) {
     });
 
     document.getElementById("addAnimation").addEventListener("click", () => {
-        axios.get("/src/animation.json").then((res) => {
-            netGraph.addFlowAnimation(res.data.data)
-        })
+        const links=netGraph.getLinks();
+        if(links.length>5){
+
+        
+        const anData={
+            "data": [
+                {
+                    "id": "flow_one",
+                    "name": "abc",
+                    "speed": 3,
+                    "colour": "rgba(255,255,255,1)",
+                    "balls": {
+                        "ball_001": {
+                            "size": 0.301,
+                            "link_id": links[0].id,
+                            "direct": 1
+                        },
+                        "ball_002": {
+                            "size": 0.3,
+                            "link_id": links[1].id,
+                            "direct": -1
+                        }
+                    },
+                    "order": [
+                        [
+                            "ball_001",
+                            "ball_002"
+                        ]
+                    ]
+                },
+                {
+                    "id": "flow_two",
+                    "name": "abcd",
+                    "speed": 5,
+                    "colour": "rgba(255,0,255,1)",
+                    "balls": {
+                        "ball_003": {
+                            "size": 0.301,
+                            "link_id": links[2].id,
+                            "direct": 1
+                        },
+                        "ball_004": {
+                            "size": 0.3,
+                            "link_id": links[3].id,
+                            "direct": -1
+                        }
+                    },
+                    "order": [
+                        [
+                            "ball_003",
+                            "ball_004"
+                        ]
+                    ]
+                }
+            ]
+        }
+        netGraph.addFlowAnimation(anData.data)
+    }
+        // axios.get("/src/animation.json").then((res) => {
+        //     netGraph.addFlowAnimation(res.data.data)
+        // })
     });
     document.getElementById("pauseAnimation").addEventListener("click", () => {
         netGraph.pauseFlowAnimation(["flow_one"]);
@@ -576,7 +679,7 @@ function draw(rawData) {
                 }]
             }]
         }
-        netGraph.addFusionAnimation(data);
+        //netGraph.addFusionAnimation(data);
     });
 
     document.getElementById("updateUrlMap").addEventListener("click", () => {
