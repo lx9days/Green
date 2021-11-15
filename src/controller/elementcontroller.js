@@ -222,7 +222,6 @@ export default class ElementController {
 
 
     _generateRenderObjs() {
-        console.log(this.renderObject)
         let cacheBubble = new Array()
         if (this.renderObject.renderBubble.length > 0) {
             cacheBubble = this.renderObject.renderBubble;
