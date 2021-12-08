@@ -35,8 +35,8 @@
     "webpack-hot-middleware": "^2.25.0"
   },
   "dependencies": {
-    "@deck.gl/core": "^8.6.0",
-    "@deck.gl/layers": "^8.5.10",
+    "@deck.gl/core": "^8.6.4",
+    "@deck.gl/layers": "^8.6.4",
     "buffer": "^6.0.3",
     "d3": "^6.3.1",
     "d3-force-sampled": "^1.0.0",

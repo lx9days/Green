@@ -405,7 +405,8 @@ export default class CanvasController {
             getColor: (d) => d.style.textColor,
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize: zoom,
+                getSize: zoom+styleFlag,
+                getColor:styleFlag
             }
         });
 
@@ -621,10 +622,9 @@ export default class CanvasController {
             characterSet: charSet,
             getColor: (d) => d.style.textColor,
             updateTriggers: {
-                getPosition: d => {
-                    return d.position;
-                },
-                getSize: d => d.style.textSize * (2 ** zoom),
+                getPosition: positionFlag,
+                getSize: zoom+styleFlag,
+                getColor:styleFlag
             }
         });
 
@@ -962,7 +962,8 @@ export default class CanvasController {
             getColor: (d) => d.style.textColor,
             updateTriggers: {
                 getPosition:positionFlag,
-                getSize: zoom
+                getSize: zoom+styleFlag,
+                getColor:styleFlag
             }
         });
 
@@ -1213,7 +1214,12 @@ export default class CanvasController {
             eventController: this.eventController
         }
 
-        new BrushCanvas(brushProps);
+        if(this.brushCanvas){
+            this.brushCanvas.showBrushArea(brushProps);
+        }else{
+            this.brushCanvas=new BrushCanvas(brushProps);
+            this.brushCanvas.showBrushArea(brushProps);
+        }
         this.eventController.subscribe('_brushend', this._brushInfoCallBack)
     }
 

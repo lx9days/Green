@@ -564,7 +564,7 @@ function draw (rawData) {
     });
     document.getElementById("addBubble").addEventListener("click", () => {
         const nodeIds = netGraph.getSelectedNodes().map(v => v.id);
-        netGraph.addBubbleSet([nodeIds], ["#d7473a"], "one");
+        netGraph.addBubbleSet([nodeIds, ["b001", "b002", "b003", "b004", "b005", "b006", "b007"]], ["#d7473a", "#4ea79b"], "one");
     });
     document.getElementById("layoutBubble").addEventListener("click", () => {
         netGraph.layoutBubbleSet(["one"]);
@@ -691,8 +691,17 @@ function draw (rawData) {
         });
     });
 
-    document.getElementById("highlight").addEventListener("click",()=>{
-        netGraph.updateNodeStatus(["01cc378b0ebe3ad6b82c4a13e0767d47","80b55436e31238928e1b753b2611485c"],HIGHLIGHT);
+    document.getElementById("highlight").addEventListener("click", () => {
+        netGraph.updateNodeStatus(["01cc378b0ebe3ad6b82c4a13e0767d47", "80b55436e31238928e1b753b2611485c"], HIGHLIGHT);
+    });
+
+    document.getElementById("updateTextStyle").addEventListener("click", () => {
+        const selectedNodes = netGraph.getSelectedNodes();
+        const node = selectedNodes[selectedNodes.length - 1];
+        console.log(node);
+        node.styles.push({'font-size':40});
+        node.styles.push({'background-color':"#000"});
+        netGraph.updateStyle();
     });
 }
 
