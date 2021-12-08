@@ -347,7 +347,6 @@ export default class ElementController {
      * 根据node 位置生成link 的起始位置
      */
     _updateAllLinkLocation() {
-
         if (this.nodes && this.nodes.length > 0) {
             this.nodes.forEach((node) => {
                 if (node.sourceLinks && node.sourceLinks.length > 0) {
@@ -1379,7 +1378,5 @@ export default class ElementController {
             this.controller.styleController.mountAllStyleToElement(newNodeArray, newLinkArray);
             this._parseElements(newNodeArray, newLinkArray, 'part');
         }
-
     }
-
 }
