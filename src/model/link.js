@@ -20,6 +20,9 @@ export default class Link {
         };
         this.sourceNode=null;
         this.targetNode=null;
+
+        this.useCustomStyle=false;
+        this.customStyle={};
     }
 
     getId(){
@@ -127,6 +130,15 @@ export default class Link {
     getSourceLocation(){
         //return {x:this.source.x,y:this.source.y};
         return {x:this.sourceNode.x,y:this.sourceNode.y}
+    }
+
+    updateCustomStyle(customeStyle){
+        this.useCustomStyle=true;
+        this.customStyle=Object.assign(this.customStyle,customeStyle);
+    }
+    closeCustomStyle(){
+        this.useCustomStyle=false;
+        this.customStyle={};
     }
 
 }

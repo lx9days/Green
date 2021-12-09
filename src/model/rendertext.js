@@ -33,6 +33,11 @@ export default class RenderText {
         this._generateStyle();
         this._generatePosition();
     }
+    
+    rebuildForCustomStyle(){
+        this._generateStyle(true);
+        this._generatePosition();
+    }
 
     reLocation(){
         this._generatePosition();
@@ -73,8 +78,19 @@ export default class RenderText {
 
     }
 
-    _generateStyle() {
-        const styles = this.origionElement.getStyles();
+    _generateStyle(custom=false) {
+        let styles;
+        if(custom){
+            if(!this.origionElement.useCustomStyle){
+                return
+            }
+            styles=[this.origionElement.customStyle];
+        }else{
+            styles = this.origionElement.getStyles();
+            if(this.origionElement.useCustomStyle){
+                styles.push(this.origionElement.customStyle);
+            }
+        }
         styles.forEach((style) => {
             for (const item in style) {
                 switch (item.toLowerCase()) {
@@ -152,6 +168,9 @@ export default class RenderText {
                 }
             }
         });
+        if(this.origionElement.useCustomStyle){
+            styles.pop();
+        }
         this.style.textColor[3] = this.style.textOpacity * 255;
     }
 

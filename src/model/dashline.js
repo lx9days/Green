@@ -61,6 +61,11 @@ export default class DashLine {
         this._generateDash();
     }
 
+    rebuildForCustomStyle(){
+        this._generatePosition(true);
+        this._generateDash();
+    }
+
     /**
      * 更新状态
      */
@@ -73,8 +78,19 @@ export default class DashLine {
     }
 
 
-    _generateStyle() {
-        const styles = this.origionElement.getStyles();
+    _generateStyle(custom=false) {
+        let styles;
+        if(custom){
+            if(!this.origionElement.useCustomStyle){
+                return
+            }
+            styles=[this.origionElement.customStyle];
+        }else{
+            styles = this.origionElement.getStyles();
+            if(this.origionElement.useCustomStyle){
+                styles.push(this.origionElement.customStyle);
+            }
+        }
 
         styles.forEach((style) => {
             for (const item in style) {
@@ -192,6 +208,9 @@ export default class DashLine {
                 }
             }
         });
+        if(this.origionElement.useCustomStyle){
+            styles.pop();
+        }
         this.style.lineColor[3] = this.style.lineOpacity * 255;
     }
 }

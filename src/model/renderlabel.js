@@ -27,6 +27,11 @@ export default class RenderLabel {
         this._generateStyle();
         this._generatePosition();
     }
+
+    rebuildForCustomStyle(){
+        this._generateStyle(true);
+        this._generatePosition();
+    }
     /**
      * 计算位置
      */
@@ -63,8 +68,19 @@ export default class RenderLabel {
     /**
      * 将css样式解析为当前组件可用样式
      */
-    _generateStyle() {
-        const styles = this.origionElement.getStyles();
+    _generateStyle(custom=false) {
+        let styles;
+        if(custom){
+            if(!this.origionElement.useCustomStyle){
+                return
+            }
+            styles=[this.origionElement.customStyle];
+        }else{
+            styles = this.origionElement.getStyles();
+            if(this.origionElement.useCustomStyle){
+                styles.push(this.origionElement.customStyle);
+            }
+        }
         styles.forEach((style) => {
             for (const item in style) {
                 switch (item.toLowerCase()) {
@@ -113,5 +129,8 @@ export default class RenderLabel {
                 }
             }
         });
+        if(this.origionElement.useCustomStyle){
+            styles.pop();
+        }
     }
 }
