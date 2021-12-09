@@ -32,6 +32,11 @@ export default class RenderBorder {
         this._generatePosition();
     }
 
+    rebuildForCustomStyle(){
+        this._generateStyle(true);
+        this._generatePosition();
+    }
+
     /**
      * 重新计算位置
      */
@@ -58,9 +63,19 @@ export default class RenderBorder {
     /**
      * 解析样式，将css样式规则解析为，当前组件可以的样式
      */
-    _generateStyle() {
-        const styles = this.origionElement.getStyles();
-
+    _generateStyle(custom=false) {
+        let styles;
+        if(custom){
+            if(!this.origionElement.useCustomStyle){
+                return
+            }
+            styles=[this.origionElement.customStyle];
+        }else{
+            styles = this.origionElement.getStyles();
+            if(this.origionElement.useCustomStyle){
+                styles.push(this.origionElement.customStyle);
+            }
+        }
         styles.forEach((style) => {
             for (const item in style) {
                 switch (item.toLowerCase()) {
@@ -151,8 +166,10 @@ export default class RenderBorder {
 
                 }
             }
-
         });
+        if(this.origionElement.useCustomStyle){
+            styles.pop();
+        }
         this.style.backgroundColor[3] = this.style.backgroundOpacity * 255;
         this.style.borderColor[3] = this.style.borderOpacity * 255;
         this.style.backgroundHeight=this.style.backgroundHeight+this.style.borderWidth

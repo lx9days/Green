@@ -39,6 +39,11 @@ export default class RenderLine {
         this._generatePosition();
     }
 
+    rebuildForCustomStyle(){
+        this._generateStyle(true);
+        this._generatePosition();
+    }
+
     /**
      * 重构position
      */
@@ -58,8 +63,19 @@ export default class RenderLine {
     }
 
 
-    _generateStyle() {
-        const styles = this.origionElement.getStyles();
+    _generateStyle(custom=false) {
+        let styles;
+        if(custom){
+            if(!this.origionElement.useCustomStyle){
+                return
+            }
+            styles=[this.origionElement.customStyle];
+        }else{
+            styles = this.origionElement.getStyles();
+            if(this.origionElement.useCustomStyle){
+                styles.push(this.origionElement.customStyle);
+            }
+        }
 
         styles.forEach((style) => {
             for (const item in style) {
@@ -177,6 +193,9 @@ export default class RenderLine {
                 }
             }
         });
+        if(this.origionElement.useCustomStyle){
+            styles.pop();
+        }
         this.style.lineColor[3]=this.style.lineOpacity*255;
     }
 }

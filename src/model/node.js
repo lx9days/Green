@@ -16,7 +16,9 @@ export default class Node {
         this.styles;
         this.sourceLinks = new Array();
         this.targetLinks = new Array();
-        this.isLocked=false
+        this.isLocked=false;
+        this.useCustomStyle=false;
+        this.customStyle={};
     }
 
     
@@ -175,13 +177,22 @@ export default class Node {
     }
     set x(newX){
         if(!this.isLocked){
-            this._x=newX
+            this._x=newX;
         }
     }
     set y(newY){
         if(!this.isLocked){
-            this._y=newY
+            this._y=newY;
         }
+    }
+
+    updateCustomStyle(customeStyle){
+        this.useCustomStyle=true;
+        this.customStyle=Object.assign(this.customStyle,customeStyle);
+    }
+    closeCustomStyle(){
+        this.useCustomStyle=false;
+        this.customStyle={};
     }
 
 }

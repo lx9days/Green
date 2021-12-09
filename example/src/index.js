@@ -696,12 +696,13 @@ function draw (rawData) {
     });
 
     document.getElementById("updateTextStyle").addEventListener("click", () => {
+
         const selectedNodes = netGraph.getSelectedNodes();
         const node = selectedNodes[selectedNodes.length - 1];
-        console.log(node);
-        node.styles.push({'font-size':40});
-        node.styles.push({'background-color':"#000"});
-        netGraph.updateStyle();
+        // console.log(node);
+        // node.styles.push({'font-size':40,'background-color':"#000"});
+
+        netGraph.updateNodeCustomStyle([node],{'font-size':40,'background-color':"#000"});
     });
 }
 

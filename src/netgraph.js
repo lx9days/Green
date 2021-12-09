@@ -432,6 +432,27 @@ export default class NetGraph {
         }
     }
 
+    /**
+     * 
+     * @param {Array} nodes 要修改样式的Node
+     * @param {Objec} style 要添加的样式
+     */
+    updateNodeCustomStyle(nodes,style){
+        if(Array.isArray(nodes)&&nodes.length>0){
+            this.controller.elementController.updateNodeCustomStyle(nodes,style);
+        }
+    }
+    /**
+     * 
+     * @param {Array} links 要修改的样式的Link
+     * @param {Objec} style 要添加的样式
+     */
+    updateLinkCustomStyle(links,style){
+        if(Array.isArray(links)&&links.length>0){
+            this.controller.elementController.updateLinkCustomStyle(nodes,style);
+        }
+    }
+
 
 
     
