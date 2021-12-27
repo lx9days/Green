@@ -8,7 +8,7 @@ import BrushCanvas from '../helper/brushCanvas';
 //     colorRed:[255,0,0]
 //     colorBlue
 // }
-const ICONDIM=45;
+const ICONDIM=60;
 export default class CanvasController {
     constructor(props, eventController) {
         this.props = props;
@@ -89,8 +89,6 @@ export default class CanvasController {
         if (this.deck) {
             this.deck = null;
         }
-        // console.log(this.props.containerWidth, this.props.containerHeight);
-
         this.deck = new Deck({
             views: new OrthographicView({
                 id: 'globalView',
