@@ -8,7 +8,7 @@ import BrushCanvas from '../helper/brushCanvas';
 //     colorRed:[255,0,0]
 //     colorBlue
 // }
-const ICONDIM=60;
+const ICONDIM=45;
 export default class CanvasController {
     constructor(props, eventController) {
         this.props = props;
@@ -267,10 +267,9 @@ export default class CanvasController {
                 }
             },
             onIconError: this.onIconErrorHander,
-            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            getSize: d => d.style.iconSize ,// * (2 ** zoom),//this 指向问题
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize: zoom,
                 getIcon: iconFlag,
             }
         });
@@ -397,7 +396,7 @@ export default class CanvasController {
                 return d.position;
             },
             getText: d => d.text,
-            getSize: d => d.style.textSize * (2 ** zoom),
+            getSize: d => d.style.textSize,
             getAngle: 0,
             getTextAnchor: d => d.style.textAnchor,
             getAlignmentBaseline: d => d.style.textAlignmentBaseline,
@@ -405,7 +404,6 @@ export default class CanvasController {
             getColor: (d) => d.style.textColor,
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize: zoom+styleFlag,
                 getColor:styleFlag
             }
         });
@@ -470,10 +468,9 @@ export default class CanvasController {
                 anchorX: 0,
                 anchorY: 0,
             }),
-            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            getSize: d => d.style.iconSize,//this 指向问题
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize: zoom,
             }
         });
         if (renderBubble.length > 0 && this.animationData.length > 0) {
@@ -552,12 +549,11 @@ export default class CanvasController {
                 anchorX: 0,
                 anchorY: 0,
             }),
-            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            getSize: d => d.style.iconSize,//this 指向问题
             updateTriggers: {
                 getPosition: d => {
                     return d.position;
                 },
-                getSize: d => d.style.iconSize * (2 ** zoom),
                 
             },
         });
@@ -615,7 +611,7 @@ export default class CanvasController {
                 return d.position;
             },
             getText: d => d.text,
-            getSize: d => d.style.textSize * (2 ** zoom),
+            getSize: d => d.style.textSize,
             getAngle: 0,
             getTextAnchor: d => d.style.textAnchor,
             getAlignmentBaseline: d => d.style.textAlignmentBaseline,
@@ -623,7 +619,6 @@ export default class CanvasController {
             getColor: (d) => d.style.textColor,
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize: zoom+styleFlag,
                 getColor:styleFlag
             }
         });
@@ -694,12 +689,11 @@ export default class CanvasController {
                 anchorX: 0,
                 anchorY: 0,
             }),
-            getSize: d => d.style.iconSize * (2 ** zoom),
+            getSize: d => d.style.iconSize,
             updateTriggers: {
                 getPosition: d => {
                     return d.position;
                 },
-                getSize: d => d.style.iconSize * (2 ** zoom),
             },
             onIconError: () => {
                 console.log(arguments)
@@ -814,12 +808,13 @@ export default class CanvasController {
                     anchorY: 0,
                 }
             },
-            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            getSize: d => {
+                return d.style.iconSize ;
+            },//this 指向问题
             getColor: d => d.style.iconColor,
 
             updateTriggers: {
                 getPosition:positionFlag,
-                getSize:  zoom,
                 getIcon: iconFlag,
             },
             onIconError: this.onIconErrorHander,
@@ -954,7 +949,7 @@ export default class CanvasController {
                 return d.position;
             },
             getText: d => d.text,
-            getSize: d => d.style.textSize * (2 ** zoom),
+            getSize: d => d.style.textSize,
             getAngle: 0,
             getTextAnchor: d => d.style.textAnchor,
             getAlignmentBaseline: d => d.style.textAlignmentBaseline,
@@ -962,7 +957,6 @@ export default class CanvasController {
             getColor: (d) => d.style.textColor,
             updateTriggers: {
                 getPosition:positionFlag,
-                getSize: zoom+styleFlag,
                 getColor:styleFlag
             }
         });
@@ -1030,10 +1024,9 @@ export default class CanvasController {
                 anchorX: 0,
                 anchorY: 0,
             }),
-            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            getSize: d => d.style.iconSize,//this 指向问题
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize:  zoom,
             },
             onIconError: () => {
                 console.log(arguments)
@@ -1130,7 +1123,7 @@ export default class CanvasController {
         if (e.srcEvent.ctrlKey) {
             this.eventController.fire('lineClickWithCtrl', [info, e]);
             return true;
-        }
+        } 
         this.eventController.fire('lineClick', [info, e]);
         return true;
     }
@@ -1274,7 +1267,6 @@ export default class CanvasController {
     }
 
     fitView(params) {
-
         if (params.zoom < -5) {
             params.zoom = -4;
         }
