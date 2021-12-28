@@ -129,8 +129,7 @@ export default class CanvasController {
         } else {
             if (interactionState.isZooming) {
                 this.props.zoom = viewState.zoom;
-
-                this.updateRenderGraph();
+                //this.updateRenderGraph();
             } else {
                 viewState.target = oldViewState.target;
             }
@@ -190,7 +189,6 @@ export default class CanvasController {
 
         }
         let animationLayer = null;
-
         if (this.animationData.length > 0) {
             let animationTrigger = Math.random();
             animationLayer = new ScatterplotLayer({
@@ -480,11 +478,6 @@ export default class CanvasController {
         } else {
             this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
         }
-
-
-
-
-        //this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight,viewState:viewState, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
     }
 
     renderLockNode() {
@@ -748,8 +741,6 @@ export default class CanvasController {
                 }
             })
         }
-
-
         const lineLayer = new LineLayer({
             id: 'line-layer',
             data: renderLines.filter(() => true),
