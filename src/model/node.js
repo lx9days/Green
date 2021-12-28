@@ -164,16 +164,16 @@ export default class Node {
         }
     }
     lock(){
-        this.isLocked=true
+        this.isLocked=true;
     }
     unlock(){
-        this.isLocked=false
+        this.isLocked=false;
     }
     get x(){
-        return this._x
+        return this._x;
     }
     get y(){
-        return this._y
+        return this._y;
     }
     set x(newX){
         if(!this.isLocked){
