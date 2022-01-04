@@ -324,6 +324,7 @@ export default class ElementController {
                         targetNode.addTargetLink(linkEntity);
                         linkEntity.targetNode = targetNode
                     } else {
+                       
                         throw new Error(`link cannot find soure or target node`);
                     }
                 });
@@ -336,6 +337,7 @@ export default class ElementController {
             this.nodes = [];
             this.links = [];
         }
+       
         return {
             newNodeArray: newNodeArray,
             newLinkArray: newLinkArray
@@ -975,6 +977,60 @@ export default class ElementController {
         //  this.updateEntityPosition(nodeIds);
     }
 
+    updateEntityCustomStyle(params) {
+        if (params.node) {
+            if (params.nodes && params.nodes.length > 0) {
+                params.nodes.forEach(node => {
+                    const id = node.id;
+                    if (!this.nodeRenderMap.has(id)) {
+                        return;
+                    }
+                    const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs } = this.nodeRenderMap.get(id);
+                    iconObjs.forEach((iconObj) => {
+                        iconObj.rebuild();
+                    });
+                    backgroundObjs.forEach((borderObj) => {
+                        borderObj.rebuild();
+                    });
+                    textObjs.forEach((textObj) => {
+                        textObj.rebuild();
+                    });
+                    markObjs.forEach(mark => {
+                        mark.rebuild();
+                    })
+                    labelObjs.forEach(label => {
+                        label.rebuild();
+                    })
+                })
+            }
+        }
+        if (params.link) {
+            if (params.links && params.links.length > 0) {
+                params.links.forEach(link => {
+                    const id=link.id;
+                    if (!this.linkRenderMap.has(id)) {
+                        return;
+                    }
+                    const { polygonObjs, textObjs, lineObjs, dashLineObjs } = this.linkRenderMap.get(id);
+                    polygonObjs.forEach((polygonObj) => {
+                        polygonObj.rebuild();
+                    });
+                    textObjs.forEach((textObj) => {
+                        textObj.rebuild();
+                    });
+                    lineObjs.forEach((lineObj) => {
+                        lineObj.rebuild();
+                    });
+                    dashLineObjs.forEach(dashLineObj => {
+                        dashLineObj.rebuild();
+                    });
+                    this._updateRenderObjectDashLine();
+
+                })
+            }
+        }
+        this.controller.canvasController.updateRenderObject({ style: 1 });
+    }
 
     updateEntityStyle(params = null) {
         if (params === null) {
@@ -1378,5 +1434,18 @@ export default class ElementController {
             this.controller.styleController.mountAllStyleToElement(newNodeArray, newLinkArray);
             this._parseElements(newNodeArray, newLinkArray, 'part');
         }
+    }
+
+    updateNodeCustomStyle(nodes, style) {
+        nodes.forEach(node => {
+            node.updateCustomStyle(style);
+        });
+        this.updateEntityCustomStyle({node:true,nodes});
+    }
+    updateLinkCustomStyle(links,style){
+        links.forEach(link=>{
+            link.updateCustomStyle(style);
+        });
+        this.updateEntityCustomStyle({link:true,links});
     }
 }

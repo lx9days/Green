@@ -28,6 +28,11 @@ export default class RenderPolygon {
         this._generatePolygon();
     }
 
+    rebuildForCustomStyle(){
+        this._generateStyle(true);
+        this._generatePolygon();
+    }
+
     /**
      * 重构位置
      */
@@ -45,8 +50,19 @@ export default class RenderPolygon {
     _generatePolygon(){
         this.polygon=computePolygon(this.origionElement,this.style.polygonShape,this.polygonType,this.offset);
     }
-    _generateStyle() {
-        const styles = this.origionElement.getStyles();
+    _generateStyle(custom=false) {
+        let styles;
+        if(custom){
+            if(!this.origionElement.useCustomStyle){
+                return
+            }
+            styles=[this.origionElement.customStyle];
+        }else{
+            styles = this.origionElement.getStyles();
+            if(this.origionElement.useCustomStyle){
+                styles.push(this.origionElement.customStyle);
+            }
+        }
 
         if (this.polygonType === 'source') {
             styles.forEach((style) => {
@@ -182,6 +198,9 @@ export default class RenderPolygon {
                     }
                 }
             })
+        }
+        if(this.origionElement.useCustomStyle){
+            styles.pop();
         }
         this.style.polygonColor[3]=this.style.polygonOpacity*255;
         if (this.style.polygonFill === 'filled') {

@@ -1,55 +1,58 @@
-//import axios from 'axios';
+import axios from 'axios';
 import NetGraph, { HIGHLIGHT, SELECTED, UNSELECTED } from '../../src/index';
 
 const debug = false;
-let isUpLoadFile = false;
+// let isUpLoadFile = false;
 
-function readData () {
-    if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
-        return -1;
-    } else {
-        if (!isUpLoadFile) {
-            throw new Error("two files are needed");
-        }
-        let input = document.getElementById("uploadFile");
-        let dataFile = input.files[0];
-        let dataFileReader = new FileReader();
+// function readData () {
+//     if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+//         return -1;
+//     } else {
+//         if (!isUpLoadFile) {
+//             throw new Error("two files are needed");
+//         }
+//         let input = document.getElementById("uploadFile");
+//         let dataFile = input.files[0];
+//         let dataFileReader = new FileReader();
 
-        dataFileReader.onload = function (e) {
-            let dataContent = e.target.result;
-            const data = JSON.parse(dataContent);
-            data.nodes.forEach((node, i) => {
-                node.img = '/src/img1/a' + i % 10 + '.png';
-            });
-            draw(data);
-        };
-        dataFileReader.readAsText(dataFile);
-    }
-}
-
-document.getElementById("uploadFile").addEventListener("change", (e) => {
-    if (e.target.files[0].name.lastIndexOf('.json') !== -1) {
-        isUpLoadFile = true;
-        readData();
-    }
-});
-
-// axios.get('/src/auto_500.json').then((res) => {
-//     const nodes = res.data.nodes;
-//     const links = res.data.links;
-
-//     nodes.forEach((node, i) => {
-//         node.img = '/src/img1/a' + i%10 + '.png';
-//     });
-//     console.log("nodelength", nodes.length);
-//     console.log("linklength", links.length);
-//     // const nodes=[]
-//     const data = {
-//         nodes: nodes,
-//         links,
+//         dataFileReader.onload = function (e) {
+//             let dataContent = e.target.result;
+//             let data = JSON.parse(dataContent);
+//             //const renderData={nodes:data.data.nodes,links:data.data.links};
+//             data.nodes.forEach((node, i) => {
+//                 node.img = '/src/img1/b' + i % 10 + '.png';
+//             });
+//             // console.log(renderData.nodes.length);
+//             // console.log(renderData.links.length);
+//             draw(data);
+//         };
+//         dataFileReader.readAsText(dataFile);
 //     }
-//     draw(data);
-// })
+// }
+
+// document.getElementById("uploadFile").addEventListener("change", (e) => {
+//     if (e.target.files[0].name.lastIndexOf('.json') !== -1) {
+//         isUpLoadFile = true;
+//         readData();
+//     }
+// });
+
+axios.get('/src/auto_500.json').then((res) => {
+    const nodes = res.data.nodes;
+    const links = res.data.links;
+
+    nodes.forEach((node, i) => {
+        node.img = '/src/img1/a' + i%10 + '.png';
+    });
+    console.log("nodelength", nodes.length);
+    console.log("linklength", links.length);
+    // const nodes=[]
+    const data = {
+        nodes: nodes,
+        links,
+    };
+    draw(data);
+});
 function draw (rawData) {
     let data = null;
     if (!debug) {
@@ -209,20 +212,29 @@ function draw (rawData) {
                 style: {
                     'width': 45,
                     'height': 45,
-                    'background-width': 62,
-                    'background-height': 62,
+                    'background-width': (d)=>{
+                        if(d.data.metaType==='nodeSet'){
+                            return 98;
+                        }else{
+                            return 58
+                        }
+                    },
+                    'background-height': 58,
                     'url': (d) => d.data.img,
                     'opacity': 1,
                     'background-color': '#ffd53f',
                     'background-opacity': 1,
-                    'border-width': 0,
-                    'border-color': '#fff',
-                    'border-opacity': 1,
                     'text-color': '#845624',
                     'text-opacity': 1,
-                    'font-size': 16,
+                    'font-size': 12,
                     'text': (d) => d.data.name,
-                    'shape': 'rect',
+                    'shape': (d)=>{
+                        if(d.data.metaType==='nodeSet'){
+                            return 'horizontal_rect';
+                        }else{
+                            return 'rect'
+                        }
+                    },
                     'highlight-color': "#Fff0BC",
                     'highlight-opacity': 0.8,
                     "label-style": {
@@ -241,11 +253,9 @@ function draw (rawData) {
                     'line-opacity': 1,
                     'text-opacity': 1,
                     'line-style': (d) => {
-                        if (d.data.direct) {
+                       
                             return 'solid';
-                        } else {
-                            return 'dash';
-                        }
+                    
                     },
                     'text-color': "#456456",
                     'font-size': 10,
@@ -275,6 +285,7 @@ function draw (rawData) {
         ]
     });
 
+    console.log(netGraph);
 
     let timeout = null;
     netGraph.addEventListener('canvasMouseDown', (e) => {
@@ -480,17 +491,17 @@ function draw (rawData) {
                 {
                     id: 'b001',
                     name: '是1',
-                    img: '/src/img1/a5.png'
+                    img: '/src/img1/b5.png'
                 },
                 {
                     id: 'b002',
                     name: '是2',
-                    img: '/src/img1/a6.png'
+                    img: '/src/img1/b6.png'
                 },
                 {
                     id: 'b003',
                     name: '是7',
-                    img: '/src/img1/a4.png'
+                    img: '/src/img1/b4.png'
                 },
                 {
                     id: 'b004',
@@ -696,12 +707,9 @@ function draw (rawData) {
     });
 
     document.getElementById("updateTextStyle").addEventListener("click", () => {
-        const selectedNodes = netGraph.getSelectedNodes();
-        const node = selectedNodes[selectedNodes.length - 1];
-        console.log(node);
-        node.styles.push({'font-size':40});
-        node.styles.push({'background-color':"#000"});
-        netGraph.updateStyle();
+        netGraph.scrollIntoView("Q249995");
+        // const selectedNodes = netGraph.getSelectedNodes();
+        // netGraph.updateNodeCustomStyle(selectedNodes,{'font-size':40,'background-color':"#000"});
     });
 }
 

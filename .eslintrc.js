@@ -24,6 +24,6 @@ module.exports = {
         'no-tabs': 0,
         'no-unused-vars': 1,
         'no-irregular-whitespace': 1
-    }
+    },
 
 };

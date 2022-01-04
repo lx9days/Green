@@ -34,6 +34,11 @@ export default class RenderMark {
         this._generateBackgroundPolygon();
     }
 
+    rebuildForCustomStyle(){
+        this._generateStyle(true);
+        this._generateBackgroundPolygon();
+    }
+
     /**
      * 重新计算位置
      */
@@ -72,8 +77,19 @@ export default class RenderMark {
     /**
      * 解析样式，将css样式规则解析为，当前组件可以的样式
      */
-    _generateStyle() {
-        const styles = this.origionElement.getStyles();
+    _generateStyle(custom) {
+        let styles;
+        if(custom){
+            if(!this.origionElement.useCustomStyle){
+                return
+            }
+            styles=[this.origionElement.customStyle];
+        }else{
+            styles = this.origionElement.getStyles();
+            if(this.origionElement.useCustomStyle){
+                styles.push(this.origionElement.customStyle);
+            }
+        }
 
         styles.forEach((style) => {
             for (const item in style) {
@@ -217,6 +233,9 @@ export default class RenderMark {
             }
 
         });
+        if(this.origionElement.useCustomStyle){
+            styles.pop();
+        }
         this.style.selcetedHoverColor[3]=this.style.selectedHoverOpacity*255;
         this.style.unSelectedHoverColor[3]=this.style.unSelectedHoverOpacity*255;
         this.style.highLightColor[3]=this.style.highLightOpacity*255;

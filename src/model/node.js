@@ -1,6 +1,5 @@
 //组件中使用的Node数据结构
 export default class Node {
-
     constructor(id, data) {
         this.id = id;
         this.data = data;
@@ -12,14 +11,16 @@ export default class Node {
         this._x = 0;
         this._y = 0;
         this.status = 2;//1未选中，2选中，3隐藏, 4高亮
-        this.isHover=false;
-        this.styles;
+        this.isHover = false;
         this.sourceLinks = new Array();
         this.targetLinks = new Array();
-        this.isLocked=false
+        this.isLocked = false;
+        this.useCustomStyle = false;
+        this.customStyle = {};
     }
 
-    
+
+
 
     getId() {
         return this.id;
@@ -133,11 +134,11 @@ export default class Node {
         return this.sourceLinks;
     }
 
-    removeSourceLink(link){
-        if(link){
-            const index=this.sourceLinks.indexOf(link);
-            if(index>-1){
-                this.sourceLinks.splice(index,1);
+    removeSourceLink(link) {
+        if (link) {
+            const index = this.sourceLinks.indexOf(link);
+            if (index > -1) {
+                this.sourceLinks.splice(index, 1);
             }
         }
     }
@@ -153,35 +154,44 @@ export default class Node {
         return this.targetLinks;
     }
 
-    removeTargetLink(link){
-        if(link){
-            const index=this.targetLinks.indexOf(link);
-            if(index>-1){
-                this.targetLinks.splice(index,1);
+    removeTargetLink(link) {
+        if (link) {
+            const index = this.targetLinks.indexOf(link);
+            if (index > -1) {
+                this.targetLinks.splice(index, 1);
             }
         }
     }
-    lock(){
-        this.isLocked=true
+    lock() {
+        this.isLocked = true;
     }
-    unlock(){
-        this.isLocked=false
+    unlock() {
+        this.isLocked = false;
     }
-    get x(){
-        return this._x
+    get x() {
+        return this._x;
     }
-    get y(){
-        return this._y
+    get y() {
+        return this._y;
     }
-    set x(newX){
-        if(!this.isLocked){
-            this._x=newX
+    set x(newX) {
+        if (!this.isLocked) {
+            this._x = newX;
         }
     }
-    set y(newY){
-        if(!this.isLocked){
-            this._y=newY
+    set y(newY) {
+        if (!this.isLocked) {
+            this._y = newY;
         }
+    }
+
+    updateCustomStyle(customeStyle) {
+        this.useCustomStyle = true;
+        this.customStyle = Object.assign(this.customStyle, customeStyle);
+    }
+    closeCustomStyle() {
+        this.useCustomStyle = false;
+        this.customStyle = {};
     }
 
 }

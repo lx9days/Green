@@ -112,6 +112,19 @@ export default class CanvasController {
             onDragStart: this.deckDragStartHandler,
             onDragEnd: this.deckDragEndHandler,
             pickingRadius: 6,
+            getTooltip:({object})=>{
+
+                if(object&&object.origionElement&&object.origionElement.data.metaType==='nodeSet'){
+
+                    return {
+                        html:`<div><div>实体:${object.origionElement.data.statistics['实体']}</div><div>关系 ${object.origionElement.data.statistics['关系']}</div></div>`,
+                        style:{
+                            backgroundColor:'#d9d9d9',
+                            
+                        }
+                    }
+                }
+            }
             //getCursor:({isDragging,isHovering}) => isHovering ? 'grabbing' : 'grab'
         });
         this.props.viewState.height = this.props.containerHeight;
@@ -392,11 +405,22 @@ export default class CanvasController {
             id: 'text-layer',
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             data: renderText,
+            maxWidth: 300,
+            wordBreak: 'break-all',
             fontFamily: 'Microsoft YaHei',
             getPosition: d => {
                 return d.position;
             },
-            getText: d => d.text,
+            getText: d => {
+                const len=d.text.length;
+                if(len>=10){
+                    let temp=d.text.slice(0,7);
+                    temp+='..'
+                    return temp;
+                }else{
+                    return d.text;
+                }
+            },
             getSize: d => d.style.textSize * (2 ** zoom),
             getAngle: 0,
             getTextAnchor: d => d.style.textAnchor,
@@ -614,7 +638,16 @@ export default class CanvasController {
             getPosition: d => {
                 return d.position;
             },
-            getText: d => d.text,
+            getText: d => {
+                const len=d.text.length;
+                if(len>10){
+                    let temp=d.text.slice(0,7);
+                    temp+=temp+'..'
+                    return temp;
+                }else{
+                    return d.text;
+                }
+            },
             getSize: d => d.style.textSize * (2 ** zoom),
             getAngle: 0,
             getTextAnchor: d => d.style.textAnchor,
@@ -949,11 +982,22 @@ export default class CanvasController {
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             data: renderText.filter(() => true),
             pickable: true,
+            maxWidth:300,
+            wordBreak:'break-all',
             fontFamily: 'Microsoft YaHei',
             getPosition: d => {
                 return d.position;
             },
-            getText: d => d.text,
+            getText: d => {
+                const len=d.text.length;
+                if(len>=10){
+                    let temp=d.text.slice(0,7);
+                    temp+='..'
+                    return temp;
+                }else{
+                    return d.text;
+                }
+            },
             getSize: d => d.style.textSize * (2 ** zoom),
             getAngle: 0,
             getTextAnchor: d => d.style.textAnchor,
@@ -1177,6 +1221,7 @@ export default class CanvasController {
     updateRenderObject({ renderObject, position, style, bubble }) {
         if (renderObject) {
             this.renderObject = renderObject;
+            this.renderObject.charSet.push('.')
             this.renderGraph();
         } else {
             if (position) {

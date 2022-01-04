@@ -5,7 +5,7 @@ import CanvasController from './controller/canvascontroller';
 import ElementController from './controller/elementcontroller';
 import EventController from './controller/eventcontroller';
 import AnimationController from "./controller/animationcontroller"
-
+import SuperGraph from './superelgraph';
 //NetGraph为暴露出组件所有的功能，用户不应使用除此类中包含的其他函数
 export default class NetGraph {
     constructor(props) {
@@ -34,7 +34,7 @@ export default class NetGraph {
         this.controller.animationController=new AnimationController(this.controller);
         const canvasController = new CanvasController({...props.canvasProps,...props.constant},eventController);
         this.controller.canvasController = canvasController;
-        const elementController = new ElementController(this.controller);
+        const elementController = new ElementController(this.controller,props.data);
         this.controller.elementController = elementController;
 
     }
@@ -432,8 +432,29 @@ export default class NetGraph {
         }
     }
 
+    /**
+     * 
+     * @param {Array} nodes 要修改样式的Node
+     * @param {Objec} style 要添加的样式
+     */
+    updateNodeCustomStyle(nodes,style){
+        if(Array.isArray(nodes)&&nodes.length>0){
+            this.controller.elementController.updateNodeCustomStyle(nodes,style);
+        }
+    }
+    /**
+     * 
+     * @param {Array} links 要修改的样式的Link
+     * @param {Objec} style 要添加的样式
+     */
+    updateLinkCustomStyle(links,style){
+        if(Array.isArray(links)&&links.length>0){
+            this.controller.elementController.updateLinkCustomStyle(nodes,style);
+        }
+    }
 
-
-    
-    
 }
+
+
+export {SuperGraph}
+

@@ -1,29 +1,30 @@
 import hexRgb from 'hex-rgb';
 import { isFunction } from '../helper/util';
-import Link from './link';
-import Node from './node';
+import SuperLink from './superlink';
+import SuperNode from './supernode';
 //
-export default class RenderText {
+export default class SuperRenderText {
     constructor(element, offset) {
         this.id = element.getId();
         this.position = [0, 0];
         this.origionElement = element;
         this.text = '';
         this.status = element.getStatus();
-        if (element instanceof Link) {
+        if (element instanceof SuperLink) {
             this.offset = offset;
         }
         this.style = {
             textColor: [255, 255, 255, 255],
             textSize: 10,
             textOpacity: 1,
-            shape: null,
+            shape: 'rect',
             height: 0,
             textAnchor: 'middle',
             backgroundHeight: 0,
             backgroundWidth: 0,
             textAlignmentBaseline: 'top',
-            borderWidth: 0
+            borderWidth: 0,
+
         }
         this._generateStyle();
         this._generatePosition();
@@ -35,10 +36,6 @@ export default class RenderText {
         this._generatePosition();
     }
 
-    rebuildForCustomStyle() {
-        this._generateStyle(true);
-        this._generatePosition();
-    }
 
     reLocation() {
         this._generatePosition();
@@ -50,7 +47,7 @@ export default class RenderText {
 
     _generatePosition() {
         //设计优化
-        if (this.origionElement instanceof Node) {
+        if (this.origionElement instanceof SuperNode) {
             const elementPosition = this.origionElement.getLocation();
             if (this.style.shape.toLowerCase() === 'circle') {
                 this.position[0] = elementPosition.x + this.style.height / 2 + this.style.borderWidth / 2;
@@ -63,7 +60,7 @@ export default class RenderText {
                 this.style.textAnchor = 'start';
                 this.style.textAlignmentBaseline = 'center';
             } else if (this.style.shape.toLowerCase() === 'horizontal_rect') {
-                this.position[0] = elementPosition.x + this.style.height / 2+4+ this.style.borderWidth;
+                this.position[0] = elementPosition.x + this.style.height / 2 + 4 + this.style.borderWidth;
                 this.position[1] = elementPosition.y + this.style.height / 2 + this.style.borderWidth;
                 this.style.textAnchor = 'start';
                 this.style.textAlignmentBaseline = 'center';
@@ -84,19 +81,10 @@ export default class RenderText {
 
     }
 
-    _generateStyle(custom = false) {
-        let styles;
-        if (custom) {
-            if (!this.origionElement.useCustomStyle) {
-                return
-            }
-            styles = [this.origionElement.customStyle];
-        } else {
-            styles = this.origionElement.getStyles();
-            if (this.origionElement.useCustomStyle) {
-                styles.push(this.origionElement.customStyle);
-            }
-        }
+    _generateStyle() {
+
+        const styles = this.origionElement.getStyles();
+
         styles.forEach((style) => {
             for (const item in style) {
                 switch (item.toLowerCase()) {
@@ -182,9 +170,6 @@ export default class RenderText {
                 }
             }
         });
-        if (this.origionElement.useCustomStyle) {
-            styles.pop();
-        }
         this.style.textColor[3] = this.style.textOpacity * 255;
     }
 

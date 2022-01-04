@@ -1,17 +1,17 @@
 import hexRgb from 'hex-rgb';
-import { isFunction,generateLinkLocation} from '../helper/util';
+import { isFunction, generateLinkLocation } from '../helper/util';
 
 
 //渲染line 对应deck中的linelayer
-export default class RenderLine {
-    constructor(element,offset) {
+export default class SuperRenderLine {
+    constructor(element, offset) {
         this.id = element.getId();
         this.sourcePosition = [0, 0];
         this.targetPosition = [0, 0];
         this.origionElement = element;
-        this.origionElement._line=this;
-        this.offset=offset;
-        this.status=element.getStatus();
+        this.origionElement._line = this;
+        this.offset = offset;
+        this.status = element.getStatus();
         this.style = {
             lineWidth: 1,
             lineColor: [255, 255, 255, 255],
@@ -25,7 +25,7 @@ export default class RenderLine {
             targetArrowShape: 'none',
             targetArrowFill: 'filled',
             targetArrowScale: 1,
-            direct:true,
+            direct: true,
         }
         this._generateStyle();
         this._generatePosition();
@@ -34,49 +34,33 @@ export default class RenderLine {
     /**
      * 重构style和position
      */
-    rebuild(){
+    rebuild() {
         this._generateStyle();
         this._generatePosition();
     }
 
-    rebuildForCustomStyle(){
-        this._generateStyle(true);
-        this._generatePosition();
-    }
-
+    
     /**
      * 重构position
      */
-    reLocation(){
+    reLocation() {
         this._generatePosition();
     }
-    
+
     /**
      * 更新状态
      */
-    updateStatus(){
-        this.status=this.origionElement.getStatus();
+    updateStatus() {
+        this.status = this.origionElement.getStatus();
     }
 
-    _generatePosition(){
-        generateLinkLocation(this.origionElement,this.offset,this);
+    _generatePosition() {
+        generateLinkLocation(this.origionElement, this.offset, this);
     }
 
 
-    _generateStyle(custom=false) {
-        let styles;
-        if(custom){
-            if(!this.origionElement.useCustomStyle){
-                return
-            }
-            styles=[this.origionElement.customStyle];
-        }else{
-            styles = this.origionElement.getStyles();
-            if(this.origionElement.useCustomStyle){
-                styles.push(this.origionElement.customStyle);
-            }
-        }
-
+    _generateStyle() {
+        const styles = this.origionElement.getStyles();
         styles.forEach((style) => {
             for (const item in style) {
                 switch (item.toLowerCase()) {
@@ -110,11 +94,11 @@ export default class RenderLine {
                         }
                         break;
                     case 'line-style':
-                        const lineStyleObj=style[item];
-                        if(isFunction(lineStyleObj)){
-                            this.style.lineStyle=lineStyleObj(this.origionElement);
-                        }else{
-                            this.style.lineStyle=lineStyleObj;
+                        const lineStyleObj = style[item];
+                        if (isFunction(lineStyleObj)) {
+                            this.style.lineStyle = lineStyleObj(this.origionElement);
+                        } else {
+                            this.style.lineStyle = lineStyleObj;
                         }
                         break;
                     case 'from-arrow-color':
@@ -180,11 +164,11 @@ export default class RenderLine {
                     case 'to-arrow-scale':
                         break;
                     case 'direct':
-                        const directObj=style[item];
-                        if(isFunction(directObj)){
-                            this.style.direct=directObj(this.origionElement)
-                        }else{
-                            this.style.direct=true;
+                        const directObj = style[item];
+                        if (isFunction(directObj)) {
+                            this.style.direct = directObj(this.origionElement)
+                        } else {
+                            this.style.direct = true;
                         }
                         break;
                     default:
@@ -193,9 +177,6 @@ export default class RenderLine {
                 }
             }
         });
-        if(this.origionElement.useCustomStyle){
-            styles.pop();
-        }
-        this.style.lineColor[3]=this.style.lineOpacity*255;
+        this.style.lineColor[3] = this.style.lineOpacity * 255;
     }
 }
