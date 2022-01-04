@@ -159,7 +159,6 @@ export default class CanvasController {
 
 
     updateRenderGraph() {
-        console.log(this.renderObject);
         const zoom = this.props.zoom;
         const styleFlag = this.updateFlag.style;
         const positionFlag = this.updateFlag.position;

@@ -98,8 +98,8 @@ export default class CanvasController {
                 y: 0,
                 width: '100%',
                 height: '100%',
-                maxZoom: 50,
-                minZoom: -50,
+                maxZoom: this.props.maxZoom,
+                minZoom: this.props.minZoom,
                 controller: true,
             }),
             width: this.props.containerWidth,
@@ -1320,8 +1320,8 @@ export default class CanvasController {
 
     fitView(params) {
 
-        if (params.zoom < -5) {
-            params.zoom = -4;
+        if (params.zoom < this.props.minZoom) {
+            params.zoom = this.props.minZoom;
         }
         let isNeedUpdate = false;
         if (params.zoom !== this.props.zoom) {

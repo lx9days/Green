@@ -47,8 +47,6 @@ export default class ElementController {
     }
     _parseParams(data, flag) {
         const { newNodeArray, newLinkArray } = this._generateInternalEntity(data, flag);
-
-        console.log(newNodeArray, newLinkArray);
         this.controller.styleController.mountAllStyleToElement(newNodeArray, newLinkArray);
         this.controller.positionController.layout(newNodeArray, newLinkArray);
         this._parseElements(newNodeArray, newLinkArray,flag);
@@ -75,7 +73,6 @@ export default class ElementController {
                     this.nodes = [];
                 }
             }
-            console.log(this.nodes);
             if (data.links && data.links.length > 0) {
                 if (flag === 'new' || flag === 'replace') {
                     this.links = [];
@@ -94,7 +91,6 @@ export default class ElementController {
                         linkEntity.targetNode = targetNode;
 
                     } else {
-                        console.log(linkEntity)
                         throw new Error("link cannot find source or target node");
                     }
                 })
@@ -242,7 +238,6 @@ export default class ElementController {
         this.renderObject.charSet = Array.from(this.characterSet);
         this.renderObject.labelCharSet=Array.from(this.labelCharacterSet);
         this.controller.canvasController.updateRenderObject({ renderObject: this.renderObject });
-        console.log(this.renderObject);
     }
 
     updateEntityPosition(nodeIds = null) {
@@ -298,8 +293,10 @@ export default class ElementController {
                 renderBackgrounds,
                 renderIcons,
                 renderLines,
-                renderText,
-                renderPolygon,
+                renderTexts,
+                renderPolygons,
+                renderNodeLabels,
+                renderLinkLabels
             } = this.renderObject;
             renderBackgrounds.forEach((RenderBackground) => {
                 RenderBackground.reLocation();
@@ -310,11 +307,17 @@ export default class ElementController {
             renderLines.forEach((renderLine) => {
                 renderLine.reLocation();
             });
-            renderText.forEach((reText) => {
+            renderTexts.forEach((reText) => {
                 reText.reLocation();
             });
-            renderPolygon.forEach((rePolygon) => {
+            renderPolygons.forEach((rePolygon) => {
                 rePolygon.reLocation();
+            });
+            renderNodeLabels.forEach(nodeLabel=>{
+                nodeLabel.reLocation();
+            });
+            renderLinkLabels.forEach(linkLabel=>{
+                linkLabel.reLocation();
             })
         }
         this.controller.canvasController.updateRenderObject({ position: 1 });
@@ -361,7 +364,6 @@ export default class ElementController {
  */
     updateNodeLocation(nodeIds, position, isGroup) {
         if (!isGroup) {
-            console.log(position);
             if (this.idMapNode.has(nodeIds[0])) {
                 const node = this.idMapNode.get(nodeIds[0]);
 

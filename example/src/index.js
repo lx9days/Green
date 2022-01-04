@@ -37,7 +37,8 @@ const debug = false;
 //     }
 // });
 
-axios.get('/src/auto_500.json').then((res) => {
+axios.get('/src/test_data.json').then((res) => {
+    
     const nodes = res.data.nodes;
     const links = res.data.links;
 
@@ -174,7 +175,7 @@ function draw (rawData) {
             zoom: 0,
             container: 'container',
             maxZoom: 4,
-            minZoom: -4,
+            minZoom: -2,
         },
         constant: {
             nodeHighlightColor: '#d9d9d9',
@@ -216,7 +217,7 @@ function draw (rawData) {
                         if(d.data.metaType==='nodeSet'){
                             return 98;
                         }else{
-                            return 58
+                            return 58;
                         }
                     },
                     'background-height': 58,
@@ -232,7 +233,7 @@ function draw (rawData) {
                         if(d.data.metaType==='nodeSet'){
                             return 'horizontal_rect';
                         }else{
-                            return 'rect'
+                            return 'rect';
                         }
                     },
                     'highlight-color': "#Fff0BC",

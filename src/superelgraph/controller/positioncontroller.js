@@ -72,17 +72,20 @@ export class PositionController {
     horizontalLayout(nodes, links) {
         if (nodes && nodes.length > 0) {
             const rootNodes = searchZeroDegreeNode(nodes);
+            const idMapNode=new Map();
+            nodes.forEach(node=>{
+                idMapNode.set(node.id,node);
+            })
             const data = BFSTree(rootNodes, nodes, links);
             let allIds = [];
             for (let i = 0; i < data.nodes.length; i++) {
                 let nn1 = [];
-                const initx = rootNodes[i].x;
-                const inity = rootNodes[i].y;
+                const initx = rootNodes[i].x?rootNodes[i].x:(i+1)*150;
+                const inity = rootNodes[i].y?rootNodes[i].y:400;
                 let allNodeIds = [];
-                console.log(data);
                 const root = d3.hierarchy(data.nodes[i]);
-                root.dx = 100;
-                root.dy = 300;
+                root.dx = 250;
+                root.dy = 250;
                 d3.tree().nodeSize([root.dx, root.dy])(root);
 
                 let ct = root;
@@ -110,10 +113,13 @@ export class PositionController {
                     }
                 }
                 allNodeIds = nn1.map(item => item.id);
-                const allNodes = this.superGraph.getNodes(allNodeIds);
+                const allNodes=[]
+                allNodeIds.forEach(nodeId=>{
+                    allNodes.push(idMapNode.get(nodeId));
+                });
                 allNodes.forEach((node, i) => {
-                    node.x = nn1[i].x + initx;
-                    node.y = nn1[i].y + inity;
+                    node.x = nn1[i].y + initx;
+                    node.y = nn1[i].x + inity;
                 })
                 allIds = [...allIds, ...allNodeIds];
             }
@@ -125,22 +131,25 @@ export class PositionController {
             const rootNodes = searchZeroDegreeNode(nodes);
             const data = BFSTree(rootNodes, nodes, links);
             let allIds = [];
+            const idMapNode=new Map();
+            nodes.forEach(node=>{
+                idMapNode.set(node.id,node);
+            })
             for (let i = 0; i < data.nodes.length; i++) {
                 let nn1 = [];
-                const initx = rootNodes[i].x+100;
-                const inity = rootNodes[i].y+100;
+                const initx = rootNodes[i].x?rootNodes[i].x:(i+1)*150;
+                const inity = rootNodes[i].y?rootNodes[i].y:400;
                 let allNodeIds = [];
-                console.log(data);
                 const root = d3.hierarchy(data.nodes[i]);
-                root.dx = 100;
-                root.dy = 200;
+                root.dx = 250;
+                root.dy = 250;
                 d3.tree().nodeSize([root.dx, root.dy])(root);
 
                 let ct = root;
                 let tt = {
                     id: ct.data.id,
-                    x: 500,
-                    y: 500
+                    x: root.x,
+                    y: root.y
                 };
                 nn1.push(tt);
                 if (root.children && root.children.length > 0) {
@@ -161,8 +170,11 @@ export class PositionController {
                     }
                 }
                 allNodeIds = nn1.map(item => item.id);
-                //const allNodes = this.superGraph.getNodes(allNodeIds);
-                const allNodes=nodes;
+                const allNodes=[]
+                allNodeIds.forEach(nodeId=>{
+                    allNodes.push(idMapNode.get(nodeId));
+                });
+                
                 allNodes.forEach((node, i) => {
                     node.x = nn1[i].x + initx;
                     node.y = nn1[i].y + inity;

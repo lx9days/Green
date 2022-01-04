@@ -133,10 +133,10 @@ function draw (data) {
     document.getElementById("replace",()=>{
         superGraph.replaceData();
     });
-    document.getElementById("vlayout",()=>{
+    document.getElementById("vlayout").addEventListener("click",()=>{
         superGraph.layout('vertical');
     });
-    document.getElementById("hlayout",()=>{
+    document.getElementById("hlayout").addEventListener("click",()=>{
         superGraph.layout("horizontal");
     });
 
