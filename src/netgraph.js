@@ -5,7 +5,7 @@ import CanvasController from './controller/canvascontroller';
 import ElementController from './controller/elementcontroller';
 import EventController from './controller/eventcontroller';
 import AnimationController from "./controller/animationcontroller"
-import SuperGraph from './superelgraph';
+import SuperGraph from './supergraph';
 //NetGraph为暴露出组件所有的功能，用户不应使用除此类中包含的其他函数
 export default class NetGraph {
     constructor(props) {

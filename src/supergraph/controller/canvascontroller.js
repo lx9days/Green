@@ -556,7 +556,7 @@ export default class CanvasController {
             getAngle: 0,
             getTextAnchor: d => d.style.textAnchor,
             getAlignmentBaseline: d => d.style.textAlignmentBaseline,
-            characterSet: charSet,
+            characterSet: labelCharSet,
             getColor: (d) => d.style.textColor,
             getBackgroundColor:(d)=>{
                 return d.style.labelBackground;

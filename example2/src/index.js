@@ -68,7 +68,7 @@ function draw (data) {
                     'background-opacity': 1,
                     'text-color': '#845624',
                     'text-opacity': 1,
-                    'font-size': 15,
+                    'font-size': 10,
                     'text': (d) => d.data.name,
                     'label-text-color':"#fff",
                     'label-font-size':10,
@@ -76,7 +76,7 @@ function draw (data) {
                         return '节点:100';
                     },
                     'link-label-text':(d)=>{
-                        return '关系:100';
+                        return '关系:0';
                     },
                     'node-label-background':'#456456',
                     'link-label-background':'#456456'
