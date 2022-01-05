@@ -541,6 +541,7 @@ export default class CanvasController {
                 getColor: styleFlag
             }
         });
+        console.log(renderLinkLabels,labelCharSet)
         const linkLabelLayer=new TextLayer({
             id: 'link-label-layer',
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,

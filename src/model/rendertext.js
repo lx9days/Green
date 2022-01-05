@@ -169,14 +169,14 @@ export default class RenderText {
                             this.style.height = heightObj;
                         }
                         break;
-                    case 'border-width':
-                        const borderWidthObj = style[item];
-                        if (isFunction(borderWidthObj)) {
-                            this.style.borderWidth = borderWidthObj(this.origionElement);
-                        } else {
-                            this.style.borderWidth = borderWidthObj;
-                        }
-                        break;
+                    // case 'border-width':
+                    //     const borderWidthObj = style[item];
+                    //     if (isFunction(borderWidthObj)) {
+                    //         this.style.borderWidth = borderWidthObj(this.origionElement);
+                    //     } else {
+                    //         this.style.borderWidth = borderWidthObj;
+                    //     }
+                    //     break;
                     default:
                         break;
                 }
