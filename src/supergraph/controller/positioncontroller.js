@@ -51,9 +51,10 @@ function BFSTree(rootNodes, nodes, links) {
 }
 
 export class PositionController {
-    constructor(superGraph,name = 'vertical') {
+    constructor(superGraph,name = 'vertical',viewSize) {
         this.superGraph=superGraph
         this.name = name;
+        this.viewSize=viewSize
     }
     layout(nodes, links, name = null) {
         if (name) {
@@ -80,8 +81,8 @@ export class PositionController {
             let allIds = [];
             for (let i = 0; i < data.nodes.length; i++) {
                 let nn1 = [];
-                const initx = rootNodes[i].x?rootNodes[i].x:(i+1)*150;
-                const inity = rootNodes[i].y?rootNodes[i].y:400;
+                const initx = this.viewSize[0]/2;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
+                const inity = this.viewSize[1]/2;//rootNodes[i].y?rootNodes[i].y:400;
                 let allNodeIds = [];
                 const root = d3.hierarchy(data.nodes[i]);
                 root.dx = 250;
@@ -137,8 +138,8 @@ export class PositionController {
             })
             for (let i = 0; i < data.nodes.length; i++) {
                 let nn1 = [];
-                const initx = rootNodes[i].x?rootNodes[i].x:(i+1)*150;
-                const inity = rootNodes[i].y?rootNodes[i].y:400;
+                const initx = this.viewSize[0]/2;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
+                const inity = this.viewSize[1]/2;//rootNodes[i].y?rootNodes[i].y:400;
                 let allNodeIds = [];
                 const root = d3.hierarchy(data.nodes[i]);
                 root.dx = 250;

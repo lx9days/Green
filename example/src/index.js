@@ -38,7 +38,7 @@ const debug = false;
 // });
 
 axios.get('/src/auto_500.json').then((res) => {
-    
+
     const nodes = res.data.nodes;
     const links = res.data.links;
 
@@ -52,6 +52,18 @@ axios.get('/src/auto_500.json').then((res) => {
         nodes: nodes,
         links,
     };
+    // let temp = new Array(200000).fill(1);
+    // const nodes = temp.map((v, i) => {
+    //     return {
+    //         id: 'a' + i,
+    //         name: 'h',
+    //         img: '/src/img1/a0.png',
+    //     };
+    // });
+    // const data = {
+    //     nodes,
+    //     links: [],
+    // }
     draw(data);
 });
 function draw (rawData) {
@@ -213,10 +225,10 @@ function draw (rawData) {
                 style: {
                     'width': 45,
                     'height': 45,
-                    'background-width': (d)=>{
-                        if(d.data.metaType==='nodeSet'){
+                    'background-width': (d) => {
+                        if (d.data.metaType === 'nodeSet') {
                             return 98;
-                        }else{
+                        } else {
                             return 58;
                         }
                     },
@@ -229,10 +241,10 @@ function draw (rawData) {
                     'text-opacity': 1,
                     'font-size': 12,
                     'text': (d) => d.data.name,
-                    'shape': (d)=>{
-                        if(d.data.metaType==='nodeSet'){
+                    'shape': (d) => {
+                        if (d.data.metaType === 'nodeSet') {
                             return 'horizontal_rect';
-                        }else{
+                        } else {
                             return 'rect';
                         }
                     },
@@ -254,9 +266,9 @@ function draw (rawData) {
                     'line-opacity': 1,
                     'text-opacity': 1,
                     'line-style': (d) => {
-                       
-                            return 'solid';
-                    
+
+                        return 'solid';
+
                     },
                     'text-color': "#456456",
                     'font-size': 10,
@@ -557,7 +569,9 @@ function draw (rawData) {
     });
     document.getElementById("scroll").addEventListener("click", () => {
         const nodes = netGraph.getNodes();
+        
         if (nodes.length > 0) {
+            console.log(nodes[0].id);
             netGraph.scrollIntoView(nodes[0].id);
         }
         //netGraph.scrollIntoView("3ded00b898c73c11a72558530859568d");
@@ -576,7 +590,7 @@ function draw (rawData) {
     });
     document.getElementById("addBubble").addEventListener("click", () => {
         const nodeIds = netGraph.getSelectedNodes().map(v => v.id);
-        netGraph.addBubbleSet([nodeIds, ["b001", "b002", "b003", "b004", "b005", "b006", "b007"]], ["#d7473a", "#4ea79b"], "one");
+        netGraph.addBubbleSet([nodeIds], ["#d7473a", "#4ea79b"], "one");
     });
     document.getElementById("layoutBubble").addEventListener("click", () => {
         netGraph.layoutBubbleSet(["one"]);
@@ -595,8 +609,8 @@ function draw (rawData) {
                     {
                         "id": "flow_one",
                         "name": "abc",
-                        "speed": 3,
-                        "colour": "rgba(255,255,255,1)",
+                        "speed": 2,
+                        "colour": "rgba(246,42,26,1)",
                         "balls": {
                             "ball_001": {
                                 "size": 0.301,
@@ -619,16 +633,16 @@ function draw (rawData) {
                     {
                         "id": "flow_two",
                         "name": "abcd",
-                        "speed": 5,
-                        "colour": "rgba(255,0,255,1)",
+                        "speed": 1.5,
+                        "colour": "rgba(117,218,233,1)",
                         "balls": {
                             "ball_003": {
-                                "size": 0.301,
+                                "size": 0.201,
                                 "link_id": links[2].id,
                                 "direct": 1
                             },
                             "ball_004": {
-                                "size": 0.3,
+                                "size": 0.37,
                                 "link_id": links[3].id,
                                 "direct": -1
                             }
@@ -691,7 +705,7 @@ function draw (rawData) {
                 }]
             }]
         };
-        //netGraph.addFusionAnimation(data);
+        netGraph.addFusionAnimation(data);
     });
 
     document.getElementById("updateUrlMap").addEventListener("click", () => {

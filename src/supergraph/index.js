@@ -10,7 +10,7 @@ export default class SuperGraph {
         this.props = {};
         Object.assign(this.props, props);
         const eventController = new EventController();
-        const positionController = new PositionController(this, this.props.layout);
+        const positionController = new PositionController(this, this.props.layout,[parseInt(this.props.canvasProps.containerWidth),parseInt(this.props.canvasProps.containerHeight)]);
         const styleController = new StyleController(this.props.style);
         this.controller = {
             eventController,
@@ -46,7 +46,6 @@ export default class SuperGraph {
         this.controller.elementController.removeNodes(ids);
     }
     getNodes(ids) {
-
         return this.controller.elementController.getNodes(ids);
 
     }

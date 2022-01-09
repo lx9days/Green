@@ -124,9 +124,9 @@ export default class CanvasController {
         } else {
             if (interactionState.isZooming) {
                 this.props.zoom = viewState.zoom;
-                viewState.zoom=oldViewState.zoom;
-                viewState.target = oldViewState.target;
-                //this.updateRenderGraph();
+                // viewState.zoom=oldViewState.zoom;
+                // viewState.target = oldViewState.target;
+                this.updateRenderGraph();
             } else {
                 viewState.target = oldViewState.target;
             }
@@ -187,14 +187,20 @@ export default class CanvasController {
             },
             onClick: this.lineClickHandler,
         });
-
+        const markRGB = hexRgb(this.props.nodeHighlightColor);
+        console.log(this.props);
+        console.log(markRGB);
+        const markOpactiy = this.props.nodeHighlightOpacity;
         const iconLayer = new IconLayer({
             id: 'icon-layer',
             data: renderIcons,
             pickable: true,
+            autoHighlight:true,
+            highlightColor: [markRGB.red, markRGB.green, markRGB.blue,markOpactiy*255],
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
             positionFormat: 'XY',
+            sizeScale:2**zoom,
             getIcon: d => {
                 let url = null;
                 if (invalidIcon.has(d.url)) {
@@ -212,10 +218,9 @@ export default class CanvasController {
                 }
             },
             onIconError: this.onIconErrorHander,
-            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            getSize: d => d.style.iconSize,//this 指向问题
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize: zoom,
                 getIcon: iconFlag,
             },
             onDrag: this.nodeDragingHandler,
@@ -280,7 +285,6 @@ export default class CanvasController {
             getColor: (d) => d.style.textColor,
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize: zoom + styleFlag,
                 getColor: styleFlag
             }
         });
@@ -310,6 +314,7 @@ export default class CanvasController {
             data: renderNodeLabels,
             background:true,
             backgroundPadding:[3,2,3,2],
+            sizeScale:2**zoom,
             fontFamily: 'Microsoft YaHei',
             getPosition: d => {
                 return d.position;
@@ -326,7 +331,6 @@ export default class CanvasController {
             },
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize: zoom + styleFlag,
                 getColor: styleFlag
             }
         });
@@ -336,6 +340,7 @@ export default class CanvasController {
             data: renderLinkLabels,
             background:true,
             backgroundPadding:[3,2,3,2],
+            sizeScale:2**zoom,
             fontFamily: 'Microsoft YaHei',
             getPosition: d => {
                 return d.position;
@@ -352,14 +357,11 @@ export default class CanvasController {
             },
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize: zoom + styleFlag,
                 getColor: styleFlag
             }
         })
 
         this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, iconLayer, textLayer,nodelabelLayer,linkLabelLayer] });
-
-        //this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight,viewState:viewState, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
     }
 
 
@@ -396,10 +398,14 @@ export default class CanvasController {
             },
             onClick: this.lineClickHandler,
         });
+        const markRGB = hexRgb(this.props.nodeHighlightColor);
+        const markOpactiy = this.props.nodeHighlightOpacity;
         const iconLayer = new IconLayer({
             id: 'icon-layer',
             data: renderIcons.filter(() => true),
             pickable: true,
+            autoHighlight:true,
+            highlightColor:[markRGB.red, markRGB.green, markRGB.blue,markOpactiy*255],
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
             getIcon: d => {

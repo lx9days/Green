@@ -7,6 +7,7 @@ import RenderPolygon from '../model/renderpolygon';
 import RenderText from '../model/rendertext';
 import RenderMark from '../model/rendermark';
 import RenderLabel from '../model/renderlabel';
+import RenderGroupText from '../model/rendergrouptext';
 import { autoFitView, dashLine } from '../helper/util';
 import Bubble from '../model/bubble';
 import BubbleRegion from '../model/bubbleregion';
@@ -91,6 +92,7 @@ export default class ElementController {
         this.nodeRenderMap = new Map();// node id 映射该node 对应的所有的 renderobj
         this.linkRenderMap = new Map();// link id 映射该link 对应的所有的 renderobj
         this.characterSet = new Set();//保存textlayer的字符
+        this.groupTextSet=new Set();
 
         this.idMapRegion = new Map();
 
@@ -100,11 +102,13 @@ export default class ElementController {
             renderLabels: new Array(),
             renderLines: new Array(),
             renderText: new Array(),
+            renderGroupTexts:new Array(),
             renderPolygon: new Array(),
             renderMark: new Array(),
             renderBubble: new Array(),
             renderDashLine: new Array(),
-            charSet: null
+            charSet: null,
+            groupTextSet:null,
         }
     }
     _parseElements(nodeArray, linkArray, upateFlag = null) {
@@ -118,29 +122,40 @@ export default class ElementController {
                 renderLabels: new Array(),
                 renderLines: new Array(),
                 renderText: new Array(),
+                renderGroupTexts:new Array(),
                 renderPolygon: new Array(),
                 renderMark: new Array(),
                 renderBubble: new Array(),
                 renderDashLine: new Array(),
-                charSet: null
+                charSet: null,
+                groupTextSet:null,
             }
             nodeArray.forEach((node) => {
                 const nodeRenders = {
                     iconObjs: new Array(),
                     backgroundObjs: new Array(),
                     textObjs: new Array(),
+                    groupTextObjs:new Array(),
                     markObjs: new Array(),
                     labelObjs: new Array(),
                 }
                 nodeRenders.backgroundObjs.push(new RenderBackground(node));
                 nodeRenders.iconObjs.push(new RenderIcon(node));
                 nodeRenders.markObjs.push(new RenderMark(node));
-                const renderText = new RenderText(node);
+
+                if(node.data.metaType&&node.data.metaType==='nodeSet'){
+                    const groupRenderText=new RenderGroupText(node);
+                    this._generateGroupCharSet(groupRenderText.text);
+                    nodeRenders.groupTextObjs.push(groupRenderText);
+                }else{
+                    const renderText = new RenderText(node);
+                    this._generateCharSet(renderText.text);
+                    nodeRenders.textObjs.push(renderText);
+                }
                 if (node.isLocked) {
                     nodeRenders.labelObjs.push(new RenderLabel(node))
                 }
-                this._generateCharSet(renderText.text);
-                nodeRenders.textObjs.push(renderText);
+               
                 this.nodeRenderMap.set(node.getId(), nodeRenders);
             });
 
@@ -150,6 +165,7 @@ export default class ElementController {
                     iconObjs: new Array(),
                     backgroundObjs: new Array(),
                     textObjs: new Array(),
+                    groupTextObjs:new Array(),
                     markObjs: new Array(),
                     labelObjs: new Array(),
                 }
@@ -159,9 +175,15 @@ export default class ElementController {
                 if (node.isLocked) {
                     nodeRenders.labelObjs.push(new RenderLabel(node))
                 }
-                const renderText = new RenderText(node);
-                this._generateCharSet(renderText.text);
-                nodeRenders.textObjs.push(renderText);
+                if(node.data.metaType&&node.data.metaType==='nodeSet'){
+                    const groupRenderText=new RenderGroupText(node);
+                    this._generateGroupCharSet(groupRenderText);
+                    nodeRenders.groupTextObjs.push(groupRenderText);
+                }else{
+                    const renderText = new RenderText(node);
+                    this._generateCharSet(renderText.text);
+                    nodeRenders.textObjs.push(renderText);
+                }
                 if (this.nodeRenderMap.has(node.getId())) {
 
                     Object.assign(this.nodeRenderMap.get(node.getId()), nodeRenders);
@@ -232,11 +254,13 @@ export default class ElementController {
             renderLabels: new Array(),
             renderLines: new Array(),
             renderText: new Array(),
+            renderGroupTexts:new Array(),
             renderPolygon: new Array(),
             renderMark: new Array(),
             renderBubble: cacheBubble,
             renderDashLine: new Array(),
-            charSet: null
+            charSet: null,
+            groupTextSet:null,
         }
         for (const nodeIdKey of this.nodeRenderMap.keys()) {
             const nodeRenders = this.nodeRenderMap.get(nodeIdKey);
@@ -249,12 +273,16 @@ export default class ElementController {
             nodeRenders.textObjs.forEach((textObj) => {
                 this.renderObject.renderText.push(textObj);
             });
+            nodeRenders.groupTextObjs.forEach(groupTextObj=>{
+                this.renderObject.renderGroupTexts.push(groupTextObj);
+            })
             nodeRenders.markObjs.forEach(markObj => {
                 this.renderObject.renderMark.push(markObj);
             })
             nodeRenders.labelObjs.forEach(labelObj => {
                 this.renderObject.renderLabels.push(labelObj);
-            })
+            });
+
         }
         for (const linkIdKey of this.linkRenderMap.keys()) {
             const linkRenders = this.linkRenderMap.get(linkIdKey);
@@ -272,6 +300,7 @@ export default class ElementController {
             });
         }
         this.renderObject.charSet = Array.from(this.characterSet);
+        this.renderObject.groupTextSet=Array.from(this.groupTextSet);
         this.controller.canvasController.updateRenderObject({ renderObject: this.renderObject });
 
 
@@ -373,6 +402,13 @@ export default class ElementController {
         if (str) {
             for (const s of str) {
                 this.characterSet.add(s);
+            }
+        }
+    }
+    _generateGroupCharSet(str){
+        if(str){
+            for(const s of str){
+                this.groupTextSet.add(s);
             }
         }
     }
@@ -590,6 +626,12 @@ export default class ElementController {
                         this.renderObject.renderText.splice(index, 1);
                     }
                 });
+                renderNode.groupTextObjs.forEach(text=>{
+                    const index=this.renderObject.renderGroupTexts.indexOf(text);
+                    if(index>=0){
+                        this.renderObject.renderGroupTexts.splice(index,1);
+                    }
+                })
                 renderNode.markObjs.forEach(mark => {
                     const index = this.renderObject.renderMark.indexOf(mark);
                     if (index >= 0) {
@@ -601,7 +643,8 @@ export default class ElementController {
                     if (index >= 0) {
                         this.renderObject.renderLabels.splice(index, 1);
                     }
-                })
+                });
+                
                 this.nodeRenderMap.delete(id);
             });
         }
@@ -786,15 +829,18 @@ export default class ElementController {
                     renderObjects.textObjs.forEach((text) => {
                         text.updateStatus();
                     });
+                    renderObjects.groupTextObjs.forEach(text=>{
+                        text.updateStatus();
+                    })
                     renderObjects.backgroundObjs.forEach((border) => {
                         border.updateStatus();
                     });
                     renderObjects.markObjs.forEach(mark => {
                         mark.updateStatus();
-                    })
+                    });
                     renderObjects.labelObjs.forEach(label => {
                         label.updateStatus();
-                    })
+                    });
                 }
             });
             if (status === 3) {
@@ -863,6 +909,9 @@ export default class ElementController {
                 renderObjects.textObjs.forEach((text) => {
                     text.updateStatus();
                 });
+                renderObjects.groupTextObjs.forEach(text=>{
+                    text.updateStatus();
+                })
                 renderObjects.backgroundObjs.forEach((border) => {
                     border.updateStatus();
                 });
@@ -882,6 +931,9 @@ export default class ElementController {
                 renderObjects.textObjs.forEach((text) => {
                     text.updateStatus();
                 });
+                renderObjects.groupTextObjs.forEach(groupText=>{
+                    groupText.updateStatus();
+                })
                 renderObjects.backgroundObjs.forEach((border) => {
                     border.updateStatus();
                 });
@@ -985,7 +1037,7 @@ export default class ElementController {
                     if (!this.nodeRenderMap.has(id)) {
                         return;
                     }
-                    const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs } = this.nodeRenderMap.get(id);
+                    const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs,groupTextObjs } = this.nodeRenderMap.get(id);
                     iconObjs.forEach((iconObj) => {
                         iconObj.rebuild();
                     });
@@ -995,6 +1047,9 @@ export default class ElementController {
                     textObjs.forEach((textObj) => {
                         textObj.rebuild();
                     });
+                    groupTextObjs.forEach(groupTextObj=>{
+                        groupTextObj.rebuild();
+                    })
                     markObjs.forEach(mark => {
                         mark.rebuild();
                     })
@@ -1041,7 +1096,8 @@ export default class ElementController {
                 renderText,
                 renderPolygon,
                 renderMark,
-                renderLabels
+                renderLabels,
+                renderGroupTexts,
             } = this.renderObject;
             renderBackgrounds.forEach((RenderBackground) => {
                 RenderBackground.rebuild();
@@ -1055,6 +1111,9 @@ export default class ElementController {
             renderText.forEach((reText) => {
                 reText.rebuild();
             });
+            renderGroupTexts.forEach(groupText=>{
+                groupText.rebuild();
+            })
             renderPolygon.forEach((rePolygon) => {
                 rePolygon.rebuild();
             })
@@ -1113,7 +1172,7 @@ export default class ElementController {
                     if (!this.nodeRenderMap.has(id)) {
                         return;
                     }
-                    const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs } = this.nodeRenderMap.get(id);
+                    const { iconObjs, backgroundObjs, textObjs,groupTextObjs, markObjs, labelObjs } = this.nodeRenderMap.get(id);
                     iconObjs.forEach((iconObj) => {
                         iconObj.rebuild();
                     });
@@ -1123,6 +1182,9 @@ export default class ElementController {
                     textObjs.forEach((textObj) => {
                         textObj.rebuild();
                     });
+                    groupTextObjs.forEach(groupTextObj=>{
+                        groupTextObj.rebuild();
+                    })
                     markObjs.forEach(mark => {
                         mark.rebuild();
                     })
@@ -1132,7 +1194,7 @@ export default class ElementController {
                 })
             } else {
                 for (const key of this.nodeRenderMap.keys()) {
-                    const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs } = this.nodeRenderMap.get(key);
+                    const { iconObjs, backgroundObjs, textObjs,groupTextObjs, markObjs, labelObjs } = this.nodeRenderMap.get(key);
                     iconObjs.forEach((iconObj) => {
                         iconObj.rebuild();
                     });
@@ -1142,6 +1204,9 @@ export default class ElementController {
                     textObjs.forEach((textObj) => {
                         textObj.rebuild();
                     });
+                    groupTextObjs.forEach(groupTextObj=>{
+                        groupTextObj.rebuild();
+                    })
                     markObjs.forEach(mark => {
                         mark.rebuild();
                     })
@@ -1179,7 +1244,7 @@ export default class ElementController {
                     throw new Error("cannot find node id:" + id)
                 }
                 const nodeRenders = this.nodeRenderMap.get(id);
-                const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs } = nodeRenders;
+                const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs,groupTextObjs } = nodeRenders;
                 iconObjs.forEach((iconObj) => {
                     iconObj.reLocation();
                 });
@@ -1189,12 +1254,16 @@ export default class ElementController {
                 textObjs.forEach((textObj) => {
                     textObj.reLocation();
                 });
+                groupTextObjs.forEach(groupTextObj=>{
+                    groupTextObj.reLocation();
+                })
                 markObjs.forEach(mark => {
                     mark.reLocation();
-                })
+                });
                 labelObjs.forEach(label => {
                     label.reLocation();
-                })
+                });
+                
             });
             const needReLocationDashLine = [];
             needUpdateLinks.forEach(link => {
@@ -1224,7 +1293,8 @@ export default class ElementController {
                 renderText,
                 renderPolygon,
                 renderMark,
-                renderLabels
+                renderLabels,
+                renderGroupTexts,
             } = this.renderObject;
             renderBackgrounds.forEach((RenderBackground) => {
                 RenderBackground.reLocation();
@@ -1238,6 +1308,9 @@ export default class ElementController {
             renderText.forEach((reText) => {
                 reText.reLocation();
             });
+            renderGroupTexts.forEach(groupText=>{
+                groupText.reLocation();
+            })
             renderPolygon.forEach((rePolygon) => {
                 rePolygon.reLocation();
             })
@@ -1406,7 +1479,7 @@ export default class ElementController {
 
     fusionElements({ deleteNodeId, saveNodeId, deleteLinkIds, addLinkData }) {
 
-        const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs } = this.nodeRenderMap.get(saveNodeId);
+        const { iconObjs, backgroundObjs, textObjs,groupTextObjs, markObjs, labelObjs } = this.nodeRenderMap.get(saveNodeId);
         iconObjs.forEach((iconObj) => {
             iconObj.rebuild();
         });
@@ -1417,7 +1490,12 @@ export default class ElementController {
             textObj.rebuild();
             this._generateCharSet(textObj.text);
         });
+        groupTextObjs.forEach(groupTextObj=>{
+            groupTextObj.rebuild();
+            this._generateGroupCharSet(groupTextObj.text);
+        })
         this.renderObject.charSet = Array.from(this.characterSet);
+        this.renderObject.groupTextSet=Array.from(this.renderObject);
         markObjs.forEach(mark => {
             mark.rebuild();
         });

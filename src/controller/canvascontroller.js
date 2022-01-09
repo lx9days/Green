@@ -114,10 +114,14 @@ export default class CanvasController {
             pickingRadius: 6,
             getTooltip: ({ object }) => {
 
-                if (object && object.origionElement && object.origionElement.data.metaType === 'nodeSet'&&Object.keys(object.origionElement.data.statistics).length>0) {
-//`<div><div>实体:${object.origionElement.data.statistics['实体']}</div><div>关系 ${object.origionElement.data.statistics['关系']}</div></div>`,
+                if (object && object.origionElement && object.origionElement.data.metaType === 'nodeSet' && Object.keys(object.origionElement.data.statistics).length > 0) {
+                    let html = '';
+                    for (const key in object.origionElement.data.statistics) {
+                        html += `<div>${key}:${object.origionElement.data.statistics[key]}</div>`
+                    }
+
                     return {
-                        html: `<div>${object.origionElement.data.statistics['实体']?"<div>实体:"+object.origionElement.data.statistics['实体']+"</div>":''}${object.origionElement.data.statistics['关系']?"<div>关系:"+object.origionElement.data.statistics['关系']+"</div>":''}</div>`,
+                        html: `<div>${html}</div>`,
                         style: {
                             backgroundColor: '#d9d9d9',
 
@@ -186,7 +190,7 @@ export default class CanvasController {
         const invalidIcon = this.invalidIncons
         const defaultUrlMap = this.props.defaultUrlMap;
         const defaultUrlFunc = this.props.defaultUrlFunc;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderBubble, renderDashLine } = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderBubble, renderDashLine ,renderGroupTexts,groupTextSet} = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
         let bubbleLayer = null
@@ -261,6 +265,7 @@ export default class CanvasController {
             data: renderIcons,
             pickable: true,
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            sizeScale: 2 ** zoom,
             getPosition: d => d.position,
             positionFormat: 'XY',
             getIcon: d => {
@@ -280,10 +285,9 @@ export default class CanvasController {
                 }
             },
             onIconError: this.onIconErrorHander,
-            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            getSize: d => d.style.iconSize,//this 指向问题
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize: zoom,
                 getIcon: iconFlag,
             }
         });
@@ -405,16 +409,15 @@ export default class CanvasController {
             id: 'text-layer',
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             data: renderText,
-            maxWidth: 360,
-            wordBreak: 'break-all',
             fontFamily: 'Microsoft YaHei',
+            sizeScale: 2 ** zoom,
             getPosition: d => {
                 return d.position;
             },
             getText: d => {
                 return d.text;
             },
-            getSize: d => d.style.textSize * (2 ** zoom),
+            getSize: d => d.style.textSize,
             getAngle: 0,
             getTextAnchor: d => d.style.textAnchor,
             getAlignmentBaseline: d => d.style.textAlignmentBaseline,
@@ -422,7 +425,33 @@ export default class CanvasController {
             getColor: (d) => d.style.textColor,
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize: zoom + styleFlag,
+                getSize: styleFlag,
+                getColor: styleFlag
+            }
+        });
+        const groupTextLayer = new TextLayer({
+            id: 'group-text-layer',
+            coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            data: renderGroupTexts,
+            maxWidth: 360,
+            wordBreak: 'break-all',
+            fontFamily: 'Microsoft YaHei',
+            sizeScale: 2 ** zoom,
+            getPosition: d => {
+                return d.position;
+            },
+            getText: d => {
+                return d.text;
+            },
+            getSize: d => d.style.textSize,
+            getAngle: 0,
+            getTextAnchor: d => d.style.textAnchor,
+            getAlignmentBaseline: d => d.style.textAlignmentBaseline,
+            characterSet: groupTextSet,
+            getColor: (d) => d.style.textColor,
+            updateTriggers: {
+                getPosition: positionFlag,
+                getSize: styleFlag,
                 getColor: styleFlag
             }
         });
@@ -480,6 +509,7 @@ export default class CanvasController {
             data: renderLabels,
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
+            sizeScale: 2 ** zoom,
             getIcon: d => ({
                 url: d.url,
                 width: d.style.iconHeight,
@@ -487,20 +517,19 @@ export default class CanvasController {
                 anchorX: 0,
                 anchorY: 0,
             }),
-            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            getSize: d => d.style.iconSize,//this 指向问题
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize: zoom,
             }
         });
         if (renderBubble.length > 0 && this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer,groupTextLayer, textLayer, animationLayer, markLayer] });
         } else if (renderBubble.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer,textLayer, markLayer] });
         } else if (this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer,groupTextLayer, textLayer, animationLayer, markLayer] });
         } else {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer,groupTextLayer, textLayer, markLayer] });
         }
 
 
@@ -739,7 +768,7 @@ export default class CanvasController {
 
         const zoom = this.props.zoom;
         const invalidIcon = this.invalidIncons;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderDashLine, renderBubble } = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderDashLine, renderBubble, renderGroupTexts, groupTextSet } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
 
@@ -823,7 +852,9 @@ export default class CanvasController {
             data: renderIcons.filter(() => true),
             pickable: true,
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            sizeScale: 2 ** zoom,
             getPosition: d => d.position,
+
             getIcon: d => {
                 let url = null;
                 if (invalidIcon.has(d.url)) {
@@ -840,12 +871,11 @@ export default class CanvasController {
                     anchorY: 0,
                 }
             },
-            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            getSize: d => d.style.iconSize,//this 指向问题
             getColor: d => d.style.iconColor,
 
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize: zoom,
                 getIcon: iconFlag,
             },
             onIconError: this.onIconErrorHander,
@@ -974,19 +1004,15 @@ export default class CanvasController {
             id: 'text-layer',
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             data: renderText.filter(() => true),
-            pickable: true,
-            maxWidth: 360,
-            wordBreak: 'break-all',
+            sizeScale: 2 ** zoom,
             fontFamily: 'Microsoft YaHei',
             getPosition: d => {
                 return d.position;
             },
             getText: d => {
-
                 return d.text;
-
             },
-            getSize: d => d.style.textSize * (2 ** zoom),
+            getSize: d => d.style.textSize,
             getAngle: 0,
             getTextAnchor: d => d.style.textAnchor,
             getAlignmentBaseline: d => d.style.textAlignmentBaseline,
@@ -994,7 +1020,34 @@ export default class CanvasController {
             getColor: (d) => d.style.textColor,
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize: zoom + styleFlag,
+                getSize: styleFlag,
+                getColor: styleFlag
+            }
+        });
+        const groupTextLayer = new TextLayer({
+            id: 'group-text-layer',
+            coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            data: renderGroupTexts.filter(() => true),
+            pickable: true,
+            maxWidth: 360,
+            sizeScale: 2 ** zoom,
+            wordBreak: 'break-all',
+            fontFamily: 'Microsoft YaHei',
+            getPosition: d => {
+                return d.position;
+            },
+            getText: d => {
+                return d.text;
+            },
+            getSize: d => d.style.textSize,
+            getAngle: 0,
+            getTextAnchor: d => d.style.textAnchor,
+            getAlignmentBaseline: d => d.style.textAlignmentBaseline,
+            characterSet: groupTextSet,
+            getColor: (d) => d.style.textColor,
+            updateTriggers: {
+                getPosition: positionFlag,
+                getSize: styleFlag,
                 getColor: styleFlag
             }
         });
@@ -1054,6 +1107,7 @@ export default class CanvasController {
             id: 'label-layer',
             data: renderLabels.filter(() => true),
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            sizeScale: 2 ** zoom,
             getPosition: d => d.position,
             getIcon: d => ({
                 url: d.url,
@@ -1062,10 +1116,9 @@ export default class CanvasController {
                 anchorX: 0,
                 anchorY: 0,
             }),
-            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            getSize: d => d.style.iconSize,//this 指向问题
             updateTriggers: {
                 getPosition: positionFlag,
-                getSize: zoom,
             },
             onIconError: () => {
                 console.log(arguments)
@@ -1073,13 +1126,13 @@ export default class CanvasController {
         });
 
         if (renderBubble.length > 0 && this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
         } else if (renderBubble.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
         } else if (this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
         } else {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
         }
         // if (this.animationData.length > 0) {
         //     this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
@@ -1307,7 +1360,6 @@ export default class CanvasController {
     }
 
     fitView(params) {
-
         if (params.zoom < this.props.minZoom) {
             params.zoom = this.props.minZoom;
         }

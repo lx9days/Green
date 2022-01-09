@@ -631,6 +631,19 @@ export default class ElementController {
             return this.nodes;
         }
     }
+    getLinks(ids){
+        const linkArray=[]
+        if(ids&&ids.length>0){
+            ids.forEach(id=>{
+                if(this.idMapLink.has(id)){
+                    linkArray.push(this.idMapLink.get(id));
+                }
+            });
+        }else{
+            return this.links;
+        }
+    }
+
 
 }
 

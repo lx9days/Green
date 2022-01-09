@@ -1,9 +1,8 @@
 import hexRgb from 'hex-rgb';
 import { isFunction } from '../helper/util';
 import Link from './link';
-import Node from './node';
 //
-export default class RenderText {
+export default class RenderGroupText {
     constructor(element, offset) {
         this.id = element.getId();
         this.position = [0, 0];
@@ -17,7 +16,7 @@ export default class RenderText {
             textColor: [255, 255, 255, 255],
             textSize: 10,
             textOpacity: 1,
-            shape: null,
+            shape: 'horizontal_rect',
             height: 0,
             textAnchor: 'middle',
             backgroundHeight: 0,
@@ -50,38 +49,11 @@ export default class RenderText {
 
     _generatePosition() {
         //设计优化
-        if (this.origionElement instanceof Node) {
-            const elementPosition = this.origionElement.getLocation();
-            if (this.style.shape.toLowerCase() === 'circle') {
-                this.position[0] = elementPosition.x + this.style.height / 2 + this.style.borderWidth / 2;
-                this.position[1] = elementPosition.y + this.style.height + this.style.borderWidth * 2;
-                this.style.textAnchor = 'middle';
-                this.style.textAlignmentBaseline = 'top';
-            } else if (this.style.shape.toLowerCase() === 'rounded_rect') {
-                this.position[0] = elementPosition.x + this.style.height + this.style.borderWidth;
-                this.position[1] = elementPosition.y + this.style.height / 2 + this.style.borderWidth;
-                this.style.textAnchor = 'start';
-                this.style.textAlignmentBaseline = 'center';
-            } else if (this.style.shape.toLowerCase() === 'horizontal_rect') {
-                console.log(this.style.height)
-                this.position[0] = elementPosition.x ;//+ this.style.height / 2+4;
-                this.position[1] = elementPosition.y + this.style.height / 2;
-                this.style.textAnchor = 'start';
-                this.style.textAlignmentBaseline = 'center';
-            } else {
-                this.position[0] = elementPosition.x + this.style.height / 2 + this.style.borderWidth / 2;
-                this.position[1] = elementPosition.y + this.style.borderWidth * 2 + this.style.backgroundHeight;
-                this.style.textAnchor = 'middle';
-                this.style.textAlignmentBaseline = 'top';
-            }
-        } else {
-            const elementSourcePosition = this.origionElement.getSourceLocation();
-            const elementTargetPosition = this.origionElement.getTargetLocation();
-            this.position[0] = (elementSourcePosition.x + this.offset.sourceOffset.x + elementTargetPosition.x + this.offset.targetOffset.x) / 2;
-            this.position[1] = (elementSourcePosition.y + this.offset.sourceOffset.y + elementTargetPosition.y + this.offset.targetOffset.y) / 2;
-            this.style.textAnchor = 'middle';
-            this.style.textAlignmentBaseline = 'center';
-        }
+        const elementPosition = this.origionElement.getLocation();
+        this.position[0] = elementPosition.x;//+ this.style.height / 2+4;
+        this.position[1] = elementPosition.y + this.style.height / 2;
+        this.style.textAnchor = 'start';
+        this.style.textAlignmentBaseline = 'center';
 
     }
 
@@ -136,14 +108,6 @@ export default class RenderText {
                             this.text = textObj(this.origionElement);
                         } else {
                             this.text = textObj;
-                        }
-                        break;
-                    case 'shape':
-                        const shapeObj = style[item];
-                        if (isFunction(shapeObj)) {
-                            this.style.shape = shapeObj(this.origionElement);
-                        } else {
-                            this.style.shape = shapeObj;
                         }
                         break;
                     case 'background-height':
