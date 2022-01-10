@@ -7,6 +7,7 @@ import SuperRenderLinkLabel from "../model/superrenderlinklabel";
 import SuperRenderNodeLabel from "../model/superrendernodelabel";
 import SuperRenderPolygon from "../model/superrenderpolygon";
 import SuperRenderText from "../model/superrendertext";
+import { autoFitView } from "../../helper/util";
 
 export default class ElementController {
     constructor(controller, data) {
@@ -642,6 +643,13 @@ export default class ElementController {
         }else{
             return this.links;
         }
+    }
+
+    fitView() {
+        const viewSize = this.controller.canvasController.getDim();
+        const viewFitParams = autoFitView(this.getNodes(), [viewSize.width, viewSize.height]);
+        this.controller.canvasController.fitView(viewFitParams);
+
     }
 
 

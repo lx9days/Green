@@ -52,5 +52,8 @@ export default class SuperGraph {
     layout(name) {
         this.controller.elementController.updateLayout(name);
     }
+    fitView(){
+        this.controller.elementController.fitView();
+    }
 
 }

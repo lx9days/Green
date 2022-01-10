@@ -63,7 +63,7 @@ export default class RenderText {
                 this.style.textAnchor = 'start';
                 this.style.textAlignmentBaseline = 'center';
             } else if (this.style.shape.toLowerCase() === 'horizontal_rect') {
-                console.log(this.style.height)
+    
                 this.position[0] = elementPosition.x ;//+ this.style.height / 2+4;
                 this.position[1] = elementPosition.y + this.style.height / 2;
                 this.style.textAnchor = 'start';

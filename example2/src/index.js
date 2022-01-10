@@ -118,6 +118,10 @@ function draw (data) {
         console.log(superGraph.getNodes());
         superGraph.layout("horizontal");
     });
+    document.getElementById("fit").addEventListener('click',()=>{
+        console.log("fit")
+        superGraph.fitView();
+    });
     
 
 }

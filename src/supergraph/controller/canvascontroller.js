@@ -188,8 +188,6 @@ export default class CanvasController {
             onClick: this.lineClickHandler,
         });
         const markRGB = hexRgb(this.props.nodeHighlightColor);
-        console.log(this.props);
-        console.log(markRGB);
         const markOpactiy = this.props.nodeHighlightOpacity;
         const iconLayer = new IconLayer({
             id: 'icon-layer',
@@ -547,7 +545,6 @@ export default class CanvasController {
                 getColor: styleFlag
             }
         });
-        console.log(renderLinkLabels,labelCharSet)
         const linkLabelLayer=new TextLayer({
             id: 'link-label-layer',
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
@@ -733,6 +730,28 @@ export default class CanvasController {
             height: this.props.containerHeight,
         }
     }
+
+    fitView(params) {
+        if (params.zoom < this.props.minZoom) {
+            params.zoom = this.props.minZoom;
+        }
+        let isNeedUpdate = false;
+        if (params.zoom !== this.props.zoom) {
+            isNeedUpdate = true;
+        }
+        this.props.viewState.target = [params.target[0], params.target[1], 0];
+        this.props.viewState.zoom = params.zoom;
+        this.props.zoom = params.zoom;
+        let viewStat = JSON.parse(JSON.stringify(this.props.viewState));
+        viewStat.minZoom = -1000;
+        viewStat.maxZoom = 1000 + Math.random();
+        this.props.viewState = viewStat;
+        this.deck.setProps({ viewState: viewStat });
+        if (isNeedUpdate) {
+            this.updateRenderGraph();
+        }
+    }
+
 
 
 }
