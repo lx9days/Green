@@ -305,7 +305,7 @@ export default class CanvasController {
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             data: renderLabels,
             background: true,
-            backgroundPadding: [3, 2, 3, 2],
+            backgroundPadding: [5, 2, 5, 2],
             sizeScale: 2 ** zoom,
             fontFamily: 'Microsoft YaHei',
             getPosition: d => {
@@ -326,32 +326,6 @@ export default class CanvasController {
                 getColor: styleFlag
             }
         });
-        // const linkLabelLayer=new TextLayer({
-        //     id: 'link-label-layer',
-        //     coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
-        //     data: renderLinkLabels,
-        //     background:true,
-        //     backgroundPadding:[3,2,3,2],
-        //     sizeScale:2**zoom,
-        //     fontFamily: 'Microsoft YaHei',
-        //     getPosition: d => {
-        //         return d.position;
-        //     },
-        //     getText: d => d.text,
-        //     getSize: d => d.style.textSize,
-        //     getAngle: 0,
-        //     getTextAnchor: d => d.style.textAnchor,
-        //     getAlignmentBaseline: d => d.style.textAlignmentBaseline,
-        //     characterSet: labelCharSet,
-        //     getColor: (d) => d.style.textColor,
-        //     getBackgroundColor:(d)=>{
-        //         return d.style.labelBackground;
-        //     },
-        //     updateTriggers: {
-        //         getPosition: positionFlag,
-        //         getColor: styleFlag
-        //     }
-        // })
 
         this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, iconLayer, textLayer, nodelabelLayer] });
     }
@@ -512,7 +486,7 @@ export default class CanvasController {
             data: renderLabels.filter(() => true),
             fontFamily: 'Microsoft YaHei',
             background: true,
-            backgroundPadding: [3, 2, 3, 2],
+            backgroundPadding: [5, 2, 5, 2],
             getPosition: d => {
                 return d.position;
             },
@@ -532,35 +506,6 @@ export default class CanvasController {
                 getColor: styleFlag
             }
         });
-        // const linkLabelLayer=new TextLayer({
-        //     id: 'link-label-layer',
-        //     coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
-        //     data: renderLinkLabels.filter(() => true),
-        //     fontFamily: 'Microsoft YaHei',
-        //     background:true,
-        //     backgroundPadding:[3,2,3,2],
-        //     getPosition: d => {
-        //         return d.position;
-        //     },
-        //     getText: d => {
-
-        //         return d.text;
-        //     },
-        //     getSize: d => d.style.textSize * (2 ** zoom),
-        //     getAngle: 0,
-        //     getTextAnchor: d => d.style.textAnchor,
-        //     getAlignmentBaseline: d => d.style.textAlignmentBaseline,
-        //     characterSet: labelCharSet,
-        //     getColor: (d) => d.style.textColor,
-        //     getBackgroundColor:(d)=>{
-        //         return d.style.labelBackground;
-        //     },
-        //     updateTriggers: {
-        //         getPosition: positionFlag,
-        //         getSize: zoom + styleFlag,
-        //         getColor: styleFlag,
-        //     }
-        // });
         this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, arrowLayer, rectBackgroundLayer, iconLayer, textLayer, nodelabelLayer] });
     }
 

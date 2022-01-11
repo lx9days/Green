@@ -45,6 +45,11 @@ export default class ElementController {
             this._parseParams(data, flag);
         }
     }
+    reParse(){
+        this.controller.styleController.mountAllStyleToElement(this.nodes, this.links);
+        this.controller.positionController.layout(this.nodes, this.links);
+        this._parseElements(newNodeArray, newLinkArray,flag);
+    }
     _parseParams(data, flag) {
         const { newNodeArray, newLinkArray } = this._generateInternalEntity(data, flag);
         this.controller.styleController.mountAllStyleToElement(newNodeArray, newLinkArray);
@@ -171,6 +176,7 @@ export default class ElementController {
             linkRenders.lineObjs.push(renderLine);
             linkRenders.polygonObjs.push(new SuperRenderPolygon(link, 'target', offset));
             const superRenderText = new SuperRenderText(link, offset);
+            linkRenders.textObjs.push(superRenderText);
             this._generateCharSet(superRenderText.text);
             this.linkRenderMap.set(link.getId(), linkRenders);
 

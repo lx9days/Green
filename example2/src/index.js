@@ -42,9 +42,8 @@ function draw (data) {
                     'background-height': 46 ,
                     'url': (d) => d.data.img,
                     'opacity': 1,
-                    'background-color': '#ffd53f',
                     'border-width':3,
-                    'background-opacity': 1,
+                    'border-color':'#63b0b1',
                     'text-color': '#845624',
                     'text-opacity': 1,
                     'font-size': 10,
@@ -58,7 +57,7 @@ function draw (data) {
                         return '关系:0';
                     },
                     'node-label-background':'#456456',
-                    'link-label-background':'#456456'
+                    'link-label-background':'rgba(255,0,0,125)'
                 }
             },
             {

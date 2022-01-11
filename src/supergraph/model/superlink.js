@@ -54,5 +54,8 @@ export default class SuperLink{
     getStyles(){
         return this.styles;
     }
+    clearStyle(){
+        this.styles=new Array();
+    }
 }
 

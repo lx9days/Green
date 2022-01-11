@@ -62,7 +62,12 @@ export default class StyleController{
     }
     mountAllStyleToElement(nodes,links){
         //初始化选择器
-
+        nodes.forEach(node=>{
+            node.clearStyle();
+        });
+        links.forEach(link=>{
+            link.clearStyle();
+        })
         const selector=new Selector(nodes,links);
         //const selectResult=selector.select(selectStr);
 

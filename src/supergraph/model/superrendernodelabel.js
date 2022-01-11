@@ -1,6 +1,6 @@
 
 import hexRgb from 'hex-rgb';
-import { isFunction } from '../helper/util';
+import { isFunction, isRGBA, rgbaStr2Array } from '../helper/util';
 export default class SuperRenderNodeLabel {
     constructor(element) {
         this.id = element.getId();
@@ -45,7 +45,7 @@ export default class SuperRenderNodeLabel {
         const elementPosition = this.origionElement.getLocation();
 
         this.position[0] = elementPosition.x + this.style.backgroundWidth / 2
-        this.position[1] = elementPosition.y - (this.style.backgroundHeight - this.style.height) / 2 - 3;
+        this.position[1] = elementPosition.y - (this.style.backgroundHeight - this.style.height) / 2;
         this.style.textAnchor = 'start';
         this.style.textAlignmentBaseline = 'bottom';
 
@@ -122,10 +122,19 @@ export default class SuperRenderNodeLabel {
                         } else {
                             labelBackgroundHex = labelBackgroundObj;
                         }
-                        const labelBackgroundRGB = hexRgb(labelBackgroundHex);
-                        this.style.labelBackground[0] = labelBackgroundRGB.red;
-                        this.style.labelBackground[1] = labelBackgroundRGB.green;
-                        this.style.labelBackground[2] = labelBackgroundRGB.blue;
+                        if (isRGBA(labelBackgroundHex)) {
+                            const array=rgbaStr2Array(labelBackgroundHex);
+                            if(array[3]<=1){
+                                array[3]*=255;
+                            }
+                            this.style.labelBackground[2] = array;
+                        } else {
+                            const labelBackgroundRGB = hexRgb(labelBackgroundHex);
+                            this.style.labelBackground[0] = labelBackgroundRGB.red;
+                            this.style.labelBackground[1] = labelBackgroundRGB.green;
+                            this.style.labelBackground[2] = labelBackgroundRGB.blue;
+                        }
+
                     default:
                         break;
                 }

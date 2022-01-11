@@ -10,7 +10,7 @@ export default class SuperGraph {
         this.props = {};
         Object.assign(this.props, props);
         const eventController = new EventController();
-        const positionController = new PositionController(this, this.props.layout,[parseInt(this.props.canvasProps.containerWidth),parseInt(this.props.canvasProps.containerHeight)]);
+        const positionController = new PositionController(this, this.props.layout, [parseInt(this.props.canvasProps.containerWidth), parseInt(this.props.canvasProps.containerHeight)]);
         const styleController = new StyleController(this.props.style);
         this.controller = {
             eventController,
@@ -52,15 +52,23 @@ export default class SuperGraph {
     layout(name) {
         this.controller.elementController.updateLayout(name);
     }
-    fitView(){
+    fitView() {
         this.controller.elementController.fitView();
     }
-    updateDim(size){
+    updateDim(size) {
         this.controller.positionController.updateViewSize(size);
-        const oldDim=this.controller.canvasController.getDim();
-    console.log(oldDim);
+        const oldDim = this.controller.canvasController.getDim();
         this.controller.canvasController.updateDim(size);
-        this.controller.elementController.updateGrpahAfterDimMidifed(oldDim,size);
+        this.controller.elementController.updateGrpahAfterDimMidifed(oldDim, size);
+    }
+
+    /**
+    * 将已有的所有styles经行替换
+    * @param {*} styles 
+    */
+    replaceStyle(styles) {
+        this.controller.styleController.replaceStyle(styles);
+        this.controller.elementController.reParse();
     }
 
 }

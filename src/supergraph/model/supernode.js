@@ -4,7 +4,7 @@ export default class SuperNode{
         this.data = data;
         this._x = 0;
         this._y = 0;
-        this.status = 2;//1未选中，2选中
+        this.status = 1;//1未选中，2选中
         this.sourceLinks = new Array();
         this.targetLinks = new Array();
         this.styles = new Array();
@@ -85,5 +85,8 @@ export default class SuperNode{
     }
     getStyles() {
         return this.styles;
+    }
+    clearStyle(){
+        this.styles=new Array();
     }
 }
