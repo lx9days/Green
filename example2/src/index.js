@@ -38,11 +38,12 @@ function draw (data) {
                 style: {
                     'width': 45,
                     'height': 45,
-                    'background-width': 62,
-                    'background-height': 62 ,
+                    'background-width': 46,
+                    'background-height': 46 ,
                     'url': (d) => d.data.img,
                     'opacity': 1,
                     'background-color': '#ffd53f',
+                    'border-width':3,
                     'background-opacity': 1,
                     'text-color': '#845624',
                     'text-opacity': 1,
@@ -122,6 +123,8 @@ function draw (data) {
         console.log("fit")
         superGraph.fitView();
     });
-    
+    document.getElementById("updateDim").addEventListener('click',()=>{
+        superGraph.updateDim({width:500,height:500})
+    })
 
 }

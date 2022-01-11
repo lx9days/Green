@@ -56,6 +56,9 @@ export class PositionController {
         this.name = name;
         this.viewSize=viewSize
     }
+    updateViewSize(viewSize){
+        this.viewSize=[viewSize.width,viewSize.height];
+    }
     layout(nodes, links, name = null) {
         if (name) {
             this.name = name;

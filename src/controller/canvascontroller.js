@@ -113,8 +113,7 @@ export default class CanvasController {
             onDragEnd: this.deckDragEndHandler,
             pickingRadius: 6,
             getTooltip: ({ object }) => {
-
-                if (object && object.origionElement && object.origionElement.data.metaType === 'nodeSet' && Object.keys(object.origionElement.data.statistics).length > 0) {
+                if (object && object.origionElement && object.origionElement.data.metaType === 'nodeSet' && object.origionElement.data.statistics&&Object.keys(object.origionElement.data.statistics).length > 0) {
                     let html = '';
                     for (const key in object.origionElement.data.statistics) {
                         html += `<div>${key}:${object.origionElement.data.statistics[key]}</div>`

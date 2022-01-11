@@ -504,47 +504,43 @@ function draw (rawData) {
                 {
                     id: 'b001',
                     name: '是1',
-                    img: '/src/img1/b5.png'
+                    img: '/src/img1/a5.png',
+                    metaType:'nodeSet'
                 },
-                {
-                    id: 'b002',
-                    name: '是2',
-                    img: '/src/img1/b6.png'
-                },
-                {
-                    id: 'b003',
-                    name: '是7',
-                    img: '/src/img1/b4.png'
-                },
-                {
-                    id: 'b004',
-                    name: '是3',
-                    img: '/src/img1/a8.png'
-                },
-                {
-                    id: 'b005',
-                    name: '是4',
-                    img: '/src/img1/a9.png'
-                },
-                {
-                    id: 'b006',
-                    name: '是5',
-                    img: '/src/img1/a10.png'
-                },
-                {
-                    id: 'b007',
-                    name: '是6',
-                    img: '/src/img1/a11.png'
-                }
+                // {
+                //     id: 'b002',
+                //     name: '是2',
+                //     img: '/src/img1/b6.png'
+                // },
+                // {
+                //     id: 'b003',
+                //     name: '是7',
+                //     img: '/src/img1/b4.png'
+                // },
+                // {
+                //     id: 'b004',
+                //     name: '是3',
+                //     img: '/src/img1/a8.png'
+                // },
+                // {
+                //     id: 'b005',
+                //     name: '是4',
+                //     img: '/src/img1/a9.png'
+                // },
+                // {
+                //     id: 'b006',
+                //     name: '是5',
+                //     img: '/src/img1/a10.png'
+                // },
+                // {
+                //     id: 'b007',
+                //     name: '是6',
+                //     img: '/src/img1/a11.png'
+                // }
 
             ],
             links: [
-                {
-                    id: 'lk01',
-                    type: 'cm',
-                    from: 'b004',
-                    to: 'b001',
-                }
+               
             ]
         });
     });

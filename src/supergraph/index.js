@@ -55,5 +55,12 @@ export default class SuperGraph {
     fitView(){
         this.controller.elementController.fitView();
     }
+    updateDim(size){
+        this.controller.positionController.updateViewSize(size);
+        const oldDim=this.controller.canvasController.getDim();
+    console.log(oldDim);
+        this.controller.canvasController.updateDim(size);
+        this.controller.elementController.updateGrpahAfterDimMidifed(oldDim,size);
+    }
 
 }

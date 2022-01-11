@@ -45,10 +45,9 @@ export default class SuperRenderLinkLabel {
         const elementPosition = this.origionElement.getLocation();
 
         this.position[0] = elementPosition.x + this.style.backgroundWidth / 2;
-        this.position[1] = elementPosition.y;
+        this.position[1] = elementPosition.y+10;
         this.style.textAnchor = 'start';
         this.style.textAlignmentBaseline = 'bottom';
-
 
 
     }

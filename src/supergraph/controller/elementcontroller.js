@@ -32,8 +32,7 @@ export default class ElementController {
             renderIcons: new Array(),
             renderLines: new Array(),
             renderTexts: new Array(),
-            renderNodeLabels: new Array(),
-            renderLinkLabels: new Array(),
+            renderLabels: new Array(),
             renderPolygons: new Array(),
             charSet: null,
             labelCharSet:null,
@@ -120,8 +119,7 @@ export default class ElementController {
             renderIcons: new Array(),
             renderLines: new Array(),
             renderTexts: new Array(),
-            renderNodeLabels: new Array(),
-            renderLinkLabels: new Array(),
+            renderLabels: new Array(),
             renderPolygons: new Array(),
         }
         this.nodes.forEach(node => {
@@ -129,8 +127,7 @@ export default class ElementController {
                 iconObjs: new Array(),
                 backgroundObjs: new Array(),
                 textObjs: new Array(),
-                nodeLabelObjs: new Array(),
-                linkLabelObjs: new Array(),
+                labelObjs: new Array(),
             }
             nodeRenders.backgroundObjs.push(new SuperRenderBackground(node));
             nodeRenders.iconObjs.push(new SuperRenderIcon(node));
@@ -138,8 +135,8 @@ export default class ElementController {
             const superLinkLabel=new SuperRenderLinkLabel(node);
             this._generateLabelCharSet(superNodeLabel.text);
             this._generateLabelCharSet(superLinkLabel.text);
-            nodeRenders.nodeLabelObjs.push(superNodeLabel);
-            nodeRenders.linkLabelObjs.push(superLinkLabel);
+            nodeRenders.labelObjs.push(superNodeLabel);
+            nodeRenders.labelObjs.push(superLinkLabel);
             const superRendText = new SuperRenderText(node);
             this._generateCharSet(superRendText.text);
             nodeRenders.textObjs.push(superRendText);
@@ -200,8 +197,7 @@ export default class ElementController {
             renderIcons: new Array(),
             renderLines: new Array(),
             renderTexts: new Array(),
-            renderNodeLabels: new Array(),
-            renderLinkLabels: new Array(),
+            renderLabels: new Array(),
             renderPolygons: new Array(),
             charSet: null,
         }
@@ -216,11 +212,8 @@ export default class ElementController {
             nodeRenders.textObjs.forEach(textObj => {
                 this.renderObject.renderTexts.push(textObj);
             });
-            nodeRenders.nodeLabelObjs.forEach(nodeLabel=>{
-                this.renderObject.renderNodeLabels.push(nodeLabel);
-            });
-            nodeRenders.linkLabelObjs.forEach(linkLabel=>{
-                this.renderObject.renderLinkLabels.push(linkLabel);
+            nodeRenders.labelObjs.forEach(nodeLabel=>{
+                this.renderObject.renderLabels.push(nodeLabel);
             });
         }
 
@@ -257,7 +250,7 @@ export default class ElementController {
                     throw new Error("cannot find node id:" + id)
                 }
                 const nodeRenders = this.nodeRenderMap.get(id);
-                const { iconObjs, backgroundObjs, textObjs ,nodeLabelObjs,linkLabelObjs} = nodeRenders;
+                const { iconObjs, backgroundObjs, textObjs ,labelObjs} = nodeRenders;
                 iconObjs.forEach((iconObj) => {
                     iconObj.reLocation();
                 });
@@ -267,12 +260,9 @@ export default class ElementController {
                 textObjs.forEach((textObj) => {
                     textObj.reLocation();
                 });
-                nodeLabelObjs.forEach(nodeLabelObj=>{
+                labelObjs.forEach(nodeLabelObj=>{
                     nodeLabelObj.reLocation();
                 });
-                linkLabelObjs.forEach(linkLabelObj=>{
-                    linkLabelObj.reLocation();
-                })
             });
            
             needUpdateLinks.forEach(link => {
@@ -296,8 +286,7 @@ export default class ElementController {
                 renderLines,
                 renderTexts,
                 renderPolygons,
-                renderNodeLabels,
-                renderLinkLabels
+                renderLabels,
             } = this.renderObject;
             renderBackgrounds.forEach((RenderBackground) => {
                 RenderBackground.reLocation();
@@ -314,12 +303,9 @@ export default class ElementController {
             renderPolygons.forEach((rePolygon) => {
                 rePolygon.reLocation();
             });
-            renderNodeLabels.forEach(nodeLabel=>{
+            renderLabels.forEach(nodeLabel=>{
                 nodeLabel.reLocation();
             });
-            renderLinkLabels.forEach(linkLabel=>{
-                linkLabel.reLocation();
-            })
         }
         this.controller.canvasController.updateRenderObject({ position: 1 });
     }
@@ -433,6 +419,9 @@ export default class ElementController {
                     renderObjects.backgroundObjs.forEach((border) => {
                         border.updateStatus();
                     });
+                    renderObjects.labelObjs.forEach(labelObj=>{
+                        labelObj.updateStatus();
+                    })
                 }
             });
         } else {
@@ -541,18 +530,12 @@ export default class ElementController {
                         this.renderObject.renderTexts.splice(index, 1);
                     }
                 });
-                renderNode.nodeLabelObjs.forEach(nodeLabel => {
-                    const index = this.renderObject.renderNodeLabels.indexOf(nodeLabel);
+                renderNode.labelObjs.forEach(nodeLabel => {
+                    const index = this.renderObject.renderLabels.indexOf(nodeLabel);
                     if (index >= 0) {
-                        this.renderObject.renderNodeLabels.splice(index, 1);
+                        this.renderObject.renderLabels.splice(index, 1);
                     }
-                })
-                renderNode.linkLabelObjs.forEach(linkLabel => {
-                    const index = this.renderObject.renderLinkLabels.indexOf(linkLabel);
-                    if (index >= 0) {
-                        this.renderObject.renderLinkLabels.splice(index, 1);
-                    }
-                })
+                });
                 this.nodeRenderMap.delete(id);
             });
         }
@@ -652,6 +635,17 @@ export default class ElementController {
 
     }
 
+    updateGrpahAfterDimMidifed(oldDim, newDim) {
+        const xFactor = newDim.width / oldDim.width;
+        const yFactor = newDim.height / oldDim.height;
+        const newNodeArray = this.getNodes();
+
+        newNodeArray.forEach(node => {
+            node.x = node.x * xFactor;
+            node.y = node.y * yFactor;
+        });
+        this.updateEntityPosition()
+    }
 
 }
 

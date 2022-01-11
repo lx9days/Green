@@ -177,7 +177,7 @@ export default class ElementController {
                 }
                 if(node.data.metaType&&node.data.metaType==='nodeSet'){
                     const groupRenderText=new RenderGroupText(node);
-                    this._generateGroupCharSet(groupRenderText);
+                    this._generateGroupCharSet(groupRenderText.text);
                     nodeRenders.groupTextObjs.push(groupRenderText);
                 }else{
                     const renderText = new RenderText(node);
