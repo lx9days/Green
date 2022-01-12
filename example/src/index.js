@@ -722,6 +722,9 @@ function draw (rawData) {
         // const selectedNodes = netGraph.getSelectedNodes();
         // netGraph.updateNodeCustomStyle(selectedNodes,{'font-size':40,'background-color':"#000"});
     });
+    document.getElementById("autoFocus").addEventListener("click",()=>{
+        netGraph.focusOnNodes(["01cc378b0ebe3ad6b82c4a13e0767d47"])
+    })
 }
 
 

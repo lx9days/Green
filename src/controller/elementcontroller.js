@@ -8,7 +8,7 @@ import RenderText from '../model/rendertext';
 import RenderMark from '../model/rendermark';
 import RenderLabel from '../model/renderlabel';
 import RenderGroupText from '../model/rendergrouptext';
-import { autoFitView, dashLine } from '../helper/util';
+import { autoFitView, dashLine,autoFocusNode } from '../helper/util';
 import Bubble from '../model/bubble';
 import BubbleRegion from '../model/bubbleregion';
 import { v4 as uuidv4 } from 'uuid';
@@ -1224,7 +1224,11 @@ export default class ElementController {
         const viewSize = this.controller.canvasController.getDim();
         const viewFitParams = autoFitView(this.getNodes(nodeIds), [viewSize.width, viewSize.height]);
         this.controller.canvasController.fitView(viewFitParams);
-
+    }
+    focusOnNodes(nodeIds){
+        const viewSize = this.controller.canvasController.getDim();
+        const viewFitParams = autoFocusNode(this.getNodes(nodeIds), [viewSize.width, viewSize.height]);
+        this.controller.canvasController.fitView(viewFitParams);
     }
 
 

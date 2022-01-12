@@ -273,7 +273,61 @@ function autoFitView(nodes, viewSize) {
         target,
         zoom: zoom
     }
+}
+function autoFocusNode(nodes,viewSize){
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    let minX = Infinity;
+    let minY = Infinity;
+    let sumX=0;
+    let sumY=0;
+    for (let i = 0; i < nodes.length; i++) {
+        sumX+=nodes[i].x;
+        sumY+=nodes[i].y;
+        if (nodes[i].x > maxX) {
+            maxX = nodes[i].x;
+        }
+        if (nodes[i].x < minX) {
+            minX = nodes[i].x;
+        }
+        if (nodes[i].y > maxY) {
+            maxY = nodes[i].y;
+        }
+        if (nodes[i].y < minY) {
+            minY = nodes[i].y;
+        }
+    }
+    let originWidth = (maxX - minX)+20;
+    let originHeight = (maxY - minY)+20;
+    let curZoom = 0;
+    let target = [sumX/nodes.length, sumY/nodes.length];
+    let zoom = null
+    if (originWidth < viewSize[0] && originHeight < viewSize[1]) {
+        zoom=0;
 
+    } else if (originWidth < viewSize[0]) {
+        zoom = -Math.log2(originHeight / viewSize[1] );
+
+    } else if (originHeight < viewSize[1]) {
+        zoom = -Math.log2(originWidth / viewSize[0]);
+
+    } else {
+        if (originWidth / viewSize[0] > originHeight / viewSize[1]) {
+            zoom = -Math.log2(originWidth / viewSize[0]);
+        } else {
+            zoom = -Math.log2(originHeight / viewSize[1]);
+        }
+    }
+    if(isNaN(target[0])){
+        target[0]=viewSize[0]/2;
+    }
+    if(isNaN(target[1])){
+        target[1]=viewSize[1]/2;
+    }
+    return {
+        target,
+        zoom: zoom
+    }
 }
 
 function svgPathToPolygon(path){
@@ -350,4 +404,4 @@ function dashLine(start,end,dashStep) {
     }
     return result;
 }
-export { generatePolygon, getInteractionData, generateLinkLocation, isFunction, computePolygon, BFSTree, autoFitView ,svgPathToPolygon,isRGBA,rgbaStr2Array,dashLine}
+export { generatePolygon, getInteractionData, generateLinkLocation, isFunction, computePolygon, BFSTree, autoFitView ,svgPathToPolygon,isRGBA,rgbaStr2Array,dashLine,autoFocusNode}

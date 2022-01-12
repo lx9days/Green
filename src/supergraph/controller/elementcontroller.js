@@ -48,7 +48,7 @@ export default class ElementController {
     reParse(){
         this.controller.styleController.mountAllStyleToElement(this.nodes, this.links);
         this.controller.positionController.layout(this.nodes, this.links);
-        this._parseElements(newNodeArray, newLinkArray,flag);
+        this._parseElements(this.nodes, newLinkArray,flag);
     }
     _parseParams(data, flag) {
         const { newNodeArray, newLinkArray } = this._generateInternalEntity(data, flag);
@@ -610,13 +610,15 @@ export default class ElementController {
         this.updateEntityPosition();
     }
     getNodes(ids){
-        const nodeArray=[];
+       
         if(ids&&ids.length>0){
+            const nodeArray=[];
             ids.forEach(id=>{
                 if(this.idMapNode.has(id)){
                     nodeArray.push(this.idMapNode.get(id));
                 }
-            })
+            });
+            return nodeArray;
         }else{
             return this.nodes;
         }

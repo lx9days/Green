@@ -452,6 +452,15 @@ export default class NetGraph {
             this.controller.elementController.updateLinkCustomStyle(nodes,style);
         }
     }
+    /**
+     * 自动将视图聚焦了一组Nodes之中
+     * @param {Array} ids 要聚焦的Node的数组
+     */
+    focusOnNodes(ids){
+        if(ids&&ids.length>0){
+            this.controller.elementController.focusOnNodes(ids);
+        }
+    }
 
 }
 
