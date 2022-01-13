@@ -44,8 +44,8 @@ export default class SuperRenderNodeLabel {
         //设计优化
         const elementPosition = this.origionElement.getLocation();
 
-        this.position[0] = elementPosition.x + this.style.backgroundWidth / 2
-        this.position[1] = elementPosition.y - (this.style.backgroundHeight - this.style.height) / 2;
+        this.position[0] = elementPosition.x + this.style.backgroundWidth / 2+4
+        this.position[1] = elementPosition.y - (this.style.backgroundHeight - this.style.height) / 2+4;
         this.style.textAnchor = 'start';
         this.style.textAlignmentBaseline = 'bottom';
 
