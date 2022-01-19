@@ -375,12 +375,13 @@ export default class PositionController {
                 const initx = rootNodes[i].x;
                 const inity = rootNodes[i].y;
                 let allNodeIds = [];
-                const root = d3.hierarchy(data.nodes[i])
+                const root = d3.hierarchy(data.nodes[i]);
                 root.dx = 100;
                 root.dy = 300;
                 d3.tree().nodeSize([root.dx, root.dy])(root);
-
+                //console.log(root);
                 let ct = root;
+
                 let tt = {
                     id: ct.data.id,
                     x: root.x,

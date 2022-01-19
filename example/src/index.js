@@ -38,6 +38,7 @@ const debug = false;
 // });
 
 axios.get('/src/auto_500.json').then((res) => {
+
     const nodes = res.data.nodes;
     const links = res.data.links;
 
@@ -51,6 +52,18 @@ axios.get('/src/auto_500.json').then((res) => {
         nodes: nodes,
         links,
     };
+    // let temp = new Array(200000).fill(1);
+    // const nodes = temp.map((v, i) => {
+    //     return {
+    //         id: 'a' + i,
+    //         name: 'h',
+    //         img: '/src/img1/a0.png',
+    //     };
+    // });
+    // const data = {
+    //     nodes,
+    //     links: [],
+    // }
     draw(data);
 });
 function draw (rawData) {
@@ -174,7 +187,7 @@ function draw (rawData) {
             zoom: 0,
             container: 'container',
             maxZoom: 4,
-            minZoom: -4,
+            minZoom: -2,
         },
         constant: {
             nodeHighlightColor: '#d9d9d9',
@@ -212,20 +225,29 @@ function draw (rawData) {
                 style: {
                     'width': 45,
                     'height': 45,
-                    'background-width': 62,
-                    'background-height': 62,
+                    'background-width': (d) => {
+                        if (d.data.metaType === 'nodeSet') {
+                            return 98;
+                        } else {
+                            return 58;
+                        }
+                    },
+                    'background-height': 58,
                     'url': (d) => d.data.img,
                     'opacity': 1,
                     'background-color': '#ffd53f',
                     'background-opacity': 1,
-                    'border-width': 0,
-                    'border-color': '#fff',
-                    'border-opacity': 1,
                     'text-color': '#845624',
                     'text-opacity': 1,
-                    'font-size': 16,
+                    'font-size': 12,
                     'text': (d) => d.data.name,
-                    'shape': 'rect',
+                    'shape': (d) => {
+                        if (d.data.metaType === 'nodeSet') {
+                            return 'horizontal_rect';
+                        } else {
+                            return 'rect';
+                        }
+                    },
                     'highlight-color': "#Fff0BC",
                     'highlight-opacity': 0.8,
                     "label-style": {
@@ -244,9 +266,9 @@ function draw (rawData) {
                     'line-opacity': 1,
                     'text-opacity': 1,
                     'line-style': (d) => {
-                       
-                            return 'solid';
-                    
+
+                        return 'solid';
+
                     },
                     'text-color': "#456456",
                     'font-size': 10,
@@ -482,47 +504,43 @@ function draw (rawData) {
                 {
                     id: 'b001',
                     name: '是1',
-                    img: '/src/img1/b5.png'
+                    img: '/src/img1/a5.png',
+                    metaType:'nodeSet'
                 },
-                {
-                    id: 'b002',
-                    name: '是2',
-                    img: '/src/img1/b6.png'
-                },
-                {
-                    id: 'b003',
-                    name: '是7',
-                    img: '/src/img1/b4.png'
-                },
-                {
-                    id: 'b004',
-                    name: '是3',
-                    img: '/src/img1/a8.png'
-                },
-                {
-                    id: 'b005',
-                    name: '是4',
-                    img: '/src/img1/a9.png'
-                },
-                {
-                    id: 'b006',
-                    name: '是5',
-                    img: '/src/img1/a10.png'
-                },
-                {
-                    id: 'b007',
-                    name: '是6',
-                    img: '/src/img1/a11.png'
-                }
+                // {
+                //     id: 'b002',
+                //     name: '是2',
+                //     img: '/src/img1/b6.png'
+                // },
+                // {
+                //     id: 'b003',
+                //     name: '是7',
+                //     img: '/src/img1/b4.png'
+                // },
+                // {
+                //     id: 'b004',
+                //     name: '是3',
+                //     img: '/src/img1/a8.png'
+                // },
+                // {
+                //     id: 'b005',
+                //     name: '是4',
+                //     img: '/src/img1/a9.png'
+                // },
+                // {
+                //     id: 'b006',
+                //     name: '是5',
+                //     img: '/src/img1/a10.png'
+                // },
+                // {
+                //     id: 'b007',
+                //     name: '是6',
+                //     img: '/src/img1/a11.png'
+                // }
 
             ],
             links: [
-                {
-                    id: 'lk01',
-                    type: 'cm',
-                    from: 'b004',
-                    to: 'b001',
-                }
+               
             ]
         });
     });
@@ -547,7 +565,9 @@ function draw (rawData) {
     });
     document.getElementById("scroll").addEventListener("click", () => {
         const nodes = netGraph.getNodes();
+        
         if (nodes.length > 0) {
+            console.log(nodes[0].id);
             netGraph.scrollIntoView(nodes[0].id);
         }
         //netGraph.scrollIntoView("3ded00b898c73c11a72558530859568d");
@@ -566,7 +586,7 @@ function draw (rawData) {
     });
     document.getElementById("addBubble").addEventListener("click", () => {
         const nodeIds = netGraph.getSelectedNodes().map(v => v.id);
-        netGraph.addBubbleSet([nodeIds, ["b001", "b002", "b003", "b004", "b005", "b006", "b007"]], ["#d7473a", "#4ea79b"], "one");
+        netGraph.addBubbleSet([nodeIds], ["#d7473a", "#4ea79b"], "one");
     });
     document.getElementById("layoutBubble").addEventListener("click", () => {
         netGraph.layoutBubbleSet(["one"]);
@@ -585,8 +605,8 @@ function draw (rawData) {
                     {
                         "id": "flow_one",
                         "name": "abc",
-                        "speed": 3,
-                        "colour": "rgba(255,255,255,1)",
+                        "speed": 2,
+                        "colour": "rgba(246,42,26,1)",
                         "balls": {
                             "ball_001": {
                                 "size": 0.301,
@@ -609,16 +629,16 @@ function draw (rawData) {
                     {
                         "id": "flow_two",
                         "name": "abcd",
-                        "speed": 5,
-                        "colour": "rgba(255,0,255,1)",
+                        "speed": 1.5,
+                        "colour": "rgba(117,218,233,1)",
                         "balls": {
                             "ball_003": {
-                                "size": 0.301,
+                                "size": 0.201,
                                 "link_id": links[2].id,
                                 "direct": 1
                             },
                             "ball_004": {
-                                "size": 0.3,
+                                "size": 0.37,
                                 "link_id": links[3].id,
                                 "direct": -1
                             }
@@ -681,7 +701,7 @@ function draw (rawData) {
                 }]
             }]
         };
-        //netGraph.addFusionAnimation(data);
+        netGraph.addFusionAnimation(data);
     });
 
     document.getElementById("updateUrlMap").addEventListener("click", () => {
@@ -702,6 +722,9 @@ function draw (rawData) {
         // const selectedNodes = netGraph.getSelectedNodes();
         // netGraph.updateNodeCustomStyle(selectedNodes,{'font-size':40,'background-color':"#000"});
     });
+    document.getElementById("autoFocus").addEventListener("click",()=>{
+        netGraph.focusOnNodes(["01cc378b0ebe3ad6b82c4a13e0767d47"])
+    })
 }
 
 

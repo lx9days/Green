@@ -8,7 +8,7 @@ import BrushCanvas from '../helper/brushCanvas';
 //     colorRed:[255,0,0]
 //     colorBlue
 // }
-const ICONDIM=60;
+const ICONDIM = 60;
 export default class CanvasController {
     constructor(props, eventController) {
         this.props = props;
@@ -24,8 +24,8 @@ export default class CanvasController {
             position: 0,
             style: 0,
             bubble: 0,
-            icon:0,
-            iconTimer:null,
+            icon: 0,
+            iconTimer: null,
         }
         this.animationData = [];
 
@@ -96,8 +96,8 @@ export default class CanvasController {
                 y: 0,
                 width: '100%',
                 height: '100%',
-                maxZoom: 50,
-                minZoom: -50,
+                maxZoom: this.props.maxZoom,
+                minZoom: this.props.minZoom,
                 controller: true,
             }),
             width: this.props.containerWidth,
@@ -110,6 +110,22 @@ export default class CanvasController {
             onDragStart: this.deckDragStartHandler,
             onDragEnd: this.deckDragEndHandler,
             pickingRadius: 6,
+            getTooltip: ({ object }) => {
+                if (object && object.origionElement && object.origionElement.data.metaType === 'nodeSet' && object.origionElement.data.statistics&&Object.keys(object.origionElement.data.statistics).length > 0) {
+                    let html = '';
+                    for (const key in object.origionElement.data.statistics) {
+                        html += `<div>${key}:${object.origionElement.data.statistics[key]}</div>`
+                    }
+
+                    return {
+                        html: `<div>${html}</div>`,
+                        style: {
+                            backgroundColor: '#d9d9d9',
+
+                        }
+                    }
+                }
+            }
             //getCursor:({isDragging,isHovering}) => isHovering ? 'grabbing' : 'grab'
         });
         this.props.viewState.height = this.props.containerHeight;
@@ -166,11 +182,11 @@ export default class CanvasController {
         const styleFlag = this.updateFlag.style;
         const positionFlag = this.updateFlag.position;
         const bubbleFlag = this.updateFlag.bubble;
-        const iconFlag=this.updateFlag.icon;
+        const iconFlag = this.updateFlag.icon;
         const invalidIcon = this.invalidIncons
         const defaultUrlMap = this.props.defaultUrlMap;
         const defaultUrlFunc = this.props.defaultUrlFunc;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderBubble,renderDashLine } = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderBubble, renderDashLine ,renderGroupTexts,groupTextSet} = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
         let bubbleLayer = null
@@ -235,7 +251,7 @@ export default class CanvasController {
             updateTriggers: {
                 getSourcePosition: positionFlag,
                 getTargetPosition: positionFlag,
-                getColor:styleFlag,
+                getColor: styleFlag,
             },
             onClick: this.lineClickHandler,
         });
@@ -244,15 +260,16 @@ export default class CanvasController {
             data: renderIcons,
             pickable: true,
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            sizeScale: 2 ** zoom,
             getPosition: d => d.position,
             positionFormat: 'XY',
-            getIcon:d => {
-                let url=null;
-                if(invalidIcon.has(d.url)){
-                    let type=defaultUrlFunc(d);
-                    url=defaultUrlMap[type];
-                }else{
-                    url=d.url;
+            getIcon: d => {
+                let url = null;
+                if (invalidIcon.has(d.url)) {
+                    let type = defaultUrlFunc(d);
+                    url = defaultUrlMap[type];
+                } else {
+                    url = d.url;
                 }
                 return {
                     url: url,
@@ -388,6 +405,7 @@ export default class CanvasController {
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             data: renderText,
             fontFamily: 'Microsoft YaHei',
+            sizeScale: 2 ** zoom,
             getPosition: d => {
                 return d.position;
             },
@@ -400,7 +418,34 @@ export default class CanvasController {
             getColor: (d) => d.style.textColor,
             updateTriggers: {
                 getPosition: positionFlag,
-                getColor:styleFlag
+                getSize: styleFlag,
+                getColor: styleFlag
+            }
+        });
+        const groupTextLayer = new TextLayer({
+            id: 'group-text-layer',
+            coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            data: renderGroupTexts,
+            maxWidth: 360,
+            wordBreak: 'break-all',
+            fontFamily: 'Microsoft YaHei',
+            sizeScale: 2 ** zoom,
+            getPosition: d => {
+                return d.position;
+            },
+            getText: d => {
+                return d.text;
+            },
+            getSize: d => d.style.textSize,
+            getAngle: 0,
+            getTextAnchor: d => d.style.textAnchor,
+            getAlignmentBaseline: d => d.style.textAlignmentBaseline,
+            characterSet: groupTextSet,
+            getColor: (d) => d.style.textColor,
+            updateTriggers: {
+                getPosition: positionFlag,
+                getSize: styleFlag,
+                getColor: styleFlag
             }
         });
 
@@ -419,8 +464,8 @@ export default class CanvasController {
             getFillColor: (d) => d.style.polygonFillColor,
             updateTriggers: {
                 getPolygon: positionFlag,
-                getFillColor:styleFlag,
-                getLineColor:styleFlag,
+                getFillColor: styleFlag,
+                getLineColor: styleFlag,
             }
         });
         const markRGB = hexRgb(this.props.nodeHighlightColor);
@@ -457,6 +502,7 @@ export default class CanvasController {
             data: renderLabels,
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             getPosition: d => d.position,
+            sizeScale: 2 ** zoom,
             getIcon: d => ({
                 url: d.url,
                 width: d.style.iconHeight,
@@ -470,19 +516,19 @@ export default class CanvasController {
             }
         });
         if (renderBubble.length > 0 && this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer,groupTextLayer, textLayer, animationLayer, markLayer] });
         } else if (renderBubble.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer,textLayer, markLayer] });
         } else if (this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer,groupTextLayer, textLayer, animationLayer, markLayer] });
         } else {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer,groupTextLayer, textLayer, markLayer] });
         }
     }
 
     renderLockNode() {
         const zoom = this.props.zoom;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels,renderDashLine } = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderDashLine } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
         const invalidIcon = this.invalidIncons;
@@ -491,7 +537,7 @@ export default class CanvasController {
         const styleFlag = this.updateFlag.style;
         const positionFlag = this.updateFlag.position;
         const bubbleFlag = this.updateFlag.bubble;
-        const iconFlag=this.updateFlag.icon;
+        const iconFlag = this.updateFlag.icon;
 
         const lineLayer = new LineLayer({
             id: 'line-layer',
@@ -545,7 +591,8 @@ export default class CanvasController {
                 getPosition: d => {
                     return d.position;
                 },
-                
+                getSize: d => d.style.iconSize * (2 ** zoom),
+
             },
         });
         const rectBackgroundLayer = new PolygonLayer({
@@ -601,8 +648,17 @@ export default class CanvasController {
             getPosition: d => {
                 return d.position;
             },
-            getText: d => d.text,
-            getSize: d => d.style.textSize,
+            getText: d => {
+                const len = d.text.length;
+                if (len > 10) {
+                    let temp = d.text.slice(0, 7);
+                    temp += temp + '..'
+                    return temp;
+                } else {
+                    return d.text;
+                }
+            },
+            getSize: d => d.style.textSize * (2 ** zoom),
             getAngle: 0,
             getTextAnchor: d => d.style.textAnchor,
             getAlignmentBaseline: d => d.style.textAlignmentBaseline,
@@ -610,7 +666,8 @@ export default class CanvasController {
             getColor: (d) => d.style.textColor,
             updateTriggers: {
                 getPosition: positionFlag,
-                getColor:styleFlag
+                getSize: zoom + styleFlag,
+                getColor: styleFlag
             }
         });
 
@@ -691,20 +748,20 @@ export default class CanvasController {
             }
         })
 
-        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
     }
     renderGraph() {
 
 
         const zoom = this.props.zoom;
         const invalidIcon = this.invalidIncons;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels ,renderDashLine,renderBubble} = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderDashLine, renderBubble, renderGroupTexts, groupTextSet } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
 
         const styleFlag = this.updateFlag.style;
         const positionFlag = this.updateFlag.position;
-        const iconFlag=this.updateFlag.icon;
+        const iconFlag = this.updateFlag.icon;
         const bubbleFlag = this.updateFlag.bubble;
 
         const defaultUrlMap = this.props.defaultUrlMap;
@@ -754,7 +811,7 @@ export default class CanvasController {
             updateTriggers: {
                 getSourcePosition: positionFlag,
                 getTargetPosition: positionFlag,
-                getColor:styleFlag,
+                getColor: styleFlag,
             },
             onClick: this.lineClickHandler,
         });
@@ -771,7 +828,7 @@ export default class CanvasController {
             updateTriggers: {
                 getSourcePosition: positionFlag,
                 getTargetPosition: positionFlag,
-                getColor:styleFlag,
+                getColor: styleFlag,
             },
             onClick: this.lineClickHandler,
         });
@@ -780,14 +837,16 @@ export default class CanvasController {
             data: renderIcons.filter(() => true),
             pickable: true,
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            sizeScale: 2 ** zoom,
             getPosition: d => d.position,
+
             getIcon: d => {
-                let url=null;
-                if(invalidIcon.has(d.url)){
-                    let type=defaultUrlFunc(d);
-                    url=defaultUrlMap[type];
-                }else{
-                    url=d.url;
+                let url = null;
+                if (invalidIcon.has(d.url)) {
+                    let type = defaultUrlFunc(d);
+                    url = defaultUrlMap[type];
+                } else {
+                    url = d.url;
                 }
                 return {
                     url: url,
@@ -797,13 +856,11 @@ export default class CanvasController {
                     anchorY: 0,
                 }
             },
-            getSize: d => {
-                return d.style.iconSize ;
-            },//this 指向问题
+            getSize: d => d.style.iconSize,//this 指向问题
             getColor: d => d.style.iconColor,
 
             updateTriggers: {
-                getPosition:positionFlag,
+                getPosition: positionFlag,
                 getIcon: iconFlag,
             },
             onIconError: this.onIconErrorHander,
@@ -932,7 +989,7 @@ export default class CanvasController {
             id: 'text-layer',
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
             data: renderText.filter(() => true),
-            pickable: true,
+            sizeScale: 2 ** zoom,
             fontFamily: 'Microsoft YaHei',
             getPosition: d => {
                 return d.position;
@@ -945,8 +1002,36 @@ export default class CanvasController {
             characterSet: charSet,
             getColor: (d) => d.style.textColor,
             updateTriggers: {
-                getPosition:positionFlag,
-                getColor:styleFlag
+                getPosition: positionFlag,
+                getSize: styleFlag,
+                getColor: styleFlag
+            }
+        });
+        const groupTextLayer = new TextLayer({
+            id: 'group-text-layer',
+            coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            data: renderGroupTexts.filter(() => true),
+            pickable: true,
+            maxWidth: 360,
+            sizeScale: 2 ** zoom,
+            wordBreak: 'break-all',
+            fontFamily: 'Microsoft YaHei',
+            getPosition: d => {
+                return d.position;
+            },
+            getText: d => {
+                return d.text;
+            },
+            getSize: d => d.style.textSize,
+            getAngle: 0,
+            getTextAnchor: d => d.style.textAnchor,
+            getAlignmentBaseline: d => d.style.textAlignmentBaseline,
+            characterSet: groupTextSet,
+            getColor: (d) => d.style.textColor,
+            updateTriggers: {
+                getPosition: positionFlag,
+                getSize: styleFlag,
+                getColor: styleFlag
             }
         });
 
@@ -963,8 +1048,8 @@ export default class CanvasController {
                 return d.polygon;
             },
             getFillColor: (d) => d.style.polygonFillColor,
-            updateTriggers:{
-                getFillColor:styleFlag,
+            updateTriggers: {
+                getFillColor: styleFlag,
             }
         });
         const markRGB = hexRgb(this.props.nodeHighlightColor);
@@ -1005,6 +1090,7 @@ export default class CanvasController {
             id: 'label-layer',
             data: renderLabels.filter(() => true),
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            sizeScale: 2 ** zoom,
             getPosition: d => d.position,
             getIcon: d => ({
                 url: d.url,
@@ -1023,13 +1109,13 @@ export default class CanvasController {
         });
 
         if (renderBubble.length > 0 && this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
         } else if (renderBubble.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
         } else if (this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
         } else {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
         }
         // if (this.animationData.length > 0) {
         //     this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
@@ -1066,17 +1152,17 @@ export default class CanvasController {
         this.eventController.fire('nodeDragStart', [info, e]);
         return true;
     }
-    _iconErrorHander({ url}) {
+    _iconErrorHander({ url }) {
         this.invalidIncons.set(url, true);
-        if(this.updateFlag.iconTimer){
+        if (this.updateFlag.iconTimer) {
             clearTimeout(this.updateFlag.iconTimer);
-            this.updateFlag.iconTimer=null;
+            this.updateFlag.iconTimer = null;
         }
-        this.updateFlag.iconTimer=setTimeout(()=>{
-            this.updateFlag.icon=Math.random();
+        this.updateFlag.iconTimer = setTimeout(() => {
+            this.updateFlag.icon = Math.random();
             this.updateRenderGraph()
-        },1000);
-        
+        }, 1000);
+
     }
 
 
@@ -1159,6 +1245,7 @@ export default class CanvasController {
     updateRenderObject({ renderObject, position, style, bubble }) {
         if (renderObject) {
             this.renderObject = renderObject;
+            this.renderObject.charSet.push('.')
             this.renderGraph();
         } else {
             if (position) {
@@ -1196,10 +1283,10 @@ export default class CanvasController {
             eventController: this.eventController
         }
 
-        if(this.brushCanvas){
+        if (this.brushCanvas) {
             this.brushCanvas.showBrushArea(brushProps);
-        }else{
-            this.brushCanvas=new BrushCanvas(brushProps);
+        } else {
+            this.brushCanvas = new BrushCanvas(brushProps);
             this.brushCanvas.showBrushArea(brushProps);
         }
         this.eventController.subscribe('_brushend', this._brushInfoCallBack)
@@ -1256,8 +1343,19 @@ export default class CanvasController {
     }
 
     fitView(params) {
-        if (params.zoom < -5) {
-            params.zoom = -4;
+        if(Number.isNaN(params.target[0])||params.target===undefined){
+            params.target[0]=this.props.viewState.target[0];
+        }
+        if(Number.isNaN(params.target[1])||params.target===undefined){
+            params.target[1]=this.props.viewState.target[1];
+        }
+        if(Number.isNaN(params.zoom)||params.zoom===undefined){
+            params.zoom=this.props.zoom;
+        }
+
+
+        if (params.zoom < this.props.minZoom) {
+            params.zoom = this.props.minZoom;
         }
         let isNeedUpdate = false;
         if (params.zoom !== this.props.zoom) {

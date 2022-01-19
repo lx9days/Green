@@ -52,6 +52,9 @@
     - [getFlowAnimationIdByStatus](#getflowanimationidbystatus)
     - [addFusionAnimation](#addfusionanimation)
     - [replaceDefaultUrlMap](#replacedefaulturlmap)
+    - [updateNodeCustomStyle](#updatenodecustomstyle)
+    - [updateLinkCustomStyle](#updatelinkcustomstyle)
+    - [focusOnNodes](#focusonnodes)
 
 
 ## API detail
@@ -371,3 +374,15 @@ netGraph.replaceStyle([
     "default": "/src/img1/a107.png",
 }
 ```
+### updateNodeCustomStyle
+`updateNodeCustomStyle(nodes,style)`为指定的Node 添加用户自定义的样式
+```javascript
+netGraph.updateNodeCustomStyle(selectedNodes,{'font-size':40,'background-color':"#000"});
+```
+### updateLinkCustomStyle
+`updateLinkCustomStyle(links,style)`为指定的Link 添加用户自定义的样式
+```javascript
+netGraph.updateNodeCustomStyle(selectedNodes,{'font-size':40,'background-color':"#000"});
+```
+### focusOnNodes
+` focusOnNodes(ids)`自动将视图聚焦了一组Nodes之中

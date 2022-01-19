@@ -3,4 +3,10 @@ example/src/img2
 example/src/*.json
 example/src/*.zip
 node_modules
-example/dist
+example2/dist
+example2/src/img1
+example2/src/img2
+exampl2e/src/*.json
+example2/src/*.zip
+node_modules
+example2/dist

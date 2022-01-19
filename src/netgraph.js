@@ -5,7 +5,7 @@ import CanvasController from './controller/canvascontroller';
 import ElementController from './controller/elementcontroller';
 import EventController from './controller/eventcontroller';
 import AnimationController from "./controller/animationcontroller"
-
+import SuperGraph from './supergraph';
 //NetGraph为暴露出组件所有的功能，用户不应使用除此类中包含的其他函数
 export default class NetGraph {
     constructor(props) {
@@ -34,7 +34,7 @@ export default class NetGraph {
         this.controller.animationController=new AnimationController(this.controller);
         const canvasController = new CanvasController({...props.canvasProps,...props.constant},eventController);
         this.controller.canvasController = canvasController;
-        const elementController = new ElementController(this.controller);
+        const elementController = new ElementController(this.controller,props.data);
         this.controller.elementController = elementController;
 
     }
@@ -452,9 +452,18 @@ export default class NetGraph {
             this.controller.elementController.updateLinkCustomStyle(nodes,style);
         }
     }
+    /**
+     * 自动将视图聚焦了一组Nodes之中
+     * @param {Array} ids 要聚焦的Node的数组
+     */
+    focusOnNodes(ids){
+        if(ids&&ids.length>0){
+            this.controller.elementController.focusOnNodes(ids);
+        }
+    }
 
-
-
-    
-    
 }
+
+
+export {SuperGraph}
+

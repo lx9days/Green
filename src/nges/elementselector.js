@@ -526,7 +526,6 @@ function test() {
         }
     });
     const selection = new ElementSelector(nodes, links, nodeMap, linkMap);
-    console.log(selection.select('link.aa[type2=a2]'));
 }
 // function test() {
 //     const nodeMap = new Map();

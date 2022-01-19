@@ -1,7 +1,7 @@
 //import { hexRgb } from 'hex-rgb';
 import { isFunction } from '../helper/util';
 //渲染icon,对应deck中的IconLayer
-export default class RenderIcon {
+export default class SuperRenderIcon {
     constructor(element) {
         this.id = element.getId();
         this.position = [0, 0];
@@ -16,7 +16,8 @@ export default class RenderIcon {
             iconColor: [255, 0, 0, 255],
             borderWidth: 0,
             backgroundWidth: 10,
-            shape:'rect'
+            backgroundHeight:10,
+            shape: 'rect'
         }
 
         this._generateStyle();
@@ -26,15 +27,8 @@ export default class RenderIcon {
     get data() {
         return this.origionElement.data;
     }
-
-
-
     rebuild() {
         this._generateStyle();
-        this._generatePosition();
-    }
-    rebuildForCustomStyle() {
-        this._generateStyle(true);
         this._generatePosition();
     }
     /**
@@ -51,32 +45,18 @@ export default class RenderIcon {
     }
     _generatePosition() {
         const elementPosition = this.origionElement.getLocation();
-        if (this.style.shape === 'horizontal_rect') {
-            this.position[0] = elementPosition.x - (this.style.backgroundWidth - this.style.iconWidth) / 2 + 4 + this.style.borderWidth / 2;
-            this.position[1] = elementPosition.y + this.style.borderWidth / 2;
-        } else {
-            this.position[0] = elementPosition.x + this.style.borderWidth / 2;
-            this.position[1] = elementPosition.y + this.style.borderWidth / 2;
-        }
+        this.position[0] = elementPosition.x;
+        this.position[1] = elementPosition.y;
 
     }
 
     /**
      * 将css样式解析为当前组件可用样式
      */
-    _generateStyle(custom) {
-        let styles;
-        if (custom) {
-            if (!this.origionElement.useCustomStyle) {
-                return
-            }
-            styles = [this.origionElement.customStyle];
-        } else {
-            styles = this.origionElement.getStyles();
-            if (this.origionElement.useCustomStyle) {
-                styles.push(this.origionElement.customStyle);
-            }
-        }
+    _generateStyle() {
+
+        const styles = this.origionElement.getStyles();
+
 
         styles.forEach((style) => {
             for (const item in style) {
@@ -107,14 +87,6 @@ export default class RenderIcon {
                             this.style.iconOpacity = iconOpacityObj;
                         }
                         break;
-                    case 'border-width':
-                        const borderWidthObj = style[item];
-                        if (isFunction(borderWidthObj)) {
-                            this.style.borderWidth = borderWidthObj(this.origionElement);
-                        } else {
-                            this.style.borderWidth = borderWidthObj;
-                        }
-                        break;
                     case 'shape':
                         const shapeObj = style[item];
                         if (isFunction(shapeObj)) {
@@ -130,15 +102,13 @@ export default class RenderIcon {
                         } else {
                             this.style.backgroundWidth = backgroundWidthObj;
                         }
+                        this.style.backgroundHeight=this.style.backgroundWidth;
                         break;
                     default:
                     //console.error(`存在无法识别结点样式${item}`);
                 }
             }
         });
-        if (this.origionElement.useCustomStyle) {
-            styles.pop();
-        }
         this.style.iconColor[3] = this.style.iconOpacity * 225;
     }
 }
