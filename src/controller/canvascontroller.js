@@ -1359,6 +1359,17 @@ export default class CanvasController {
     }
 
     fitView(params) {
+        if(Number.isNaN(params.target[0])||params.target===undefined){
+            params.target[0]=this.props.viewState.target[0];
+        }
+        if(Number.isNaN(params.target[1])||params.target===undefined){
+            params.target[1]=this.props.viewState.target[1];
+        }
+        if(Number.isNaN(params.zoom)||params.zoom===undefined){
+            params.zoom=this.props.zoom;
+        }
+
+
         if (params.zoom < this.props.minZoom) {
             params.zoom = this.props.minZoom;
         }
