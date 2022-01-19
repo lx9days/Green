@@ -89,8 +89,6 @@ export default class CanvasController {
         if (this.deck) {
             this.deck = null;
         }
-        // console.log(this.props.containerWidth, this.props.containerHeight);
-
         this.deck = new Deck({
             views: new OrthographicView({
                 id: 'globalView',
@@ -147,8 +145,7 @@ export default class CanvasController {
         } else {
             if (interactionState.isZooming) {
                 this.props.zoom = viewState.zoom;
-
-                this.updateRenderGraph();
+                //this.updateRenderGraph();
             } else {
                 viewState.target = oldViewState.target;
             }
@@ -208,7 +205,6 @@ export default class CanvasController {
 
         }
         let animationLayer = null;
-
         if (this.animationData.length > 0) {
             let animationTrigger = Math.random();
             animationLayer = new ScatterplotLayer({
@@ -284,7 +280,7 @@ export default class CanvasController {
                 }
             },
             onIconError: this.onIconErrorHander,
-            getSize: d => d.style.iconSize,//this 指向问题
+            getSize: d => d.style.iconSize ,// * (2 ** zoom),//this 指向问题
             updateTriggers: {
                 getPosition: positionFlag,
                 getIcon: iconFlag,
@@ -413,9 +409,7 @@ export default class CanvasController {
             getPosition: d => {
                 return d.position;
             },
-            getText: d => {
-                return d.text;
-            },
+            getText: d => d.text,
             getSize: d => d.style.textSize,
             getAngle: 0,
             getTextAnchor: d => d.style.textAnchor,
@@ -530,11 +524,6 @@ export default class CanvasController {
         } else {
             this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer,groupTextLayer, textLayer, markLayer] });
         }
-
-
-
-
-        //this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight,viewState:viewState, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
     }
 
     renderLockNode() {
@@ -597,7 +586,7 @@ export default class CanvasController {
                 anchorX: 0,
                 anchorY: 0,
             }),
-            getSize: d => d.style.iconSize * (2 ** zoom),//this 指向问题
+            getSize: d => d.style.iconSize,//this 指向问题
             updateTriggers: {
                 getPosition: d => {
                     return d.position;
@@ -748,12 +737,11 @@ export default class CanvasController {
                 anchorX: 0,
                 anchorY: 0,
             }),
-            getSize: d => d.style.iconSize * (2 ** zoom),
+            getSize: d => d.style.iconSize,
             updateTriggers: {
                 getPosition: d => {
                     return d.position;
                 },
-                getSize: d => d.style.iconSize * (2 ** zoom),
             },
             onIconError: () => {
                 console.log(arguments)
@@ -810,8 +798,6 @@ export default class CanvasController {
                 }
             })
         }
-
-
         const lineLayer = new LineLayer({
             id: 'line-layer',
             data: renderLines.filter(() => true),
@@ -1008,9 +994,7 @@ export default class CanvasController {
             getPosition: d => {
                 return d.position;
             },
-            getText: d => {
-                return d.text;
-            },
+            getText: d => d.text,
             getSize: d => d.style.textSize,
             getAngle: 0,
             getTextAnchor: d => d.style.textAnchor,
@@ -1214,7 +1198,7 @@ export default class CanvasController {
         if (e.srcEvent.ctrlKey) {
             this.eventController.fire('lineClickWithCtrl', [info, e]);
             return true;
-        }
+        } 
         this.eventController.fire('lineClick', [info, e]);
         return true;
     }
