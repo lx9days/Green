@@ -85,7 +85,7 @@ export class PositionController {
             for (let i = 0; i < data.nodes.length; i++) {
                 let nn1 = [];
                 const initx = this.viewSize[0]/2;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
-                const inity = this.viewSize[1]/2;//rootNodes[i].y?rootNodes[i].y:400;
+                const inity = this.viewSize[1]/2+100*i;//rootNodes[i].y?rootNodes[i].y:400;
                 let allNodeIds = [];
                 const root = d3.hierarchy(data.nodes[i]);
                 root.dx = 250;
@@ -141,7 +141,7 @@ export class PositionController {
             })
             for (let i = 0; i < data.nodes.length; i++) {
                 let nn1 = [];
-                const initx = this.viewSize[0]/2;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
+                const initx = this.viewSize[0]/2+i*100;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
                 const inity = this.viewSize[1]/2;//rootNodes[i].y?rootNodes[i].y:400;
                 let allNodeIds = [];
                 const root = d3.hierarchy(data.nodes[i]);

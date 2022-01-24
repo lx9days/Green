@@ -490,7 +490,7 @@ export default class CanvasController {
             },
             updateTriggers: {
                 getFillColor: styleFlag,
-                getPolygon: positionFlag,
+                getPolygon: positionFlag+styleFlag,
             },
             onDrag: this.nodeDragingHandler,
             onClick: this.nodeClickHandler,
@@ -711,14 +711,8 @@ export default class CanvasController {
                 }
             },
             updateTriggers: {
-                getFillColor: (d) => {
-                    if (d.status === 4) {
-                        return d.style.highLightColor;
-                    } else {
-                        return [255, 255, 255, 0];
-                    }
-                },
-                getPolygon: d => d.backgroundPolygon,
+                getFillColor: styleFlag,
+                getPolygon: styleFlag+positionFlag,
             },
             onDrag: this.nodeDragingHandler,
             onClick: this.nodeClickHandler,
@@ -1073,13 +1067,8 @@ export default class CanvasController {
                 }
             },
             updateTriggers: {
-                getFillColor: (d) => {
-                    if (d.status === 4) {
-                        return d.style.highLightColor;
-                    } else {
-                        return [255, 255, 255, 0];
-                    }
-                },
+                getFillColor:styleFlag,
+                getPolygon:styleFlag+positionFlag,
             },
             onDrag: this.nodeDragingHandler,
             onClick: this.nodeClickHandler,

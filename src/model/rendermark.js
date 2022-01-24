@@ -63,14 +63,27 @@ export default class RenderMark {
             x:(this.style.backgroundWidth-this.style.width)/2+this.style.borderWidth/2,
             y: (this.style.backgroundHeight-this.style.height)/2+this.style.borderWidth/2,
         }
-        const polygonBasePosition = {
-            x: elementPosition.x - offset.x,
-            y: elementPosition.y - offset.y
+        if(this.status===2||this.status===4){
+            const polygonBasePosition = {
+                x: elementPosition.x - offset.x-10,
+                y: elementPosition.y - offset.y-10
+            }
+            this.backgroundPolygon.push([polygonBasePosition.x, polygonBasePosition.y]);
+            this.backgroundPolygon.push([polygonBasePosition.x + this.style.backgroundWidth+20, polygonBasePosition.y]);
+            this.backgroundPolygon.push([polygonBasePosition.x + this.style.backgroundWidth+20, polygonBasePosition.y + this.style.backgroundHeight+20])
+            this.backgroundPolygon.push([polygonBasePosition.x, polygonBasePosition.y + this.style.backgroundHeight+20]);
+        }else{
+            const polygonBasePosition = {
+                x: elementPosition.x - offset.x,
+                y: elementPosition.y - offset.y
+            }
+            this.backgroundPolygon.push([polygonBasePosition.x, polygonBasePosition.y]);
+            this.backgroundPolygon.push([polygonBasePosition.x + this.style.backgroundWidth, polygonBasePosition.y]);
+            this.backgroundPolygon.push([polygonBasePosition.x + this.style.backgroundWidth, polygonBasePosition.y + this.style.backgroundHeight])
+            this.backgroundPolygon.push([polygonBasePosition.x, polygonBasePosition.y + this.style.backgroundHeight]);
+            
         }
-        this.backgroundPolygon.push([polygonBasePosition.x, polygonBasePosition.y]);
-        this.backgroundPolygon.push([polygonBasePosition.x + this.style.backgroundWidth, polygonBasePosition.y]);
-        this.backgroundPolygon.push([polygonBasePosition.x + this.style.backgroundWidth, polygonBasePosition.y + this.style.backgroundHeight])
-        this.backgroundPolygon.push([polygonBasePosition.x, polygonBasePosition.y + this.style.backgroundHeight]);
+        
 
     }
 

@@ -418,6 +418,7 @@ export default class ElementController {
                 if (renderObjects) {
                     renderObjects.iconObjs.forEach((icon) => {
                         icon.updateStatus();
+                    
                     });
                     renderObjects.textObjs.forEach((text) => {
                         text.updateStatus();
