@@ -837,6 +837,7 @@ export default class ElementController {
                     });
                     renderObjects.markObjs.forEach(mark => {
                         mark.updateStatus();
+                        mark.reLocation()
                     });
                     renderObjects.labelObjs.forEach(label => {
                         label.updateStatus();
@@ -917,6 +918,7 @@ export default class ElementController {
                 });
                 renderObjects.markObjs.forEach(mark => {
                     mark.updateStatus();
+                    mark.reLocation();
                 });
                 renderObjects.labelObjs.forEach(label => {
                     label.updateStatus()
@@ -939,6 +941,7 @@ export default class ElementController {
                 });
                 renderObjects.markObjs.forEach(mark => {
                     mark.updateStatus();
+                    mark.reLocation();
                 });
                 renderObjects.labelObjs.forEach(label => {
                     label.updateStatus()

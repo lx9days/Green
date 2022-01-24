@@ -32,6 +32,39 @@
             "dataSize": {
                 "nodesNum": 4287
             }
+        },
+        {
+            "id": "con_3d84bec3aae517bbb0633648ec0cfec0a",
+            "img": "",
+            "type": "dataPackage",
+            "name": "默认名称",
+            "loaded": true,
+            "relation": "",
+            "dataSize": {
+                "nodesNum": 4287
+            }
+        },
+        {
+            "id": "a2992a",
+            "img": "",
+            "type": "dataPackage",
+            "name": "Hello",
+            "loaded": true,
+            "relation": "",
+            "dataSize": {
+                "nodesNum": 4287
+            }
+        },
+        {
+            "id": "b2992a",
+            "img": "",
+            "type": "dataPackage",
+            "name": "javk",
+            "loaded": true,
+            "relation": "",
+            "dataSize": {
+                "nodesNum": 4287
+            }
         }
     ],
     "links": [
@@ -48,6 +81,24 @@
             "id": "conEdge_con_3d84bec3aae517bbb0633648ec0cec0",
             "from": "a2992",
             "to": "b2992",
+            "type": "通过实体类型过滤",
+            "undirected_type": "undirected_type",
+            "direct": true,
+            "labelDetail": "实体类型(人物)  "
+        },
+        {
+            "id": "conEdge_con_3d84bec3aae517bbb0633648ec0cfec0a",
+            "from": "a2992a",
+            "to": "con_3d84bec3aae517bbb0633648ec0cfec0a",
+            "type": "通过实体类型过滤",
+            "undirected_type": "undirected_type",
+            "direct": true,
+            "labelDetail": "实体类型(人物)  "
+        },
+        {
+            "id": "conEdge_con_3d84bec3aae517bbb0633648ec0cec0a",
+            "from": "a2992a",
+            "to": "b2992a",
             "type": "通过实体类型过滤",
             "undirected_type": "undirected_type",
             "direct": true,
