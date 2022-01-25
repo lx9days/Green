@@ -73,7 +73,7 @@ export class PositionController {
         }
     }
 
-    horizontalLayout(nodes, links) {
+    horizontalLayout_v1(nodes, links) {
         if (nodes && nodes.length > 0) {
             const rootNodes = searchZeroDegreeNode(nodes);
             const idMapNode=new Map();
@@ -129,8 +129,73 @@ export class PositionController {
             }
         }
     }
+    horizontalLayout(nodes, links) {
+        if (nodes && nodes.length > 0) {
+            const rootNodes = searchZeroDegreeNode(nodes);
+            const data = BFSTree(rootNodes, nodes, links);
+            const idMapNode=new Map();
+            nodes.forEach(node=>{
+                idMapNode.set(node.id,node);
+            });
+            const virtualRootNode={id:"virtual_node",data:{id:"virtual_node"},children:[]}
+            for(let i=0;i<data.nodes.length;i++){
+                virtualRootNode.children.push(data.nodes[i]);
+            }
+            console.log(virtualRootNode)
 
-    verticalLayout(nodes, links) {
+            let nn1 = [];
+            const initx = this.viewSize[0]/2;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
+            const inity = this.viewSize[1]/2;//rootNodes[i].y?rootNodes[i].y:400;
+            let allNodeIds = [];
+            const root = d3.hierarchy(virtualRootNode);
+            root.dx = 150;
+            root.dy = 150;
+            d3.tree().nodeSize([root.dx, root.dy])(root);
+
+            let ct = root;
+            let tt = {
+                id: ct.data.id,
+                x: root.x,
+                y: root.y
+            };
+            nn1.push(tt);
+            if (root.children && root.children.length > 0) {
+                let stack = root.children;
+                while (stack.length !== 0) {
+                    let ctt = stack.pop();
+                    let ttt = {
+                        id: ctt.data.id,
+                        x: ctt.x,
+                        y: ctt.y
+                    }
+                    nn1.push(ttt);
+                    if (ctt.children && ctt.children.length > 0) {
+                        ctt.children.forEach(child => {
+                            stack.push(child)
+                        })
+                    }
+                }
+            }
+            nn1.forEach(item=>{
+                    allNodeIds.push(item.id);
+            });
+            console.log(allNodeIds);
+            const allNodes=[];
+            allNodeIds.forEach(nodeId=>{
+                allNodes.push(idMapNode.get(nodeId));
+            });
+            
+            allNodes.forEach((node, i) => {
+                if(node){
+                    node.x = nn1[i].y + initx-150;
+                    node.y = nn1[i].x + inity;
+                }
+               
+            });
+        }
+    }
+
+    verticalLayout_v1(nodes, links) {
         if (nodes && nodes.length > 0) {
             const rootNodes = searchZeroDegreeNode(nodes);
             const data = BFSTree(rootNodes, nodes, links);
@@ -138,7 +203,7 @@ export class PositionController {
             const idMapNode=new Map();
             nodes.forEach(node=>{
                 idMapNode.set(node.id,node);
-            })
+            });
             for (let i = 0; i < data.nodes.length; i++) {
                 let nn1 = [];
                 const initx = this.viewSize[0]/2+i*100;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
@@ -185,6 +250,71 @@ export class PositionController {
                 })
                 allIds = [...allIds, ...allNodeIds];
             }
+        }
+    }
+    verticalLayout(nodes, links) {
+        if (nodes && nodes.length > 0) {
+            const rootNodes = searchZeroDegreeNode(nodes);
+            const data = BFSTree(rootNodes, nodes, links);
+            const idMapNode=new Map();
+            nodes.forEach(node=>{
+                idMapNode.set(node.id,node);
+            });
+            const virtualRootNode={id:"virtual_node",data:{id:"virtual_node"},children:[]}
+            for(let i=0;i<data.nodes.length;i++){
+                virtualRootNode.children.push(data.nodes[i]);
+            }
+            console.log(virtualRootNode)
+
+            let nn1 = [];
+            const initx = this.viewSize[0]/2;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
+            const inity = this.viewSize[1]/2;//rootNodes[i].y?rootNodes[i].y:400;
+            let allNodeIds = [];
+            const root = d3.hierarchy(virtualRootNode);
+            root.dx = 150;
+            root.dy = 150;
+            d3.tree().nodeSize([root.dx, root.dy])(root);
+
+            let ct = root;
+            let tt = {
+                id: ct.data.id,
+                x: root.x,
+                y: root.y
+            };
+            nn1.push(tt);
+            if (root.children && root.children.length > 0) {
+                let stack = root.children;
+                while (stack.length !== 0) {
+                    let ctt = stack.pop();
+                    let ttt = {
+                        id: ctt.data.id,
+                        x: ctt.x,
+                        y: ctt.y
+                    }
+                    nn1.push(ttt);
+                    if (ctt.children && ctt.children.length > 0) {
+                        ctt.children.forEach(child => {
+                            stack.push(child)
+                        })
+                    }
+                }
+            }
+            nn1.forEach(item=>{
+                    allNodeIds.push(item.id);
+            });
+            console.log(allNodeIds);
+            const allNodes=[];
+            allNodeIds.forEach(nodeId=>{
+                allNodes.push(idMapNode.get(nodeId));
+            });
+            
+            allNodes.forEach((node, i) => {
+                if(node){
+                    node.x = nn1[i].x + initx;
+                    node.y = nn1[i].y + inity-150;
+                }
+               
+            });
         }
     }
 }
