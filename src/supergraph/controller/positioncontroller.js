@@ -141,8 +141,6 @@ export class PositionController {
             for(let i=0;i<data.nodes.length;i++){
                 virtualRootNode.children.push(data.nodes[i]);
             }
-            console.log(virtualRootNode)
-
             let nn1 = [];
             const initx = this.viewSize[0]/2;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
             const inity = this.viewSize[1]/2;//rootNodes[i].y?rootNodes[i].y:400;
@@ -179,7 +177,6 @@ export class PositionController {
             nn1.forEach(item=>{
                     allNodeIds.push(item.id);
             });
-            console.log(allNodeIds);
             const allNodes=[];
             allNodeIds.forEach(nodeId=>{
                 allNodes.push(idMapNode.get(nodeId));
@@ -264,7 +261,6 @@ export class PositionController {
             for(let i=0;i<data.nodes.length;i++){
                 virtualRootNode.children.push(data.nodes[i]);
             }
-            console.log(virtualRootNode)
 
             let nn1 = [];
             const initx = this.viewSize[0]/2;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
@@ -302,7 +298,6 @@ export class PositionController {
             nn1.forEach(item=>{
                     allNodeIds.push(item.id);
             });
-            console.log(allNodeIds);
             const allNodes=[];
             allNodeIds.forEach(nodeId=>{
                 allNodes.push(idMapNode.get(nodeId));

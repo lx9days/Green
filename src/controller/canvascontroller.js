@@ -113,7 +113,7 @@ export default class CanvasController {
             onDragEnd: this.deckDragEndHandler,
             pickingRadius: 6,
             getTooltip: ({ object }) => {
-                if (object && object.origionElement && object.origionElement.data.metaType === 'nodeSet' && object.origionElement.data.statistics&&Object.keys(object.origionElement.data.statistics).length > 0) {
+                if (object && object.origionElement && object.origionElement.data.metaType === 'nodeSet' && object.origionElement.data.statistics && Object.keys(object.origionElement.data.statistics).length > 0) {
                     let html = '';
                     for (const key in object.origionElement.data.statistics) {
                         html += `<div>${key}:${object.origionElement.data.statistics[key]}</div>`
@@ -189,7 +189,7 @@ export default class CanvasController {
         const invalidIcon = this.invalidIncons
         const defaultUrlMap = this.props.defaultUrlMap;
         const defaultUrlFunc = this.props.defaultUrlFunc;
-        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderBubble, renderDashLine ,renderGroupTexts,groupTextSet} = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderBubble, renderDashLine, renderGroupTexts, groupTextSet } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
         let bubbleLayer = null
@@ -496,7 +496,7 @@ export default class CanvasController {
             },
             updateTriggers: {
                 getFillColor: styleFlag,
-                getPolygon: positionFlag+styleFlag,
+                getPolygon: positionFlag + styleFlag,
             },
             onDrag: this.nodeDragingHandler,
             onClick: this.nodeClickHandler,
@@ -522,13 +522,13 @@ export default class CanvasController {
             }
         });
         if (renderBubble.length > 0 && this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer,groupTextLayer, textLayer, animationLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
         } else if (renderBubble.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer,textLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
         } else if (this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer,groupTextLayer, textLayer, animationLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
         } else {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer,groupTextLayer, textLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
         }
 
 
@@ -723,7 +723,7 @@ export default class CanvasController {
             },
             updateTriggers: {
                 getFillColor: styleFlag,
-                getPolygon: styleFlag+positionFlag,
+                getPolygon: styleFlag + positionFlag,
             },
             onDrag: this.nodeDragingHandler,
             onClick: this.nodeClickHandler,
@@ -1083,8 +1083,8 @@ export default class CanvasController {
                 }
             },
             updateTriggers: {
-                getFillColor:styleFlag,
-                getPolygon:styleFlag+positionFlag,
+                getFillColor: styleFlag,
+                getPolygon: styleFlag + positionFlag,
             },
             onDrag: this.nodeDragingHandler,
             onClick: this.nodeClickHandler,
@@ -1348,35 +1348,41 @@ export default class CanvasController {
     }
 
     fitView(params) {
-        if(Number.isNaN(params.target[0])||params.target===undefined){
-            params.target[0]=this.props.viewState.target[0];
-        }
-        if(Number.isNaN(params.target[1])||params.target===undefined){
-            params.target[1]=this.props.viewState.target[1];
-        }
-        if(Number.isNaN(params.zoom)||params.zoom===undefined){
-            params.zoom=this.props.zoom;
-        }
+        try {
+            if (Number.isNaN(params.target[0]) || params.target === undefined) {
+                params.target[0] = this.props.viewState.target[0];
+            }
+            if (Number.isNaN(params.target[1]) || params.target === undefined) {
+                params.target[1] = this.props.viewState.target[1];
+            }
+            if (Number.isNaN(params.zoom) || params.zoom === undefined) {
+                params.zoom = this.props.zoom;
+            }
 
 
-        if (params.zoom < this.props.minZoom) {
-            params.zoom = this.props.minZoom;
+            if (params.zoom < this.props.minZoom) {
+                params.zoom = this.props.minZoom;
+            }
+            let isNeedUpdate = false;
+            if (params.zoom !== this.props.zoom) {
+                isNeedUpdate = true;
+            }
+            this.props.viewState.target = [params.target[0], params.target[1], 0];
+            this.props.viewState.zoom = params.zoom;
+            this.props.zoom = params.zoom;
+            let viewStat = JSON.parse(JSON.stringify(this.props.viewState));
+            // viewStat.minZoom = -1000;
+            // viewStat.maxZoom = 1000 + Math.random();
+            this.props.viewState = viewStat;
+            this.deck.setProps({ viewState: viewStat });
+            if (isNeedUpdate) {
+                this.updateRenderGraph();
+            }
+        } catch (err) {
+            console.log(params);
+            throw err;
         }
-        let isNeedUpdate = false;
-        if (params.zoom !== this.props.zoom) {
-            isNeedUpdate = true;
-        }
-        this.props.viewState.target = [params.target[0], params.target[1], 0];
-        this.props.viewState.zoom = params.zoom;
-        this.props.zoom = params.zoom;
-        let viewStat = JSON.parse(JSON.stringify(this.props.viewState));
-        viewStat.minZoom = -1000;
-        viewStat.maxZoom = 1000 + Math.random();
-        this.props.viewState = viewStat;
-        this.deck.setProps({ viewState: viewStat });
-        if (isNeedUpdate) {
-            this.updateRenderGraph();
-        }
+
     }
 
     scrollIntoView(target) {

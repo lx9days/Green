@@ -10,3 +10,8 @@ exampl2e/src/*.json
 example2/src/*.zip
 node_modules
 example2/dist
+example2/dist
+example3/src/img1
+example3/src/img2
+example3/src/*.json
+example3/src/*.zip
