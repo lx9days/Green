@@ -224,6 +224,7 @@ function BFSTree(rootNodes, nodes, links) {
 }
 
 function autoFitView(nodes, viewSize) {
+    
     let maxX = -Infinity;
     let maxY = -Infinity;
     let minX = Infinity;
@@ -242,10 +243,10 @@ function autoFitView(nodes, viewSize) {
             minY = nodes[i].y;
         }
     }
-    let originWidth = (maxX - minX)+20;
-    let originHeight = (maxY - minY)+20;
+    let originWidth = (maxX - minX)+40;
+    let originHeight = (maxY - minY)+40;
     let curZoom = 0;
-    let target = [minX + originWidth / 2, minY + originHeight / 2];
+    let target = [Math.floor(minX + originWidth / 2), Math.floor(minY + originHeight / 2)];
     let zoom = null
     if (originWidth < viewSize[0] && originHeight < viewSize[1]) {
         zoom=0;
@@ -269,6 +270,7 @@ function autoFitView(nodes, viewSize) {
     if(isNaN(target[1])){
         target[1]=viewSize[1]/2;
     }
+    console.log({target,zoom})
     return {
         target,
         zoom: zoom
@@ -297,8 +299,8 @@ function autoFocusNode(nodes,viewSize){
             minY = nodes[i].y;
         }
     }
-    let originWidth = (maxX - minX)+20;
-    let originHeight = (maxY - minY)+20;
+    let originWidth = (maxX - minX)+40;
+    let originHeight = (maxY - minY)+40;
     let curZoom = 0;
     let target = [sumX/nodes.length, sumY/nodes.length];
     let zoom = null
