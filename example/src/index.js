@@ -37,7 +37,7 @@ const debug = false;
 //     }
 // });
 
-axios.get('/src/auto_500.json').then((res) => {
+axios.get('/src/test_data.json').then((res) => {
 
     const nodes = res.data.nodes;
     const links = res.data.links;
@@ -232,7 +232,7 @@ function draw (rawData) {
                             return 58;
                         }
                     },
-                    'background-height': 58,
+                    'background-height': 56,
                     'url': (d) => d.data.img,
                     'opacity': 1,
                     'background-color': '#ffd53f',

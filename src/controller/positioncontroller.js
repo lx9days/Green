@@ -226,7 +226,7 @@ export default class PositionController {
             const nodeIds = new Array();
             const typeMap = new Map();
             nodes.map(item => {
-                let type = item.data.Entity_type;///
+                let type = item.data.metaType;///
                 if (typeMap.has(type)) {
                     typeMap.get(type).push(item);
                 } else {
