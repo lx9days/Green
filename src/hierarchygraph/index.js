@@ -21,11 +21,20 @@ export default class HierarchyGraph {
         const elementController = new HierarchyElementController(this.controller, props.data);
         this.controller.elementController = elementController;
     }
+
+    /**
+     * 将指定的id的孩子进行展开
+     * @param {Array} ids 节点id
+     */
     showChildren(ids){
         if(Array.isArray(ids)&&ids.length>0){
             this.controller.elementController.showChildren(ids);
         }
     }
+    /**
+     * 将指定的id的孩子进行隐藏
+     * @param {Array} ids 节点id
+     */
     hideChildren(ids){
         if(Array.isArray(ids)&&ids.length>0){
             this.controller.elementController.hideChildren(ids);
@@ -36,28 +45,34 @@ export default class HierarchyGraph {
             this.controller.elementController.parseNewData(data)
         }
     }
-
+    /**
+     * 添加监听事件 
+     * @param {String} name 事件名
+     * @param {function}} func callback
+     * @returns 
+     */
     addEventListener(name, func) {
         return this.controller.eventController.subscribe(name, func);
     }
+    /**
+     * 
+     * @param {Array} ids 要更新状态的id
+     * @param {number}} status 节点的状态 1 未选中 2选中
+     */
+    updateNodeStatus(ids=null,status){
+        if(status===1||status===2){
+            this.controller.elementController.updateNodeStatus(ids,status);
+        }
+    }
+    /**
+     * 更新视图的大小
+     * @param {{width,height}} size 
+     */
+    updateDim(size) {
+        const oldDim = this.controller.canvasController.getDim();
+        this.controller.canvasController.updateDim(size);
+        this.controller.elementController.updateGrpahAfterDimMidifed(oldDim, size);
+    }
    
-    // fitView() {
-    //     this.controller.elementController.fitView();
-    // }
-    // updateDim(size) {
-    //     this.controller.positionController.updateViewSize(size);
-    //     const oldDim = this.controller.canvasController.getDim();
-    //     this.controller.canvasController.updateDim(size);
-    //     this.controller.elementController.updateGrpahAfterDimMidifed(oldDim, size);
-    // }
-
-    // /**
-    // * 将已有的所有styles经行替换
-    // * @param {*} styles 
-    // */
-    // replaceStyle(styles) {
-    //     this.controller.styleController.replaceStyle(styles);
-    //     this.controller.elementController.reParse();
-    // }
 
 }

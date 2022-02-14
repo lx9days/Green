@@ -17,8 +17,8 @@ axios.get('/src/schema1.json').then(res => {
 function draw(data) {
     const hierarchyGraph = new HierarchyGraph({
         canvasProps: {
-            containerWidth: 1000,
-            containerHeight: 1000,
+            containerWidth: 1500,
+            containerHeight: 1500,
             zoom: 0,
             container: 'container',
             maxZoom: 4,
@@ -60,14 +60,20 @@ function draw(data) {
         ]
     });
     hierarchyGraph.addEventListener("nodeClick",()=>{
-        hierarchyGraph.showChildren(["a3"])
+        hierarchyGraph.showChildren(["a3"]);
     })
 
     document.getElementById("showChildren").addEventListener("click",()=>{
-        hierarchyGraph.showChildren(["a3"])
+        hierarchyGraph.showChildren(["a3"]);
     });
     document.getElementById("hideChildren").addEventListener("click",()=>{
-        hierarchyGraph.hideChildren(["a3"])
+        hierarchyGraph.hideChildren(["a3"]);
     });
+    document.getElementById("updateStatus").addEventListener("click",()=>{
+        hierarchyGraph.updateNodeStatus(["a3"],2);
+    });
+    document.getElementById("updateDim").addEventListener("click",()=>{
+        hierarchyGraph.updateDim({width:500,height:500})
+    })
 
 }
