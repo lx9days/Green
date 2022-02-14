@@ -1340,6 +1340,12 @@ export default class ElementController {
         }
 
     }
+
+    /**
+     * 更新视口大小后，自动更新元素的位置
+     * @param {{width,height}} oldDim 
+     * @param {{width,height}} newDim 
+     */
     updateGrpahAfterDimMidifed(oldDim, newDim) {
         const xFactor = newDim.width / oldDim.width;
         const yFactor = newDim.height / oldDim.height;

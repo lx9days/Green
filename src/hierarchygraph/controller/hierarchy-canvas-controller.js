@@ -169,6 +169,7 @@ export default class HierarchyCanvasController{
         const { renderBackgrounds, renderIcons, renderLines,  charSet, renderText} = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
+        console.log(styleFlag)
         const lineLayer = new LineLayer({
             id: 'line-layer',
             data: renderLines,
@@ -254,6 +255,7 @@ export default class HierarchyCanvasController{
             filled: true,
             stroked: true,
             updateTriggers: {
+                getFillColor:styleFlag,
                 getPolygon: positionFlag,
                 getLineColor:styleFlag
             }
@@ -536,6 +538,7 @@ export default class HierarchyCanvasController{
 
 
     updateRenderObject({ renderObject, position, style, bubble }) {
+        
         if (renderObject) {
             this.renderObject = renderObject;
             this.renderGraph();
@@ -550,7 +553,9 @@ export default class HierarchyCanvasController{
             if (bubble) {
                 this.updateFlag.bubble = Math.random();
             }
+            console.log(this.renderObject)
             this.updateRenderGraph();
+            
         }
     }
 

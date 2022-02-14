@@ -54,8 +54,8 @@ export default class HierarchyElementController {
             });
             const fakeRoot = { id: "fake_root", _id: "fake_root", children: roots }
             const hierarchyRoot = d3.hierarchy(fakeRoot);
-            const dim=this.controller.canvasController.getDim();
-            this.treeFunc = d3.tree().size([dim.width-120, dim.height-150]).separation(function (a, b) { return (a.parent == b.parent ? 1 : 2); });
+            const dim = this.controller.canvasController.getDim();
+            this.treeFunc = d3.tree().size([dim.width - 120, dim.height - 150]).separation(function (a, b) { return (a.parent == b.parent ? 1 : 2); });
             const treeRes = this.treeFunc(hierarchyRoot);
             this.fakeRoot = new HierarchyNode({ data: treeRes.data, depth: treeRes.depth, height: treeRes.height, childrenVis: true }, null, true)
             this.nodes.push(this.fakeRoot);
@@ -118,10 +118,10 @@ export default class HierarchyElementController {
                         }
                         queue.push(child);
                     });
-                    
+
                     if (!cur.data.isFake) {
-                        renderLine.push(new RenderHierarchyLine({ id: lineCount++, parentNodeId: cur.data.id, source: { x: cur.x, y: cur.y }, target: { x: cur.x, y: (cur.y + cur.children[0].y) / 2 } }));
-                        if (cur.children.length>1&&left < right) {
+                        renderLine.push(new RenderHierarchyLine({ id: lineCount++, parentNodeId: cur.data.id, source: { x: cur.x, y: cur.y }, target: { x: cur.x, y: (cur.y + cur.children[0].y) / 2 },tag:1 }));
+                        if (cur.children.length > 1 && left < right) {
                             renderLine.push(new RenderHierarchyLine({ id: lineCount++, parentNodeId: cur.data.id, source: { x: left, y: (cur.y + cur.children[0].y) / 2 }, target: { x: right, y: (cur.y + cur.children[0].y) / 2 } }));
                         }
                     }
@@ -134,14 +134,14 @@ export default class HierarchyElementController {
     }
     updateVisibleTree() {
         const queue = [this.fakeRoot];
-        let maxNodeNum=1;
+        let maxNodeNum = 1;
         while (queue.length > 0) {
             const cur = queue.shift();
             if (cur.childrenVisible) {
                 cur.visChildren();
                 const children = cur.getChildren();
-                if(children.length>maxNodeNum){
-                    maxNodeNum=children.length;
+                if (children.length > maxNodeNum) {
+                    maxNodeNum = children.length;
                 }
                 children.forEach(child => {
                     queue.push(child);
@@ -149,9 +149,9 @@ export default class HierarchyElementController {
             }
         }
         const hierarchyRoot = d3.hierarchy(this.fakeRoot);
-        const dim=this.controller.canvasController.getDim();
-        if(dim.width<=maxNodeNum*80){
-            this.treeFunc=this.treeFunc.size([dim.width-120,dim.height-120]).nodeSize([60,120]);
+        const dim = this.controller.canvasController.getDim();
+        if (dim.width <= maxNodeNum * 80) {
+            this.treeFunc = this.treeFunc.size([dim.width - 120, dim.height - 120]).nodeSize([60, 120]);
         }
         const tree = this.treeFunc(hierarchyRoot);
         const traverseRes = this.traverseLayoutedTree(tree);
@@ -198,12 +198,13 @@ export default class HierarchyElementController {
             const renderText = new RenderHierarchyText(node);
             this._generateCharSet(renderText.text);
             nodeRenders.textObjs.push(renderText);
-            if(this.nodeRenderMap.has(node.id)){
+            if (this.nodeRenderMap.has(node.id)) {
                 console.log(node.id);
                 throw new Error("replicated element id");
             }
             this.nodeRenderMap.set(node.id, nodeRenders);
         });
+       
         this._generateRenderObjs();
         this.fitView();
 
@@ -231,6 +232,11 @@ export default class HierarchyElementController {
             nodeRenders.textObjs.forEach(textObj => {
                 this.renderObject.renderText.push(textObj);
             });
+        }
+        for(let i=0;i<this.renderLines.length;i++){
+            if(this.renderLines[i].tag===1){
+                this.renderLines[i].updateSourcePos(this.renderObject.renderIcons[0].style.iconHeight)
+            }
         }
         this.renderObject.charSet = Array.from(this.characterSet);
         this.renderObject.renderLines = this.renderLines;
@@ -271,18 +277,108 @@ export default class HierarchyElementController {
             this._parseElements(visibleNodes);
         }
     }
-    fitView(){
-        const zoom=this.controller.canvasController.getZoom();
-        const visibleNodes=this.getVisibleNodes();
-        let sumX=0;
-        let sumY=0;
-        visibleNodes.forEach(node=>{
-            sumX+=node.x;
-            sumY+=node.y;
+    fitView() {
+        const zoom = this.controller.canvasController.getZoom();
+        const visibleNodes = this.getVisibleNodes();
+        let sumX = 0;
+        let sumY = 0;
+        visibleNodes.forEach(node => {
+            sumX += node.x;
+            sumY += node.y;
         });
-        if(visibleNodes.length>0){
-            this.controller.canvasController.fitView({zoom,target:[sumX/visibleNodes.length,sumY/visibleNodes.length]})
+        if (visibleNodes.length > 0) {
+            this.controller.canvasController.fitView({ zoom, target: [sumX / visibleNodes.length, sumY / visibleNodes.length] })
         }
-        
     }
+
+    /**
+    * 更新指定node 的状态
+    * @param {id} nodeIds 
+    * @param {状态} status 
+    */
+    updateNodeStatus(nodeIds, status) {
+        if (nodeIds && nodeIds.length > 0) {
+            const idsSet = new Set();
+            nodeIds.forEach((id) => {
+                const node = this.idMapNode.get(id);
+                if (node) {
+                    node.updateStatus(status);
+                } else {
+                    throw new Error(`cannot find node id:${id}`)
+                }
+                const renderObjects = this.nodeRenderMap.get(id);
+                if (renderObjects) {
+                    renderObjects.iconObjs.forEach((icon) => {
+                        icon.updateStatus();
+                    });
+                    renderObjects.textObjs.forEach((text) => {
+                        text.updateStatus();
+                    });
+                    renderObjects.backgroundObjs.forEach((border) => {
+                        border.updateStatus();
+                    });
+                    renderObjects.markObjs.forEach(mark => {
+                        mark.updateStatus();
+                        // mark.reLocation()
+                    });
+                }
+            });
+
+        } else {
+            this.nodes.forEach(node => {
+                node.setStatus(status);
+            });
+            this._updateNodeRenderObjStatus();
+        }
+        this.controller.canvasController.updateRenderObject({ style: 1 });
+    }
+    /**
+    * 更新nodeid 对应的renderobj 的状态
+    * @param {id} nodeIds 
+    */
+    _updateNodeRenderObjStatus(nodeIds = null) {
+        if (nodeIds && nodeIds.length > 0) {
+            nodeIds.forEach((id) => {
+                const renderObjects = this.nodeRenderMap.get(id);
+                renderObjects.iconObjs.forEach((icon) => {
+                    icon.updateStatus();
+                });
+                renderObjects.textObjs.forEach((text) => {
+                    text.updateStatus();
+                });
+                renderObjects.backgroundObjs.forEach((border) => {
+                    border.updateStatus();
+                });
+                renderObjects.markObjs.forEach(mark => {
+                    mark.updateStatus();
+                    mark.reLocation();
+                });
+            })
+        } else {
+            for (const key of this.nodeRenderMap.keys()) {
+                const renderObjects = this.nodeRenderMap.get(key);
+                renderObjects.iconObjs.forEach((icon) => {
+                    icon.updateStatus();
+                });
+                renderObjects.textObjs.forEach((text) => {
+                    text.updateStatus();
+                });
+                renderObjects.backgroundObjs.forEach((border) => {
+                    border.updateStatus();
+                });
+                renderObjects.markObjs.forEach(mark => {
+                    mark.updateStatus();
+                    mark.reLocation();
+                });
+            }
+        }
+    }
+
+    updateGrpahAfterDimMidifed() {
+        this.updateVisibleTree();
+        const visibleNodes = this.getVisibleNodes();
+        this.controller.styleController.mountAllStyleToElement(visibleNodes, []);
+        this._parseElements(visibleNodes);
+    }
+
 }
