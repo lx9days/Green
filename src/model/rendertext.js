@@ -34,6 +34,11 @@ export default class RenderText {
         this._generateStyle();
         this._generatePosition();
     }
+    
+    rebuildForCustomStyle(){
+        this._generateStyle(true);
+        this._generatePosition();
+    }
 
     rebuildForCustomStyle() {
         this._generateStyle(true);
