@@ -130,15 +130,15 @@ export default class CanvasController {
             }
             //getCursor:({isDragging,isHovering}) => isHovering ? 'grabbing' : 'grab'
         });
-        this.props.viewState.height = this.props.containerHeight;
-        this.props.viewState.width = this.props.containerWidth;
-        this.props.viewState.maxRotationX = 90;
-        this.props.viewState.minRotationX = -90;
-        this.props.viewState.orbitAxis = "Z";
-        this.props.viewState.rotationOrbit = 0;
-        this.props.viewState.rotationX = 0;
-        this.props.viewState.minZoom = -Infinity;
-        this.props.viewState.maxZoom = Infinity;
+        // this.props.viewState.height = this.props.containerHeight;
+        // this.props.viewState.width = this.props.containerWidth;
+        // this.props.viewState.maxRotationX = 90;
+        // this.props.viewState.minRotationX = -90;
+        // this.props.viewState.orbitAxis = "Z";
+        // this.props.viewState.rotationOrbit = 0;
+        // this.props.viewState.rotationX = 0;
+        // this.props.viewState.minZoom = -Infinity;
+        // this.props.viewState.maxZoom = Infinity;
     }
 
     _onViewStateChange({ viewState, oldViewState, interactionState }) {
@@ -1381,14 +1381,15 @@ export default class CanvasController {
             this.props.viewState.target = [params.target[0], params.target[1], 0];
             this.props.viewState.zoom = params.zoom;
             this.props.zoom = params.zoom;
-            let viewStat = JSON.parse(JSON.stringify(this.props.viewState));
+            // let viewStat = JSON.parse(JSON.stringify(this.props.viewState));
+            let viewStat = Object.assign({}, this.props.viewState);
             viewStat.minZoom = -4;
             viewStat.maxZoom = 4 + Math.random();
-            if(!viewStat){
+            if (!viewStat) {
                 return
             }
             this.props.viewState = viewStat;
-           
+
             if (isNeedUpdate) {
                 this.updateRenderGraph(viewStat);
             }
