@@ -37,7 +37,7 @@
             "id": "con_3d84bec3aae517bbb0633648ec0cfec0a",
             "img": "",
             "type": "dataPackage",
-            "name": "得开发商附件是扩大解届放福克届斯的附件是肯定届",
+            "name": "得开性别附件是扩大解届放福克届斯的附件是肯定届",
             "loaded": true,
             "relation": "",
             "dataSize": {
@@ -72,7 +72,7 @@
             "id": "conEdge_con_3d84bec3aae517bbb0633648ec0cfec0",
             "from": "a2992",
             "to": "con_3d84bec3aae517bbb0633648ec0cfec0",
-            "type": "通过实体类型过滤",
+            "type": "通过性别类型过滤",
             "undirected_type": "undirected_type",
             "direct": true,
             "labelDetail": "实体类型(人物)  "
