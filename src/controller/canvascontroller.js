@@ -180,7 +180,7 @@ export default class CanvasController {
     }
 
 
-    updateRenderGraph() {
+    updateRenderGraph(viewStat = null) {
         const zoom = this.props.zoom;
         const styleFlag = this.updateFlag.style;
         const positionFlag = this.updateFlag.position;
@@ -521,15 +521,28 @@ export default class CanvasController {
                 getPosition: positionFlag,
             }
         });
-        if (renderBubble.length > 0 && this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
-        } else if (renderBubble.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
-        } else if (this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
+        if (viewStat === null) {
+            if (renderBubble.length > 0 && this.animationData.length > 0) {
+                this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
+            } else if (renderBubble.length > 0) {
+                this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
+            } else if (this.animationData.length > 0) {
+                this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
+            } else {
+                this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
+            }
         } else {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
+            if (renderBubble.length > 0 && this.animationData.length > 0) {
+                this.deck.setProps({ viewState: viewStat, width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
+            } else if (renderBubble.length > 0) {
+                this.deck.setProps({ viewState: viewStat, width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
+            } else if (this.animationData.length > 0) {
+                this.deck.setProps({ viewState: viewStat, width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
+            } else {
+                this.deck.setProps({ viewState: viewStat, width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
+            }
         }
+
 
 
 
@@ -1358,7 +1371,6 @@ export default class CanvasController {
             if (Number.isNaN(params.zoom) || params.zoom === undefined) {
                 params.zoom = this.props.zoom;
             }
-
             if (params.zoom < this.props.minZoom) {
                 params.zoom = this.props.minZoom;
             }
@@ -1371,14 +1383,17 @@ export default class CanvasController {
             this.props.zoom = params.zoom;
             let viewStat = JSON.parse(JSON.stringify(this.props.viewState));
             viewStat.minZoom = -4;
-            viewStat.maxZoom = 10 + Math.random();
+            viewStat.maxZoom = 4 + Math.random();
+            if(!viewStat){
+                return
+            }
             this.props.viewState = viewStat;
-            this.deck.setProps({ viewState: viewStat });
+           
             if (isNeedUpdate) {
-                this.updateRenderGraph();
+                this.updateRenderGraph(viewStat);
             }
         } catch (err) {
-            console.log(params,this.viewState);
+            console.log(params, this.viewState);
             throw err;
         }
 
