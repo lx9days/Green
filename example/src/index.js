@@ -37,7 +37,7 @@ const debug = false;
 //     }
 // });
 
-axios.get('/src/auto_500.json').then((res) => {
+axios.get('/src/test_data.json').then((res) => {
 
     const nodes = res.data.nodes;
     const links = res.data.links;
@@ -187,7 +187,7 @@ function draw (rawData) {
             zoom: 0,
             container: 'container',
             maxZoom: 4,
-            minZoom: -2,
+            minZoom: -4,
         },
         constant: {
             nodeHighlightColor: '#d9d9d9',
