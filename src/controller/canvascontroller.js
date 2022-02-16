@@ -1343,7 +1343,6 @@ export default class CanvasController {
                 params.zoom = this.props.zoom;
             }
 
-
             if (params.zoom < this.props.minZoom) {
                 params.zoom = this.props.minZoom;
             }
@@ -1355,15 +1354,15 @@ export default class CanvasController {
             this.props.viewState.zoom = params.zoom;
             this.props.zoom = params.zoom;
             let viewStat = JSON.parse(JSON.stringify(this.props.viewState));
-            // viewStat.minZoom = -1000;
-            // viewStat.maxZoom = 1000 + Math.random();
+            viewStat.minZoom = -4;
+            viewStat.maxZoom = 10 + Math.random();
             this.props.viewState = viewStat;
             this.deck.setProps({ viewState: viewStat });
             if (isNeedUpdate) {
                 this.updateRenderGraph();
             }
         } catch (err) {
-            console.log(params);
+            console.log(params,this.viewState);
             throw err;
         }
 
