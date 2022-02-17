@@ -130,15 +130,15 @@ export default class CanvasController {
             }
             //getCursor:({isDragging,isHovering}) => isHovering ? 'grabbing' : 'grab'
         });
-        // this.props.viewState.height = this.props.containerHeight;
-        // this.props.viewState.width = this.props.containerWidth;
-        // this.props.viewState.maxRotationX = 90;
-        // this.props.viewState.minRotationX = -90;
-        // this.props.viewState.orbitAxis = "Z";
-        // this.props.viewState.rotationOrbit = 0;
-        // this.props.viewState.rotationX = 0;
-        // this.props.viewState.minZoom = -Infinity;
-        // this.props.viewState.maxZoom = Infinity;
+        this.props.viewState.height = this.props.containerHeight;
+        this.props.viewState.width = this.props.containerWidth;
+        this.props.viewState.maxRotationX = 90;
+        this.props.viewState.minRotationX = -90;
+        this.props.viewState.orbitAxis = "Z";
+        this.props.viewState.rotationOrbit = 0;
+        this.props.viewState.rotationX = 0;
+        this.props.viewState.minZoom = -Infinity;
+        this.props.viewState.maxZoom = Infinity;
     }
 
     _onViewStateChange({ viewState, oldViewState, interactionState }) {
@@ -1390,9 +1390,9 @@ export default class CanvasController {
             }
             this.props.viewState = viewStat;
 
-            if (isNeedUpdate) {
+           // if (isNeedUpdate) {
                 this.updateRenderGraph(viewStat);
-            }
+          //  }
         } catch (err) {
             console.log(params, this.viewState);
             throw err;
