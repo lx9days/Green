@@ -116,7 +116,6 @@ export default class CanvasController {
                     for (const key in object.origionElement.data.statistics) {
                         html += `<div>${key}:${object.origionElement.data.statistics[key]}</div>`
                     }
-
                     return {
                         html: `<div>${html}</div>`,
                         style: {
@@ -128,15 +127,15 @@ export default class CanvasController {
             }
             //getCursor:({isDragging,isHovering}) => isHovering ? 'grabbing' : 'grab'
         });
-        // this.props.viewState.height = this.props.containerHeight;
-        // this.props.viewState.width = this.props.containerWidth;
-        // this.props.viewState.maxRotationX = 90;
-        // this.props.viewState.minRotationX = -90;
-        // this.props.viewState.orbitAxis = "Z";
-        // this.props.viewState.rotationOrbit = 0;
-        // this.props.viewState.rotationX = 0;
-        // this.props.viewState.minZoom = -Infinity;
-        // this.props.viewState.maxZoom = Infinity;
+        this.props.viewState.height = this.props.containerHeight;
+        this.props.viewState.width = this.props.containerWidth;
+        this.props.viewState.maxRotationX = 90;
+        this.props.viewState.minRotationX = -90;
+        this.props.viewState.orbitAxis = "Z";
+        this.props.viewState.rotationOrbit = 0;
+        this.props.viewState.rotationX = 0;
+        this.props.viewState.minZoom = -Infinity;
+        this.props.viewState.maxZoom = Infinity;
     }
 
     _onViewStateChange({ viewState, oldViewState, interactionState }) {
@@ -145,12 +144,11 @@ export default class CanvasController {
         } else {
             if (interactionState.isZooming) {
                 this.props.zoom = viewState.zoom;
-                //this.updateRenderGraph();
+                this.updateRenderGraph();
             } else {
                 viewState.target = oldViewState.target;
             }
         }
-
         this.props.viewState = viewState;
         this.deck.setProps({ viewState });
     }
@@ -160,7 +158,6 @@ export default class CanvasController {
             this.eventController.fire('emptyClick', [info, e]);
         }
         return true;
-
     }
 
     _deckDragStartHandler(info, e) {
@@ -1379,9 +1376,9 @@ export default class CanvasController {
             }
             this.props.viewState = viewStat;
 
-            if (isNeedUpdate) {
+           // if (isNeedUpdate) {
                 this.updateRenderGraph(viewStat);
-            }
+          //  }
         } catch (err) {
             console.log(params, this.viewState);
             throw err;

@@ -8,6 +8,7 @@ export default class SuperNode{
         this.sourceLinks = new Array();
         this.targetLinks = new Array();
         this.styles = new Array();
+        this.newNode=true;
     }
     get x(){
         return this._x;
