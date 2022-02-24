@@ -1,7 +1,7 @@
 import axios from 'axios';
 import HierarchyGraph from '../../src/hierarchygraph';
 
-axios.get('/src/schema1.json').then(res => {
+axios.get('/src/DATA.json').then(res => {
     // const nodes = res.data.nodes;
     // const links = res.data.links;
     // nodes.forEach((node, i) => {
@@ -17,8 +17,8 @@ axios.get('/src/schema1.json').then(res => {
 function draw(data) {
     const hierarchyGraph = new HierarchyGraph({
         canvasProps: {
-            containerWidth: 500,
-            containerHeight: 500,
+            containerWidth: 1500,
+            containerHeight: 1500,
             zoom: 0,
             container: 'container',
             maxZoom: 4,
@@ -59,8 +59,9 @@ function draw(data) {
             }
         ]
     });
-    hierarchyGraph.addEventListener("nodeClick",()=>{
-        hierarchyGraph.showChildren(["a3"]);
+    hierarchyGraph.addEventListener("nodeClick",(node)=>{
+        console.log(node.object.id);
+        hierarchyGraph.showChildren([node.object.id]);
     })
 
     document.getElementById("showChildren").addEventListener("click",()=>{
@@ -74,6 +75,13 @@ function draw(data) {
     });
     document.getElementById("updateDim").addEventListener("click",()=>{
         hierarchyGraph.updateDim({width:500,height:500})
+    });
+
+    document.getElementById("selectedNodes").addEventListener("click",()=>{
+        console.log(hierarchyGraph.getSelectedNodes())
+    });
+    document.getElementById("getNodes").addEventListener("click",()=>{
+        console.log(hierarchyGraph.getNodes())
     })
 
 }

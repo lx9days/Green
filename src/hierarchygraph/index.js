@@ -73,6 +73,22 @@ export default class HierarchyGraph {
         this.controller.canvasController.updateDim(size);
         this.controller.elementController.updateGrpahAfterDimMidifed(oldDim, size);
     }
+
+    /**
+     * 根据传入的id 数组获取节点
+     * @param {Array<string>} ids
+     */
+    getNodes(ids=null){
+        return this.controller.elementController.getNodes(ids);
+    }
+
+    /**
+     * 获取选中的节点
+     * @returns Array<Node>
+     */
+    getSelectedNodes(){
+        return this.controller.elementController.getSelectedNodes();
+    }
    
 
 }

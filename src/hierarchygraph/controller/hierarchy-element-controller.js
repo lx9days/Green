@@ -381,4 +381,30 @@ export default class HierarchyElementController {
         this._parseElements(visibleNodes);
     }
 
+    getNodes(ids){
+        if(Array.isArray(ids)){
+            const tempArray=[];
+            ids.forEach(id=>{
+                const node=this.idMapNode.get(id);
+                if(node&&!node.isFake&&node.visible){
+                    tempArray.push(node)
+                }
+            });
+            return tempArray;
+        }else{
+            return this.nodes.filter(v=>{
+                return !v.isFake&&v.visible;
+            });
+        }
+    }
+    getSelectedNodes(){
+        const resArray=[];
+        this.nodes.forEach(node=>{
+            if(node.status===2&&!node.isFake&&node.visible){
+                resArray.push(node);
+            }
+        });
+        return resArray;
+    }
+
 }
