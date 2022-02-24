@@ -118,7 +118,6 @@ export default class CanvasController {
                     for (const key in object.origionElement.data.statistics) {
                         html += `<div>${key}:${object.origionElement.data.statistics[key]}</div>`
                     }
-
                     return {
                         html: `<div>${html}</div>`,
                         style: {
@@ -147,13 +146,11 @@ export default class CanvasController {
         } else {
             if (interactionState.isZooming) {
                 this.props.zoom = viewState.zoom;
-
                 this.updateRenderGraph();
             } else {
                 viewState.target = oldViewState.target;
             }
         }
-
         this.props.viewState = viewState;
         this.deck.setProps({ viewState });
     }
@@ -163,7 +160,6 @@ export default class CanvasController {
             this.eventController.fire('emptyClick', [info, e]);
         }
         return true;
-
     }
 
     _deckDragStartHandler(info, e) {

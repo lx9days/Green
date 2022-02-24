@@ -51,24 +51,24 @@ function BFSTree(rootNodes, nodes, links) {
 }
 
 export class PositionController {
-    constructor(superGraph,name = 'vertical',viewSize) {
-        this.superGraph=superGraph
+    constructor(superGraph, name = 'vertical', viewSize) {
+        this.superGraph = superGraph
         this.name = name;
-        this.viewSize=viewSize
+        this.viewSize = viewSize
     }
-    updateViewSize(viewSize){
-        this.viewSize=[viewSize.width,viewSize.height];
+    updateViewSize(viewSize) {
+        this.viewSize = [viewSize.width, viewSize.height];
     }
-    layout(nodes, links, name = null) {
+    layout(nodes, links, flag, name = null) {
         if (name) {
             this.name = name;
         }
         switch (this.name) {
             case 'vertical':
-                this.verticalLayout(nodes, links);
+                this.verticalLayout(nodes, links, flag);
                 break;
             case 'horizontal':
-                this.horizontalLayout(nodes, links);
+                this.horizontalLayout(nodes, links, flag);
                 break;
         }
     }
@@ -76,16 +76,16 @@ export class PositionController {
     horizontalLayout_v1(nodes, links) {
         if (nodes && nodes.length > 0) {
             const rootNodes = searchZeroDegreeNode(nodes);
-            const idMapNode=new Map();
-            nodes.forEach(node=>{
-                idMapNode.set(node.id,node);
+            const idMapNode = new Map();
+            nodes.forEach(node => {
+                idMapNode.set(node.id, node);
             })
             const data = BFSTree(rootNodes, nodes, links);
             let allIds = [];
             for (let i = 0; i < data.nodes.length; i++) {
                 let nn1 = [];
-                const initx = this.viewSize[0]/2;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
-                const inity = this.viewSize[1]/2+100*i;//rootNodes[i].y?rootNodes[i].y:400;
+                const initx = this.viewSize[0] / 2;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
+                const inity = this.viewSize[1] / 2 + 100 * i;//rootNodes[i].y?rootNodes[i].y:400;
                 let allNodeIds = [];
                 const root = d3.hierarchy(data.nodes[i]);
                 root.dx = 250;
@@ -117,8 +117,8 @@ export class PositionController {
                     }
                 }
                 allNodeIds = nn1.map(item => item.id);
-                const allNodes=[]
-                allNodeIds.forEach(nodeId=>{
+                const allNodes = []
+                allNodeIds.forEach(nodeId => {
                     allNodes.push(idMapNode.get(nodeId));
                 });
                 allNodes.forEach((node, i) => {
@@ -129,21 +129,21 @@ export class PositionController {
             }
         }
     }
-    horizontalLayout(nodes, links) {
+    horizontalLayout(nodes, links, flag = false) {
         if (nodes && nodes.length > 0) {
             const rootNodes = searchZeroDegreeNode(nodes);
             const data = BFSTree(rootNodes, nodes, links);
-            const idMapNode=new Map();
-            nodes.forEach(node=>{
-                idMapNode.set(node.id,node);
+            const idMapNode = new Map();
+            nodes.forEach(node => {
+                idMapNode.set(node.id, node);
             });
-            const virtualRootNode={id:"virtual_node",data:{id:"virtual_node"},children:[]}
-            for(let i=0;i<data.nodes.length;i++){
+            const virtualRootNode = { id: "virtual_node", data: { id: "virtual_node" }, children: [] }
+            for (let i = 0; i < data.nodes.length; i++) {
                 virtualRootNode.children.push(data.nodes[i]);
             }
             let nn1 = [];
-            const initx = this.viewSize[0]/2;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
-            const inity = this.viewSize[1]/2;//rootNodes[i].y?rootNodes[i].y:400;
+            const initx = this.viewSize[0] / 2;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
+            const inity = this.viewSize[1] / 2;//rootNodes[i].y?rootNodes[i].y:400;
             let allNodeIds = [];
             const root = d3.hierarchy(virtualRootNode);
             root.dx = 150;
@@ -174,20 +174,30 @@ export class PositionController {
                     }
                 }
             }
-            nn1.forEach(item=>{
-                    allNodeIds.push(item.id);
+            nn1.forEach(item => {
+                allNodeIds.push(item.id);
             });
-            const allNodes=[];
-            allNodeIds.forEach(nodeId=>{
+            const allNodes = [];
+            allNodeIds.forEach(nodeId => {
                 allNodes.push(idMapNode.get(nodeId));
             });
-            
+
             allNodes.forEach((node, i) => {
-                if(node){
-                    node.x = nn1[i].y + initx-150;
-                    node.y = nn1[i].x + inity;
+                if (!flag) {
+                    if (node && node.newNode) {
+                        node.x = nn1[i].y + initx - 150;
+                        node.y = nn1[i].x + inity;
+                        node.newNode = false;
+                    }
+                } else {
+                    if (node) {
+                        node.x = nn1[i].y + initx - 150;
+                        node.y = nn1[i].x + inity;
+                        node.newNode = false;
+                    }
                 }
-               
+
+
             });
         }
     }
@@ -197,14 +207,14 @@ export class PositionController {
             const rootNodes = searchZeroDegreeNode(nodes);
             const data = BFSTree(rootNodes, nodes, links);
             let allIds = [];
-            const idMapNode=new Map();
-            nodes.forEach(node=>{
-                idMapNode.set(node.id,node);
+            const idMapNode = new Map();
+            nodes.forEach(node => {
+                idMapNode.set(node.id, node);
             });
             for (let i = 0; i < data.nodes.length; i++) {
                 let nn1 = [];
-                const initx = this.viewSize[0]/2+i*100;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
-                const inity = this.viewSize[1]/2;//rootNodes[i].y?rootNodes[i].y:400;
+                const initx = this.viewSize[0] / 2 + i * 100;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
+                const inity = this.viewSize[1] / 2;//rootNodes[i].y?rootNodes[i].y:400;
                 let allNodeIds = [];
                 const root = d3.hierarchy(data.nodes[i]);
                 root.dx = 250;
@@ -236,11 +246,11 @@ export class PositionController {
                     }
                 }
                 allNodeIds = nn1.map(item => item.id);
-                const allNodes=[]
-                allNodeIds.forEach(nodeId=>{
+                const allNodes = []
+                allNodeIds.forEach(nodeId => {
                     allNodes.push(idMapNode.get(nodeId));
                 });
-                
+
                 allNodes.forEach((node, i) => {
                     node.x = nn1[i].x + initx;
                     node.y = nn1[i].y + inity;
@@ -249,22 +259,23 @@ export class PositionController {
             }
         }
     }
-    verticalLayout(nodes, links) {
+    verticalLayout(nodes, links, flag = false) {
+        console.log(flag);
         if (nodes && nodes.length > 0) {
             const rootNodes = searchZeroDegreeNode(nodes);
             const data = BFSTree(rootNodes, nodes, links);
-            const idMapNode=new Map();
-            nodes.forEach(node=>{
-                idMapNode.set(node.id,node);
+            const idMapNode = new Map();
+            nodes.forEach(node => {
+                idMapNode.set(node.id, node);
             });
-            const virtualRootNode={id:"virtual_node",data:{id:"virtual_node"},children:[]}
-            for(let i=0;i<data.nodes.length;i++){
+            const virtualRootNode = { id: "virtual_node", data: { id: "virtual_node" }, children: [] }
+            for (let i = 0; i < data.nodes.length; i++) {
                 virtualRootNode.children.push(data.nodes[i]);
             }
 
             let nn1 = [];
-            const initx = this.viewSize[0]/2;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
-            const inity = this.viewSize[1]/2;//rootNodes[i].y?rootNodes[i].y:400;
+            const initx = this.viewSize[0] / 2;//rootNodes[i].x?rootNodes[i].x:(i+1)*150;
+            const inity = this.viewSize[1] / 2;//rootNodes[i].y?rootNodes[i].y:400;
             let allNodeIds = [];
             const root = d3.hierarchy(virtualRootNode);
             root.dx = 150;
@@ -295,20 +306,28 @@ export class PositionController {
                     }
                 }
             }
-            nn1.forEach(item=>{
-                    allNodeIds.push(item.id);
+            nn1.forEach(item => {
+                allNodeIds.push(item.id);
             });
-            const allNodes=[];
-            allNodeIds.forEach(nodeId=>{
+            const allNodes = [];
+            allNodeIds.forEach(nodeId => {
                 allNodes.push(idMapNode.get(nodeId));
             });
-            
+
             allNodes.forEach((node, i) => {
-                if(node){
-                    node.x = nn1[i].x + initx;
-                    node.y = nn1[i].y + inity-150;
+                if (!flag) {
+                    if (node && node.newNode) {
+                        node.x = nn1[i].x + initx;
+                        node.y = nn1[i].y + inity - 150;
+                        node.newNode = false;
+                    }
+                } else {
+                    if (node) {
+                        node.x = nn1[i].x + initx;
+                        node.y = nn1[i].y + inity - 150;
+                        node.newNode = false;
+                    }
                 }
-               
             });
         }
     }

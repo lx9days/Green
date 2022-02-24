@@ -17,8 +17,8 @@ axios.get('/src/schema1.json').then(res => {
 function draw(data) {
     const hierarchyGraph = new HierarchyGraph({
         canvasProps: {
-            containerWidth: 1500,
-            containerHeight: 1500,
+            containerWidth: 500,
+            containerHeight: 500,
             zoom: 0,
             container: 'container',
             maxZoom: 4,
