@@ -37,7 +37,7 @@ const debug = false;
 //     }
 // });
 
-axios.get('/src/test_data.json').then((res) => {
+axios.get('/src/auto_500.json').then((res) => {
 
     const nodes = res.data.nodes;
     const links = res.data.links;

@@ -55,7 +55,7 @@ export default class HierarchyElementController {
             const fakeRoot = { id: "fake_root", _id: "fake_root", children: roots }
             const hierarchyRoot = d3.hierarchy(fakeRoot);
             const dim = this.controller.canvasController.getDim();
-            this.treeFunc = d3.tree().size([dim.width - 120, dim.height - 150]).separation(function (a, b) { return (a.parent == b.parent ? 1 : 2); });
+            this.treeFunc = d3.tree().nodeSize([50,200]).separation(function (a, b) { return (a.parent == b.parent ? 1 : 2); });
             const treeRes = this.treeFunc(hierarchyRoot);
             this.fakeRoot = new HierarchyNode({ data: treeRes.data, depth: treeRes.depth, height: treeRes.height, childrenVis: true }, null, true)
             this.nodes.push(this.fakeRoot);
@@ -379,6 +379,32 @@ export default class HierarchyElementController {
         const visibleNodes = this.getVisibleNodes();
         this.controller.styleController.mountAllStyleToElement(visibleNodes, []);
         this._parseElements(visibleNodes);
+    }
+
+    getNodes(ids){
+        if(Array.isArray(ids)){
+            const tempArray=[];
+            ids.forEach(id=>{
+                const node=this.idMapNode.get(id);
+                if(node&&!node.isFake&&node.visible){
+                    tempArray.push(node)
+                }
+            });
+            return tempArray;
+        }else{
+            return this.nodes.filter(v=>{
+                return !v.isFake&&v.visible;
+            });
+        }
+    }
+    getSelectedNodes(){
+        const resArray=[];
+        this.nodes.forEach(node=>{
+            if(node.status===2&&!node.isFake&&node.visible){
+                resArray.push(node);
+            }
+        });
+        return resArray;
     }
 
 }

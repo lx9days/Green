@@ -8,7 +8,7 @@ import hexRgb from 'hex-rgb';
 //     colorBlue
 // }
 const ICONDIM = 60
-export default class HierarchyCanvasController{
+export default class HierarchyCanvasController {
     constructor(props, eventController) {
         this.props = props;
 
@@ -158,7 +158,7 @@ export default class HierarchyCanvasController{
     }
 
 
-    updateRenderGraph() {
+    updateRenderGraph(viewStat = null) {
         const zoom = this.props.zoom;
         const styleFlag = this.updateFlag.style;
         const positionFlag = this.updateFlag.position;
@@ -166,19 +166,18 @@ export default class HierarchyCanvasController{
         const invalidIcon = this.invalidIncons
         const defaultUrlMap = this.props.defaultUrlMap;
         const defaultUrlFunc = this.props.defaultUrlFunc;
-        const { renderBackgrounds, renderIcons, renderLines,  charSet, renderText} = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, charSet, renderText } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
-        console.log(styleFlag)
         const lineLayer = new LineLayer({
             id: 'line-layer',
             data: renderLines,
-            autoHighlight: true,
+            autoHighlight: false,
             highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
-            pickable: true,
+            pickable: false,
             getWidth: d => 2,//d.style.lineWidth,
-            getSourcePosition: d=>[d.source.x,d.source.y],//d => d.sourcePosition,
-            getTargetPosition: d=>[d.target.x,d.target.y],//d => d.targetPosition,
+            getSourcePosition: d => [d.source.x, d.source.y],//d => d.sourcePosition,
+            getTargetPosition: d => [d.target.x, d.target.y],//d => d.targetPosition,
             getColor: "#ff0000",//d => d.style.lineColor,
             updateTriggers: {
                 getSourcePosition: positionFlag,
@@ -199,7 +198,7 @@ export default class HierarchyCanvasController{
             getPosition: d => d.position,
             getIcon: d => {
                 let url = null;
-                if (invalidIcon.has(d.url)) {
+                if (d.url == '' || d.url === undefined || d.url === null || invalidIcon.has(d.url)) {
                     let type = defaultUrlFunc(d);
                     url = defaultUrlMap[type];
                 } else {
@@ -243,11 +242,8 @@ export default class HierarchyCanvasController{
                 return d.backgroundPolygon;
             },
             getLineColor: (d) => {
-                //if (d.status === 2) {
-                    return d.style.borderColor;
-                // } else {
-                //     return [255, 255, 255,0];
-                // }
+                return d.style.borderColor;
+
             },
             getLineWidth: (d) => {
                 return d.style.borderWidth;
@@ -255,9 +251,9 @@ export default class HierarchyCanvasController{
             filled: true,
             stroked: true,
             updateTriggers: {
-                getFillColor:styleFlag,
+                getFillColor: styleFlag,
                 getPolygon: positionFlag,
-                getLineColor:styleFlag
+                getLineColor: styleFlag
             }
         });
 
@@ -283,9 +279,11 @@ export default class HierarchyCanvasController{
                 getColor: styleFlag
             }
         });
-
-
-        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, rectBackgroundLayer, iconLayer, textLayer] });
+        if (viewStat === null) {
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, rectBackgroundLayer, iconLayer, textLayer] });
+        } else {
+            this.deck.setProps({viewState: viewStat, width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, rectBackgroundLayer, iconLayer, textLayer] });
+        }
     }
 
 
@@ -293,7 +291,7 @@ export default class HierarchyCanvasController{
 
         const zoom = this.props.zoom;
         const invalidIcon = this.invalidIncons;
-        const { renderBackgrounds, renderIcons, renderLines, renderText,  charSet } = this.renderObject;
+        const { renderBackgrounds, renderIcons, renderLines, renderText, charSet } = this.renderObject;
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
 
@@ -308,12 +306,12 @@ export default class HierarchyCanvasController{
         const lineLayer = new LineLayer({
             id: 'line-layer',
             data: renderLines.filter(() => true),
-            autoHighlight: true,
+            autoHighlight: false,
             highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
-            pickable: true,
+            pickable: false,
             getWidth: d => 2,//d.style.lineWidth,
-            getSourcePosition: d=>[d.source.x,d.source.y],//d => d.sourcePosition,
-            getTargetPosition: d=>[d.target.x,d.target.y],//d => d.targetPosition,
+            getSourcePosition: d => [d.source.x, d.source.y],//d => d.sourcePosition,
+            getTargetPosition: d => [d.target.x, d.target.y],//d => d.targetPosition,
             getColor: "#ff0000",//d => d.style.lineColor,
             updateTriggers: {
                 getSourcePosition: positionFlag,
@@ -334,7 +332,7 @@ export default class HierarchyCanvasController{
             getPosition: d => d.position,
             getIcon: d => {
                 let url = null;
-                if (d.url==''||d.url===undefined||d.url===null||invalidIcon.has(d.url)) {
+                if (d.url == '' || d.url === undefined || d.url === null || invalidIcon.has(d.url)) {
                     let type = defaultUrlFunc(d);
                     url = defaultUrlMap[type];
                 } else {
@@ -378,11 +376,7 @@ export default class HierarchyCanvasController{
                 return d.backgroundPolygon;
             },
             getLineColor: (d) => {
-                //if (d.status === 2) {
-                    return d.style.borderColor;
-                // } else {
-                //     return [255, 255, 255,0];
-                // }
+                return d.style.borderColor;
             },
             getLineWidth: (d) => {
                 return d.style.borderWidth;
@@ -391,7 +385,7 @@ export default class HierarchyCanvasController{
             stroked: true,
             updateTriggers: {
                 getPolygon: positionFlag,
-                getLineColor:styleFlag
+                getLineColor: styleFlag
             }
         });
 
@@ -418,24 +412,6 @@ export default class HierarchyCanvasController{
             }
         });
 
-        // const arrowLayer = new PolygonLayer({
-        //     id: 'arrow-layer',
-        //     opacity: 1,
-        //     data: renderPolygons.filter(() => true),
-        //     filled: true,
-        //     stroked: true,
-        //     positionFormat: 'XY',
-        //     getLineWidth: 1,
-        //     getLineColor: d => d.style.polygonFillColor,
-        //     getPolygon: d => {
-        //         return d.polygon;
-        //     },
-        //     getFillColor: (d) => d.style.polygonFillColor,
-        //     updateTriggers: {
-        //         getFillColor: styleFlag,
-        //     }
-        // });
-       
         this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, rectBackgroundLayer, iconLayer, textLayer] });
     }
 
@@ -538,7 +514,7 @@ export default class HierarchyCanvasController{
 
 
     updateRenderObject({ renderObject, position, style, bubble }) {
-        
+
         if (renderObject) {
             this.renderObject = renderObject;
             this.renderGraph();
@@ -555,7 +531,7 @@ export default class HierarchyCanvasController{
             }
             console.log(this.renderObject)
             this.updateRenderGraph();
-            
+
         }
     }
 
@@ -599,23 +575,41 @@ export default class HierarchyCanvasController{
     }
 
     fitView(params) {
-        if (params.zoom < this.props.minZoom) {
-            params.zoom = this.props.minZoom;
-        }
-        let isNeedUpdate = false;
-        if (params.zoom !== this.props.zoom) {
-            isNeedUpdate = true;
-        }
-        this.props.viewState.target = [params.target[0], params.target[1], 0];
-        this.props.viewState.zoom = params.zoom;
-        this.props.zoom = params.zoom;
-        let viewStat = JSON.parse(JSON.stringify(this.props.viewState));
-        // viewStat.minZoom = -1000;
-        // viewStat.maxZoom = 1000 + Math.random();
-        this.props.viewState = viewStat;
-        this.deck.setProps({ viewState: viewStat });
-        if (isNeedUpdate) {
-            this.updateRenderGraph();
+        try {
+            if (Number.isNaN(params.target[0]) || params.target === undefined) {
+                params.target[0] = this.props.viewState.target[0];
+            }
+            if (Number.isNaN(params.target[1]) || params.target === undefined) {
+                params.target[1] = this.props.viewState.target[1];
+            }
+            if (Number.isNaN(params.zoom) || params.zoom === undefined) {
+                params.zoom = this.props.zoom;
+            }
+            if (params.zoom < this.props.minZoom) {
+                params.zoom = this.props.minZoom;
+            }
+            let isNeedUpdate = false;
+            if (params.zoom !== this.props.zoom) {
+                isNeedUpdate = true;
+            }
+            this.props.viewState.target = [params.target[0], params.target[1], 0];
+            this.props.viewState.zoom = params.zoom;
+            this.props.zoom = params.zoom;
+            // let viewStat = JSON.parse(JSON.stringify(this.props.viewState));
+            let viewStat = Object.assign({}, this.props.viewState);
+            viewStat.minZoom = -4;
+            viewStat.maxZoom = 4 + Math.random();
+            if (!viewStat) {
+                return
+            }
+            this.props.viewState = viewStat;
+
+            // if (isNeedUpdate) {
+            this.updateRenderGraph(viewStat);
+            //  }
+        } catch (err) {
+            console.log(params, this.viewState);
+            throw err;
         }
     }
 

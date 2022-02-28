@@ -48,7 +48,7 @@ export default class ElementController {
     reParse() {
         this.controller.styleController.mountAllStyleToElement(this.nodes, this.links);
         this.controller.positionController.layout(this.nodes, this.links,true);
-        this._parseElements(this.nodes, newLinkArray, flag);
+        this._parseElements(this.nodes, newLinkArray);
     }
     _parseParams(data, flag) {
         const { newNodeArray, newLinkArray } = this._generateInternalEntity(data, flag);
@@ -58,7 +58,7 @@ export default class ElementController {
         } else {
             this.controller.positionController.layout(this.nodes, this.links, true);
         }
-        this._parseElements(newNodeArray, newLinkArray, flag);
+        this._parseElements(newNodeArray, newLinkArray);
 
     }
 
