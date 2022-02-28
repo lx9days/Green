@@ -68,7 +68,7 @@ function draw(data) {
         hierarchyGraph.showChildren(["a3"]);
     });
     document.getElementById("hideChildren").addEventListener("click",()=>{
-        hierarchyGraph.hideChildren(["a3"]);
+        hierarchyGraph.hideChildren(["5fff08e1fe2550c9ff6a6549"]);
     });
     document.getElementById("updateStatus").addEventListener("click",()=>{
         hierarchyGraph.updateNodeStatus(["a3"],2);

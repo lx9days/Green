@@ -61,9 +61,11 @@ export default class HierarchyNode {
         this.visible = true;
     }
     unVisNode() {
-        this.children.forEach(node => {
-            node.unVisNode();
-        });
+        if(this.children&&this.children.length>0){
+            this.children.forEach(node => {
+                node.unVisNode();
+            });
+        }
         this.visible = false;
     }
     visChildren() {

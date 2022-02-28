@@ -172,9 +172,9 @@ export default class HierarchyCanvasController {
         const lineLayer = new LineLayer({
             id: 'line-layer',
             data: renderLines,
-            autoHighlight: true,
+            autoHighlight: false,
             highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
-            pickable: true,
+            pickable: false,
             getWidth: d => 2,//d.style.lineWidth,
             getSourcePosition: d => [d.source.x, d.source.y],//d => d.sourcePosition,
             getTargetPosition: d => [d.target.x, d.target.y],//d => d.targetPosition,
@@ -306,9 +306,9 @@ export default class HierarchyCanvasController {
         const lineLayer = new LineLayer({
             id: 'line-layer',
             data: renderLines.filter(() => true),
-            autoHighlight: true,
+            autoHighlight: false,
             highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
-            pickable: true,
+            pickable: false,
             getWidth: d => 2,//d.style.lineWidth,
             getSourcePosition: d => [d.source.x, d.source.y],//d => d.sourcePosition,
             getTargetPosition: d => [d.target.x, d.target.y],//d => d.targetPosition,

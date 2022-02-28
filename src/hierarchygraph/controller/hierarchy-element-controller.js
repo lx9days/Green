@@ -55,7 +55,7 @@ export default class HierarchyElementController {
             const fakeRoot = { id: "fake_root", _id: "fake_root", children: roots }
             const hierarchyRoot = d3.hierarchy(fakeRoot);
             const dim = this.controller.canvasController.getDim();
-            this.treeFunc = d3.tree().size([dim.width - 120, dim.height - 150]).separation(function (a, b) { return (a.parent == b.parent ? 1 : 2); });
+            this.treeFunc = d3.tree().nodeSize([50,200]).separation(function (a, b) { return (a.parent == b.parent ? 1 : 2); });
             const treeRes = this.treeFunc(hierarchyRoot);
             this.fakeRoot = new HierarchyNode({ data: treeRes.data, depth: treeRes.depth, height: treeRes.height, childrenVis: true }, null, true)
             this.nodes.push(this.fakeRoot);
