@@ -83,7 +83,11 @@ export default class CanvasController {
         this.canvas.addEventListener('mousemove', e => {
             this.eventController.fire('canvasMouseMove', [e]);
             e.preventDefault();
-        })
+        });
+        this.canvas.addEventListener('dblclick',e=>{
+            this.eventController.fire('canvasDoubleClick',[e]);
+        });
+      
         container.appendChild(this.canvas);
         this.gl = this.canvas.getContext('webgl2');
         if (this.deck) {
@@ -101,6 +105,7 @@ export default class CanvasController {
                 maxZoom: this.props.maxZoom,
                 minZoom: this.props.minZoom,
                 controller: true,
+                doubleClickZoom:false,
             }),
             width: this.props.containerWidth,
             height: this.props.containerHeight,
@@ -129,6 +134,7 @@ export default class CanvasController {
             }
             //getCursor:({isDragging,isHovering}) => isHovering ? 'grabbing' : 'grab'
         });
+       
         this.props.viewState.height = this.props.containerHeight;
         this.props.viewState.width = this.props.containerWidth;
         this.props.viewState.maxRotationX = 90;
