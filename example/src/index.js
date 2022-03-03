@@ -724,6 +724,9 @@ function draw (rawData) {
     });
     document.getElementById("autoFocus").addEventListener("click",()=>{
         netGraph.focusOnNodes(["01cc378b0ebe3ad6b82c4a13e0767d47"])
+    });
+    document.getElementById("updateDim").addEventListener("click",()=>{
+        netGraph.updateDim({width:1000,height:1000})
     })
 }
 

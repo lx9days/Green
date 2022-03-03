@@ -86,6 +86,7 @@ export default class CanvasController {
         });
         this.canvas.addEventListener('dblclick',e=>{
             this.eventController.fire('canvasDoubleClick',[e]);
+            e.preventDefault();
         });
       
         container.appendChild(this.canvas);
@@ -1348,6 +1349,7 @@ export default class CanvasController {
                 maxZoom: this.props.maxZoom,
                 minZoom: this.props.minZoom,
                 controller: true,
+                doubleClickZoom:false,
             }),
             viewState: this.props.viewState,
         })
