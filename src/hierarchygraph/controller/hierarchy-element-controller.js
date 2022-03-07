@@ -5,6 +5,7 @@ import RenderHierarchyBackground from "../model/render-hierarchy-background";
 import RenderHierarchyIcon from "../model/render-hierarchy-icon";
 import RenderHierarchyMarker from "../model/render-hierarchy-marker";
 import RenderHierarchyText from "../model/render-hierarchy-text";
+import { autoFocusNode } from "../helper/util";
 
 export default class HierarchyElementController {
     constructor(controller, data) {
@@ -405,6 +406,11 @@ export default class HierarchyElementController {
             }
         });
         return resArray;
+    }
+    focusOnNodes(nodeIds){
+        const viewSize = this.controller.canvasController.getDim();
+        const viewFitParams = autoFocusNode(this.getNodes(nodeIds), [viewSize.width, viewSize.height]);
+        this.controller.canvasController.fitView(viewFitParams);
     }
 
 }
