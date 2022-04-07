@@ -260,7 +260,6 @@ export class PositionController {
         }
     }
     verticalLayout(nodes, links, flag = false) {
-        console.log(flag);
         if (nodes && nodes.length > 0) {
             const rootNodes = searchZeroDegreeNode(nodes);
             const data = BFSTree(rootNodes, nodes, links);

@@ -43,6 +43,11 @@ export default class PositionController {
     }
 
     setLayout(layoutName) {
+        if(layoutName!=="auto"){
+            if(this.force){
+                this.force.stop();
+            }
+        }
         if (layoutName != null) {
             this.useLayout = layoutName;
         }
@@ -85,10 +90,10 @@ export default class PositionController {
             return
         }
         let nodeIds = [];
-        
+
         regions.forEach((region, i) => {
             const bubbles = region.getBubbles();
-            const curPos = {x:0,y:0};
+            const curPos = { x: 0, y: 0 };
             bubbles.forEach((bubble, ind) => {
                 const nodes = bubble.getOriginNodes();
                 if (nodes.length > 0) {
@@ -104,7 +109,7 @@ export default class PositionController {
                         if (ind === 0) {
                             node.x = node1.x + col * 100;
                             node.y = node1.y + row * 100;
-                        }else{
+                        } else {
                             node.x = curPos.x + col * 100;
                             node.y = curPos.y + row * 100;
                         }
@@ -115,11 +120,11 @@ export default class PositionController {
                             row++;
                         }
                     }
-                    if(ind===0){
-                        curPos.x=node1.x+(rowNum+1)*100;
-                        curPos.y=node1.y;
-                    }else{
-                        curPos.x=curPos.x+(rowNum+1)*100;
+                    if (ind === 0) {
+                        curPos.x = node1.x + (rowNum + 1) * 100;
+                        curPos.y = node1.y;
+                    } else {
+                        curPos.x = curPos.x + (rowNum + 1) * 100;
                     }
 
                 }
@@ -141,31 +146,31 @@ export default class PositionController {
             let baseY = baseNode.y ? baseNode.y : 0;
             let insideR = (100 * selectedNodes.length) / (2 * Math.PI);
             let outsideR = 0;
-            let insideRoate = (2 * Math.PI) / selectedNodes.length;
+            let insideRoate = (2 * Math.PI) / ((selectedNodes.length-1)>0?(selectedNodes.length-1):1);
             let outsideRoate = 0;
-
             selectedNodes.forEach((node, index) => {
-                let id = node.id;
-                if (mapNodeIdToLinkIds.has(node.id)) {
-                    let rLinkObj = mapNodeIdToLinkIds.get(node.id);
-                    rLinkObj.sourceLinks.forEach((link) => {
-                        if (linkIds.indexOf(link.id) === -1) {
-                            linkIds.push(link.id);
-                        }
-                    });
-                    rLinkObj.targetLinks.forEach((link) => {
-                        if (linkIds.indexOf(link.id) === -1) {
-                            linkIds.push(link.id);
-                        }
-                    });
-                    nodeIds.push(id);
-                    node.x = baseX + Math.sin(insideRoate * index) * insideR;
-                    node.y = baseY + Math.cos(insideRoate * index) * insideR;
-                } else {
-                    node.x = 0;
-                    node.y = 0;
+                if (index !== 0) {
+                    let id = node.id;
+                    if (mapNodeIdToLinkIds.has(node.id)) {
+                        let rLinkObj = mapNodeIdToLinkIds.get(node.id);
+                        rLinkObj.sourceLinks.forEach((link) => {
+                            if (linkIds.indexOf(link.id) === -1) {
+                                linkIds.push(link.id);
+                            }
+                        });
+                        rLinkObj.targetLinks.forEach((link) => {
+                            if (linkIds.indexOf(link.id) === -1) {
+                                linkIds.push(link.id);
+                            }
+                        });
+                        nodeIds.push(id);
+                        node.x = baseX + Math.sin(insideRoate * index) * insideR;
+                        node.y = baseY + Math.cos(insideRoate * index) * insideR;
+                    } else {
+                        node.x = 0;
+                        node.y = 0;
+                    }
                 }
-
             });
             if (linkIds.length > 0) {
                 let links = this.netGraph.getLinks(linkIds);
@@ -194,7 +199,6 @@ export default class PositionController {
             }
             this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, true])
         }
-
     }
 
     circleShape(nodes) {
@@ -320,8 +324,8 @@ export default class PositionController {
         });
         this.force = d3.forceSimulation(nodes)
             .velocityDecay(0.2)
-            .force("charge", d3Simple.forceManyBodySampled().strength(-100))
-            .force("link", d3.forceLink(linkST).distance(250))
+            .force("charge", d3.forceManyBody().strength(-300))
+            .force("link", d3.forceLink(linkST).distance(120))
             .force("center", d3.forceCenter(this.canvasCenter.x, this.canvasCenter.y))
         this.force.on("tick", () => {
             this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, true])

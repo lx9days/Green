@@ -13,7 +13,7 @@ export default class HierarchyNode {
         this.height = height;
         this.childrenVisible = childrenVis;
         this.styles = new Array();
-        this.status = 1;//1未选中那个2选中
+        this.status = 2;//1未选中那个2选中
 
     }
     updateStatus(status) {

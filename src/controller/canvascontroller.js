@@ -19,6 +19,7 @@ export default class CanvasController {
         this.renderObject = null;
         this.groupDrag = false;
         this.dragDoune = null;
+        this.isJustDraged=false;
 
         this.updateFlag = {
             position: 0,
@@ -170,8 +171,11 @@ export default class CanvasController {
     }
 
     _deckDragStartHandler(info, e) {
+        this.isJustDraged=true
+        setTimeout(()=>{
+            this.isJustDraged=false
+        },4000)
         this.isAllowCanvasMove = true;
-
     }
 
     _deckDragingHandler(info, e) {
@@ -1365,6 +1369,9 @@ export default class CanvasController {
     }
 
     fitView(params) {
+        if(this.isJustDraged){
+            return
+        }
         try {
             if (Number.isNaN(params.target[0]) || params.target === undefined) {
                 params.target[0] = this.props.viewState.target[0];
