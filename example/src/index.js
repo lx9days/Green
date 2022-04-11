@@ -407,7 +407,15 @@ function draw (rawData) {
         });
         netGraph.setNodeLayout('square');
     });
-
+    document.getElementById('starLayout').addEventListener('click', () => {
+        // const selectedNodes = netGraph.getSelectedNodes();
+        // const selectedNodeIds = new Array();
+        // selectedNodes.map((v, i) => {
+        //     selectedNodeIds.push(v.getId());
+        // });
+       // console.log(netGraph.getNodes(["3ded00b898c73c11a72558530859568d"]))
+        netGraph.setNodeLayout('star');
+    });
     document.getElementById('brush').addEventListener('click', () => {
         netGraph.showBrushArea();
     });
@@ -724,6 +732,9 @@ function draw (rawData) {
     });
     document.getElementById("autoFocus").addEventListener("click",()=>{
         netGraph.focusOnNodes(["01cc378b0ebe3ad6b82c4a13e0767d47"])
+    });
+    document.getElementById("updateDim").addEventListener("click",()=>{
+        netGraph.updateDim({width:1000,height:1000})
     })
 }
 

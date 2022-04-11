@@ -529,7 +529,6 @@ export default class HierarchyCanvasController {
             if (bubble) {
                 this.updateFlag.bubble = Math.random();
             }
-            console.log(this.renderObject)
             this.updateRenderGraph();
 
         }

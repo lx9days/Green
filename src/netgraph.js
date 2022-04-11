@@ -463,7 +463,5 @@ export default class NetGraph {
     }
 
 }
-
-
 export {SuperGraph}
 

@@ -96,7 +96,7 @@ function draw (data) {
             }
         }],links:[{
             "id": "conEdge_con_3d84bec3aae517bbb0633648ec0cfec0dd",
-            "from": "con_3d84bec3aae517bbb0633648ec0cfec0",
+            "from": "a2992",
             "to": "abb2992",
             "type": "通过实体类型过滤",
             "undirected_type": "undirected_type",

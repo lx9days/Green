@@ -19,6 +19,7 @@ export default class CanvasController {
         this.renderObject = null;
         this.groupDrag = false;
         this.dragDoune = null;
+        this.isJustDraged=false;
 
         this.updateFlag = {
             position: 0,
@@ -83,7 +84,12 @@ export default class CanvasController {
         this.canvas.addEventListener('mousemove', e => {
             this.eventController.fire('canvasMouseMove', [e]);
             e.preventDefault();
-        })
+        });
+        this.canvas.addEventListener('dblclick',e=>{
+            this.eventController.fire('canvasDoubleClick',[e]);
+            e.preventDefault();
+        });
+      
         container.appendChild(this.canvas);
         this.gl = this.canvas.getContext('webgl2');
         if (this.deck) {
@@ -99,6 +105,7 @@ export default class CanvasController {
                 maxZoom: this.props.maxZoom,
                 minZoom: this.props.minZoom,
                 controller: true,
+                doubleClickZoom:false,
             }),
             width: this.props.containerWidth,
             height: this.props.containerHeight,
@@ -127,6 +134,7 @@ export default class CanvasController {
             }
             //getCursor:({isDragging,isHovering}) => isHovering ? 'grabbing' : 'grab'
         });
+       
         this.props.viewState.height = this.props.containerHeight;
         this.props.viewState.width = this.props.containerWidth;
         this.props.viewState.maxRotationX = 90;
@@ -161,8 +169,11 @@ export default class CanvasController {
     }
 
     _deckDragStartHandler(info, e) {
+        this.isJustDraged=true
+        setTimeout(()=>{
+            this.isJustDraged=false
+        },4000)
         this.isAllowCanvasMove = true;
-
     }
 
     _deckDragingHandler(info, e) {
@@ -1332,6 +1343,7 @@ export default class CanvasController {
                 maxZoom: this.props.maxZoom,
                 minZoom: this.props.minZoom,
                 controller: true,
+                doubleClickZoom:false,
             }),
             viewState: this.props.viewState,
         })
@@ -1347,6 +1359,9 @@ export default class CanvasController {
     }
 
     fitView(params) {
+        if(this.isJustDraged){
+            return
+        }
         try {
             if (Number.isNaN(params.target[0]) || params.target === undefined) {
                 params.target[0] = this.props.viewState.target[0];

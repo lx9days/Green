@@ -1,7 +1,7 @@
 import axios from 'axios';
 import HierarchyGraph from '../../src/hierarchygraph';
 
-axios.get('/src/DATA.json').then(res => {
+axios.get('/src/data1.json').then(res => {
     // const nodes = res.data.nodes;
     // const links = res.data.links;
     // nodes.forEach((node, i) => {
@@ -37,7 +37,6 @@ function draw(data) {
             }
         },
         data: data,
-
         style: [
             {
                 selector: 'node',
@@ -62,10 +61,16 @@ function draw(data) {
     hierarchyGraph.addEventListener("nodeClick",(node)=>{
         console.log(node.object.id);
         hierarchyGraph.showChildren([node.object.id]);
+
+
+        hierarchyGraph.focusOnNodes([node.object.id])
+
+        
     })
 
     document.getElementById("showChildren").addEventListener("click",()=>{
         hierarchyGraph.showChildren(["a3"]);
+        
     });
     document.getElementById("hideChildren").addEventListener("click",()=>{
         hierarchyGraph.hideChildren(["5fff08e1fe2550c9ff6a6549"]);
