@@ -27,7 +27,9 @@ export default class SuperGraph {
     addData(data) {
         if (data) {
             this.controller.elementController.parseNewData(data, 'add')
+            
         }
+
 
     }
     replaceData(data) {
@@ -55,7 +57,7 @@ export default class SuperGraph {
     fitView() {
         this.controller.elementController.fitView();
     }
-    updateDim(size) {
+    updateDim(size) {//superGraph
         this.controller.positionController.updateViewSize(size);
         const oldDim = this.controller.canvasController.getDim();
         this.controller.canvasController.updateDim(size);

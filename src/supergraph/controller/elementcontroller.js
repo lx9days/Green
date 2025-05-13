@@ -41,6 +41,12 @@ export default class ElementController {
     parseNewData(data, flag = 'add') {
         if (flag === 'add') {
             this._parseParams(data, flag);
+            console.log(this.controller.positionController.name);
+            if(this.controller.positionController.name == "vertical") {
+                this.controller.elementController.updateLayout("vertical");
+            } else if(this.controller.positionController.name == "horizontal") {
+                this.controller.elementController.updateLayout("horizontal");
+            }
         } else {
             this._parseParams(data, flag);
         }

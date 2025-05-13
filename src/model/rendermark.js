@@ -26,6 +26,13 @@ export default class RenderMark {
         this._generateStyle();
         this._generateBackgroundPolygon();
     }
+
+    resetElement(element){
+        this.id = element.getId();
+        this.origionElement = element;
+        this.status=element.getStatus();
+        this.rebuild();
+    }
     /**
      * 重新挂载样式和计算位置
      */

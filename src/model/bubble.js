@@ -39,7 +39,7 @@ export default class Bubble {
         });
         const bubble = new BubbleSet()
 
-        const list = bubble.createOutline(rectangles, [], null);
+        const list = bubble.createSimpleOutline(rectangles, [], null);
         const outline = new PointPath(list).transform([
             new ShapeSimplifier(0.0),
             new BSplineShapeGenerator(),

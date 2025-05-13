@@ -119,11 +119,17 @@ function draw (data) {
         superGraph.layout("horizontal");
     });
     document.getElementById("fit").addEventListener('click',()=>{
-        console.log("fit")
+        console.log("fit");
         superGraph.fitView();
     });
     document.getElementById("updateDim").addEventListener('click',()=>{
-        superGraph.updateDim({width:500,height:500})
-    })
+        let size = {width:2500,height:750};
+        // superGraph.controller.positionController.updateViewSize(size);
+        // const oldDim = superGraph.controller.canvasController.getDim();
+        superGraph.controller.canvasController.updateDim(size);
+        // superGraph.controller.elementController.updateGrpahAfterDimMidifed(oldDim, size);
+        superGraph.controller.elementController.fitView();
+        //superGraph.updateDim({width:500,height:500});
+    });
 
 }

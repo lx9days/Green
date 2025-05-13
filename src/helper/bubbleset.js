@@ -619,120 +619,56 @@ function BubbleSet() {
 
   var lastThreshold = Number.NaN;
 
-  this.createOutline = function (members, nonmem, edges) {
+  this.createSimpleOutline = function (members, nonmem, edges, padding = 8) {
     if (!members.length) return [];
-
-    var memberItems = members.map(function (m) {
-      return new Rectangle(m);
+  
+    const points = [];
+  
+    members.forEach(m => {
+      const x0 = m.x - m.width / 2;   // 左上角 x
+      const y0 = m.y - m.height / 2;  // 左上角 y
+      const w = m.width;
+      const h = m.height;
+  
+      // 四角 + padding
+      points.push([x0 - padding, y0 - padding]);             // 左上
+      points.push([x0 + w + padding, y0 - padding]);         // 右上
+      points.push([x0 - padding, y0 + h + padding]);         // 左下
+      points.push([x0 + w + padding, y0 + h + padding]);     // 右下
     });
-    var nonMembers = nonmem.map(function (m) {
-      return new Rectangle(m);
-    });
-
-    // calculate and store virtual edges
-    calculateVirtualEdges(memberItems, nonMembers);
-
-    edges && edges.forEach(function (e) {
-      virtualEdges.push(new Line(e.x1, e.y1, e.x2, e.y2));
-    });
-
-    activeRegion = null;
-    memberItems.forEach(function (m) {
-      if (!activeRegion) {
-        activeRegion = new Rectangle(m.rect());
-      } else {
-        activeRegion.add(m);
+  
+    // 凸包算法（略去重复部分）
+    points.sort((a, b) => a[0] === b[0] ? a[1] - b[1] : a[0] - b[0]);
+  
+    const cross = (o, a, b) =>
+      (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  
+    const lower = [];
+    for (const p of points) {
+      while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0) {
+        lower.pop();
       }
-    });
-
-    virtualEdges.forEach(function (l) {
-      activeRegion.add(l.rect());
-    });
-
-    activeRegion.rect({
-      x: activeRegion.minX() - Math.max(edgeR1, nodeR1) - morphBuffer,
-      y: activeRegion.minY() - Math.max(edgeR1, nodeR1) - morphBuffer,
-      width: activeRegion.width() + 2 * Math.max(edgeR1, nodeR1) + 2 * morphBuffer,
-      height: activeRegion.height() + 2 * Math.max(edgeR1, nodeR1) + 2 * morphBuffer,
-    });
-
-    potentialArea = new Area(Math.ceil(activeRegion.width() / pixelGroup), Math.ceil(activeRegion.height() / pixelGroup));
-
-    var estLength = (Math.floor(activeRegion.width()) + Math.floor(activeRegion.height())) * 2;
-    var surface = new PointList(estLength);
-
-    var tempThreshold = threshold;
-    var tempNegativeNodeInfluenceFactor = negativeNodeInfluenceFactor;
-    var tempNodeInfluenceFactor = nodeInfluenceFactor;
-    var tempEdgeInfluenceFactor = edgeInfluenceFactor;
-
-    var iterations = 0;
-
-    // add the aggregate and all it's members and virtual edges
-    fillPotentialArea(activeRegion, memberItems, nonMembers, potentialArea);
-
-    // try to march, check if surface contains all items
-    while ((!calculateContour(surface, activeRegion, memberItems, nonMembers, potentialArea)) && (iterations < maxMarchingIterations)) {
-      surface.clear();
-      iterations += 1;
-
-      // reduce negative influences first; this will allow the surface to
-      // pass without making it fatter all around (which raising the threshold does)
-      if (iterations <= maxMarchingIterations * 0.5) {
-        if (negativeNodeInfluenceFactor != 0) {
-          threshold *= 0.95;
-          negativeNodeInfluenceFactor *= 0.8;
-          fillPotentialArea(activeRegion, memberItems, nonMembers, potentialArea);
-        }
+      lower.push(p);
+    }
+  
+    const upper = [];
+    for (let i = points.length - 1; i >= 0; i--) {
+      const p = points[i];
+      while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0) {
+        upper.pop();
       }
-
-      // after half the iterations, start increasing positive energy and lowering the threshold
-      if (iterations > maxMarchingIterations * 0.5) {
-        threshold *= 0.95;
-        nodeInfluenceFactor *= 1.2;
-        edgeInfluenceFactor *= 1.2;
-        fillPotentialArea(activeRegion, memberItems, nonMembers, potentialArea);
-      }
+      upper.push(p);
     }
-
-    lastThreshold = threshold;
-    threshold = tempThreshold;
-    negativeNodeInfluenceFactor = tempNegativeNodeInfluenceFactor;
-    nodeInfluenceFactor = tempNodeInfluenceFactor;
-    edgeInfluenceFactor = tempEdgeInfluenceFactor;
-
-    // start with global SKIP value, but decrease skip amount if there aren't enough points in the surface
-    var thisSkip = skip;
-    // prepare viz attribute array
-    var size = surface.size();
-
-    if (thisSkip > 1) {
-      size = Math.floor(surface.size() / thisSkip);
-      // if we reduced too much (fewer than three points in reduced surface) reduce skip and try again
-      while ((size < 3) && (thisSkip > 1)) {
-        thisSkip -= 1;
-        size = Math.floor(surface.size() / thisSkip);
-      }
-    }
-
-    // add the offset of the active area to the coordinates
-    var xcorner = activeRegion.minX();
-    var ycorner = activeRegion.minY();
-
-    var fhull = new PointList(size);
-    // copy hull values
-    for (var i = 0, j = 0; j < size; j += 1, i += thisSkip) {
-      fhull.add(new Point(surface.get(i).x() + xcorner, surface.get(i).y() + ycorner));
-    }
-
-    if (!debug) {
-      // getting rid of unused memory preventing a memory leak
-      activeRegion = null;
-      potentialArea = null;
-    }
-
-    return fhull.list();
+  
+    upper.pop();
+    lower.pop();
+  
+    return lower.concat(upper);
   };
+  
+  
+  
+
   var debug = false;
   this.debug = function (_) {
     if (!arguments.length) return debug;

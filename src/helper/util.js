@@ -217,7 +217,7 @@ function BFSTree(rootNodes, nodes, links) {
         }
         nodeRes.push(nodeMap.get(rootNodes[i].id))
     }
-
+    console.log(nodeRes)
     return {
         nodes: nodeRes,
     }

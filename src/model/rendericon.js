@@ -26,9 +26,12 @@ export default class RenderIcon {
     get data() {
         return this.origionElement.data;
     }
-
-
-
+    resetElement(element){
+        this.id = element.getId();
+        this.origionElement = element;
+        this.status=element.getStatus();
+        this.rebuild();
+    }
     rebuild() {
         this._generateStyle();
         this._generatePosition();

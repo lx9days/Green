@@ -26,8 +26,8 @@ export default class HierarchyGraph {
      * 将指定的id的孩子进行展开
      * @param {Array} ids 节点id
      */
-    showChildren(ids){
-        if(Array.isArray(ids)&&ids.length>0){
+    showChildren(ids) {
+        if (Array.isArray(ids) && ids.length > 0) {
             this.controller.elementController.showChildren(ids);
         }
     }
@@ -35,8 +35,8 @@ export default class HierarchyGraph {
      * 将指定的id的孩子进行隐藏
      * @param {Array} ids 节点id
      */
-    hideChildren(ids){
-        if(Array.isArray(ids)&&ids.length>0){
+    hideChildren(ids) {
+        if (Array.isArray(ids) && ids.length > 0) {
             this.controller.elementController.hideChildren(ids);
         }
     }
@@ -59,9 +59,9 @@ export default class HierarchyGraph {
      * @param {Array} ids 要更新状态的id
      * @param {number}} status 节点的状态 1 未选中 2选中
      */
-    updateNodeStatus(ids=null,status){
-        if(status===1||status===2){
-            this.controller.elementController.updateNodeStatus(ids,status);
+    updateNodeStatus(ids = null, status) {
+        if (status === 1 || status === 2) {
+            this.controller.elementController.updateNodeStatus(ids, status);
         }
     }
     /**
@@ -78,7 +78,7 @@ export default class HierarchyGraph {
      * 根据传入的id 数组获取节点
      * @param {Array<string>} ids
      */
-    getNodes(ids=null){
+    getNodes(ids = null) {
         return this.controller.elementController.getNodes(ids);
     }
 
@@ -86,21 +86,39 @@ export default class HierarchyGraph {
      * 获取选中的节点
      * @returns Array<Node>
      */
-    getSelectedNodes(){
+    getSelectedNodes() {
         return this.controller.elementController.getSelectedNodes();
     }
 
-     /**
-     * 自动将视图聚焦了一组Nodes之中
-     * @param {Array} ids 要聚焦的Node的数组
-     */
-      focusOnNodes(ids){
-        if(ids&&ids.length>0){
+    /**
+    * 自动将视图聚焦了一组Nodes之中
+    * @param {Array} ids 要聚焦的Node的数组
+    */
+    focusOnNodes(ids) {
+        if (ids && ids.length > 0) {
             this.controller.elementController.focusOnNodes(ids);
         }
     }
 
-    
-   
+
+
+    //////////////////////////////////////////////////////////////////////
+
+    /**
+         * 添加样式
+         * @param {{selecter:..,style{}}} styles 
+         * @param {boolean} needRender 是否立即应用样式
+         */
+    addStyle(styles, needRender = true) {
+        this.controller.styleController.addStyle(styles);
+        if(needRender){
+           this.controller.elementController.updateStyle();
+        }
+        
+    }
+
+
+    //////////////////////////////////////////////////////////////////////
+
 
 }

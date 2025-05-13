@@ -23,6 +23,12 @@ export default class RenderLabel {
         this._generatePosition();
     }
 
+    resetElement(element){
+        this.id = element.getId();
+        this.origionElement = element;
+        this.status=element.getStatus();
+        this.rebuild();
+    }
     rebuild() {
         this._generateStyle();
         this._generatePosition();

@@ -24,6 +24,12 @@ export default class RenderBorder {
         this._generatePosition();
         
     }
+    resetElement(element){
+        this.id = element.getId();
+        this.origionElement = element;
+        this.status=element.getStatus();
+        this.rebuild();
+    }
     /**
      * 重新挂载样式和计算位置
      */

@@ -31,6 +31,13 @@ export default class RenderLine {
         this._generatePosition();
     }
 
+    resetElement(element){
+        this.id = element.getId();
+        this.origionElement = element;
+        this.status=element.getStatus();
+        this.rebuild();
+    }
+
     /**
      * 重构style和position
      */

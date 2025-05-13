@@ -289,7 +289,7 @@ export default class NetGraph {
      * 
      * @param {Oject} size Canvas Width
      */
-    updateDim(size){
+    updateDim(size){//netGraph
         this.controller.positionController.setCanvasCenter(size);
         const oldDim=this.controller.canvasController.getDim();
         this.controller.canvasController.updateDim(size);
@@ -462,6 +462,199 @@ export default class NetGraph {
         }
     }
 
+    updateConstantParams(params){
+        if(params){
+            this.controller.canvasController.updateConstantParams(params)
+        }
+    }
+
+    /**
+     * 设置用于展开的树状数据
+     * @param {Object} data
+     */
+    setRawData(data) {
+        // const nodes = data.nodes;
+        // const links = data.links;
+      
+        // const idToNode = Object.fromEntries(nodes.map(n => [n.id, n]));
+        // const leafSet = new Set(nodes.filter(n => n.isLeaf).map(n => n.id));
+      
+        // // === 辅助函数：获取所有非叶子祖先节点（包括多级向上） ===
+        // function getAllNonLeafAncestors(id) {
+        //   const result = new Set();
+        //   let current = idToNode[id];
+        //   while (current && current.parent) {
+        //     const parent = idToNode[current.parent];
+        //     if (parent && !parent.isLeaf) {
+        //       result.add(parent.id);
+        //     }
+        //     current = parent;
+        //   }
+        //   return result;
+        // }
+      
+        // // === 辅助函数：获取最近非叶子祖先（用于叶子→最近父边） ===
+        // function getClosestNonLeafAncestor(id) {
+        //   let current = idToNode[id];
+        //   while (current && current.parent) {
+        //     const parent = idToNode[current.parent];
+        //     if (parent && !parent.isLeaf) {
+        //       return parent.id;
+        //     }
+        //     current = parent;
+        //   }
+        //   return null;
+        // }
+      
+        // const syntheticLinks = [];
+        // const syntheticEdgeSet = new Set();  // 避免重复添加 synthetic 高层边
+        // const supportEdgeSet = new Set();    // 避免重复添加 leaf→root 辅助边
+      
+        // // === 遍历原始边，生成祖先传播边 ===
+        // links.forEach(link => {
+        //   const { source, target } = link;
+      
+        //   if (!leafSet.has(source) || !leafSet.has(target)) return; // 仅处理叶子间边
+      
+        //   const ancestorsA = getAllNonLeafAncestors(source); // a 的所有非叶子祖先
+        //   const ancestorsB = getAllNonLeafAncestors(target); // b 的所有非叶子祖先
+      
+        //   // === 添加: a → Bi ===
+        //   for (const bAncestor of ancestorsB) {
+        //     const key = `${source}->${bAncestor}`;
+        //     if (!supportEdgeSet.has(key)) {
+        //       syntheticLinks.push({
+        //         source: source,
+        //         target: bAncestor,
+        //         synthetic: true,
+        //         // type: "leaf-to-root"
+        //       });
+        //       supportEdgeSet.add(key);
+        //     }
+        //   }
+      
+        //   // === 添加: Ai → b ===
+        //   for (const aAncestor of ancestorsA) {
+        //     const key = `${aAncestor}->${target}`;
+        //     if (!supportEdgeSet.has(key)) {
+        //       syntheticLinks.push({
+        //         source: aAncestor,
+        //         target: target,
+        //         synthetic: true,
+        //         // type: "root-to-leaf"
+        //       });
+        //       supportEdgeSet.add(key);
+        //     }
+        //   }
+      
+        //   // === 添加: Ai -- Bj ===
+        //   for (const aAncestor of ancestorsA) {
+        //     for (const bAncestor of ancestorsB) {
+        //       if (aAncestor === bAncestor) continue; // 忽略自身连接
+        //       const key = aAncestor < bAncestor ? `${aAncestor}--${bAncestor}` : `${bAncestor}--${aAncestor}`;
+        //       if (!syntheticEdgeSet.has(key)) {
+        //         syntheticLinks.push({
+        //           source: aAncestor,
+        //           target: bAncestor,
+        //           synthetic: true,
+        //         //   type: "highlevel"
+        //         });
+        //         syntheticEdgeSet.add(key);
+        //       }
+        //     }
+        //   }
+      
+        //   // === （可选）添加 a → 最近祖先，最近祖先 → b 辅助方向边 ===
+        //   const aRoot = getClosestNonLeafAncestor(source);
+        //   const bRoot = getClosestNonLeafAncestor(target);
+      
+        //   if (aRoot) {
+        //     const key = `${source}->${aRoot}`;
+        //     if (!supportEdgeSet.has(key)) {
+        //       syntheticLinks.push({
+        //         source: source,
+        //         target: aRoot,
+        //         synthetic: true,
+        //         // type: "leaf-to-root"
+        //       });
+        //       supportEdgeSet.add(key);
+        //     }
+        //   }
+      
+        //   if (bRoot) {
+        //     const key = `${bRoot}->${target}`;
+        //     if (!supportEdgeSet.has(key)) {
+        //       syntheticLinks.push({
+        //         source: bRoot,
+        //         target: target,
+        //         synthetic: true,
+        //         // type: "root-to-leaf"
+        //       });
+        //       supportEdgeSet.add(key);
+        //     }
+        //   }
+        // });
+      
+        // // === 添加树结构边（父 → 子） ===
+        // nodes.forEach(node => {
+        //   if (node.parent !== "") {
+        //     syntheticLinks.push({
+        //       source: node.parent,
+        //       target: node.id,
+        //       isHierarchy: true
+        //     });
+        //   }
+        // });
+      
+        // // === 最终汇总所有边 ===
+        // const allLinks = [...links, ...syntheticLinks];
+      
+        // // === 统一设置 from/to/id 属性 ===
+        // allLinks.forEach((link, i) => {
+        //   link.id = i;
+        //   link.from = link.source;
+        //   link.to = link.target;
+        // });
+      
+        // // === 保存到控制器 ===
+        // data.links = allLinks;
+        // console.log(data);
+
+        const nodes = data.nodes;
+        const originalLinks = data.links; // 保留原始图结构边
+        const links = [];
+      
+        // === 补充树结构边（父 → 子） ===
+        nodes.forEach(node => {
+          if (node.parent !== "") {
+            links.push({
+              source: node.parent,
+              target: node.id,
+              isHierarchy: true // 标记为树边
+            });
+          }
+        });
+      
+        // === 合并原始图边 + 补充的树边
+        const allLinks = [...originalLinks, ...links];
+      
+        // === 给所有边统一设置 id/from/to 属性
+        allLinks.forEach((link, i) => {
+          link.id = i;
+          link.from = link.source;
+          link.to = link.target;
+        });
+      
+        // === 更新到 controller
+        data.links = allLinks;
+        console.log(data);
+
+        this.controller.dataController.tree = data;
+      }
+      
+    getRawData(){
+        return this.controller.dataController.tree;
+    }
 }
 export {SuperGraph}
 

@@ -29,6 +29,13 @@ export default class RenderGroupText {
 
     }
 
+    resetElement(element){
+        this.id = element.getId();
+        this.origionElement = element;
+        this.status=element.getStatus();
+        this.rebuild();
+    }
+
     rebuild() {
         this._generateStyle();
         this._generatePosition();
@@ -51,7 +58,7 @@ export default class RenderGroupText {
         //设计优化
         const elementPosition = this.origionElement.getLocation();
         this.position[0] = elementPosition.x;//+ this.style.height / 2+4;
-        this.position[1] = elementPosition.y + this.style.height / 2;
+        this.position[1] = elementPosition.y + this.style.borderWidth * 2 + this.style.backgroundHeight;
         this.style.textAnchor = 'start';
         this.style.textAlignmentBaseline = 'center';
 
@@ -118,7 +125,7 @@ export default class RenderGroupText {
                             this.style.backgroundHeight = backgroundHeightObj;
                         }
                         break;
-                    case 'background-height':
+                    case 'background-width':
                         const backgroundWidthObj = style[item];
                         if (isFunction(backgroundWidthObj)) {
                             this.style.backgroundWidth = backgroundWidthObj(this.origionElement)

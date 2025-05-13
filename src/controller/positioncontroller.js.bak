@@ -60,41 +60,37 @@ export default class PositionController {
 
     importLayout(nodes) {
         if (nodes.length > 0) {
-            nodes.forEach(node => {
-                node.x = this.netGraph.backupNodeLayout.get(node.id).x;
-            node.y = this.netGraph.backupNodeLayout.get(node.id).y;
-            })
-            // let nodeIds = [];
-            // let rowNum = Math.ceil(Math.sqrt(nodes.length));
-            // let node1 = nodes[0];
-            // if (node1) {
-            //     this.offset.x += (Math.random() - 0.5) * 200;
-            //     this.offset.y += (Math.random() - 0.5) * 200;
+            let nodeIds = [];
+            let rowNum = Math.ceil(Math.sqrt(nodes.length));
+            let node1 = nodes[0];
+            if (node1) {
+                this.offset.x += (Math.random() - 0.5) * 200;
+                this.offset.y += (Math.random() - 0.5) * 200;
 
-            //     node1.x = ((this.canvasCenter.x - rowNum * 100 / 2) || 0) + this.offset.x;
-            //     node1.y = ((this.canvasCenter.y - rowNum * 100 / 2) || 0) + this.offset.y;
+                node1.x = ((this.canvasCenter.x - rowNum * 100 / 2) || 0) + this.offset.x;
+                node1.y = ((this.canvasCenter.y - rowNum * 100 / 2) || 0) + this.offset.y;
 
-            // }
-            // let col = 0;
-            // let row = 0;
-            // for (let i = 0; i < nodes.length; i++) {
-            //     let node = nodes[i];
-            //     let nodeId = node.id;
-            //     nodeIds.push(nodeId);
-            //     if(this.netGraph.getIdMapNode().get(nodeId).data.x && this.netGraph.getIdMapNode().get(nodeId).data.y) {
-            //         node.x = this.netGraph.getIdMapNode().get(nodeId).data.x;
-            //         node.y = this.netGraph.getIdMapNode().get(nodeId).data.y;
-            //     } else {
-            //         node.x = node1.x + col * 100;
-            //         node.y = node1.y + row * 100;
-            //         col++;
-            //     }
-            //     if (col >= rowNum) {
-            //         col = 0;
-            //         row++;
-            //     }
-            // }
-            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodes.map(n => n.id), true])
+            }
+            let col = 0;
+            let row = 0;
+            for (let i = 0; i < nodes.length; i++) {
+                let node = nodes[i];
+                let nodeId = node.id;
+                nodeIds.push(nodeId);
+                if(this.netGraph.getIdMapNode().get(nodeId).data.x && this.netGraph.getIdMapNode().get(nodeId).data.y) {
+                    node.x = this.netGraph.getIdMapNode().get(nodeId).data.x;
+                    node.y = this.netGraph.getIdMapNode().get(nodeId).data.y;
+                } else {
+                    node.x = node1.x + col * 100;
+                    node.y = node1.y + row * 100;
+                    col++;
+                }
+                if (col >= rowNum) {
+                    col = 0;
+                    row++;
+                }
+            }
+            this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, true])
         }
     };
 
@@ -121,8 +117,8 @@ export default class PositionController {
                 let node = nodes[i];
                 let nodeId = node.id;
                 nodeIds.push(nodeId);
-                node.x = node1.x + col * 150;
-                node.y = node1.y + row * 150;
+                node.x = node1.x + col * 100;
+                node.y = node1.y + row * 100;
                 col++;
                 if (col >= rowNum) {
                     col = 0;
@@ -429,67 +425,15 @@ export default class PositionController {
                 });
             }
         });
-
-        // Create groups of nodes with same properties
-        const nodeGroups = {};
-        nodes.forEach(node => {
-            const properties = node.data.properties || {};
-            Object.entries(properties).forEach(([key, value]) => {
-                if(key !== 'platform')return; // 只对平台进行分组
-
-                const groupKey = `${key}_${value}`;
-                if (!nodeGroups[groupKey]) {
-                    nodeGroups[groupKey] = [];
-                }
-                nodeGroups[groupKey].push(node);
-            });
-        });
-
+        console.log(nodes);
+        //////////////////////////////////////////////////////////////从此处开始，node被附加了vxvy
         this.force = d3.forceSimulation(nodes)
             .velocityDecay(0.2)
             .force("charge", d3.forceManyBody().strength(-300))
-            // .force("link", d3.forceLink(linkST).distance(120))
-            .force("link", d3.forceLink(linkST)
-  .distance(320)
-  .strength(link => {
-    const sourceNode = nodes[link.source.index ?? link.source];
-    const targetNode = nodes[link.target.index ?? link.target];
-    const parent1 = sourceNode.data.parent;
-    const parent2 = targetNode.data.parent;
-    return parent1 === parent2 ? 0.3 : -0.001;
-  }))
+            .force("link", d3.forceLink(linkST).distance(120))
             .force("center", d3.forceCenter(this.canvasCenter.x, this.canvasCenter.y))
-            
-        // Switch for platform attraction
-        if (true) {
-            // Add attraction forces between nodes with same properties
-            Object.values(nodeGroups).forEach(group => {
-                if (group.length > 1) {
-                    const force = d3.forceManyBody()
-                        .strength(80);
-                    // force.distanceMax(200);
-                    this.force.force(`group-${Math.random()}`, force);
-                }
-            });
-
-            // Add weak attraction forces between all nodes to prevent excessive spreading
-            // const weakAttraction = d3.forceManyBody()
-            //     .strength(-10) // Weak repulsion
-            //     .distanceMax(300); // Only affects nodes within this distance
-            // this.force.force("weak-attraction", weakAttraction);
-
-            // Add a weak x-positioning force to spread nodes horizontally
-            const xPositioning = d3.forceX(this.canvasCenter.x)
-                .strength(0.03);
-            this.force.force("x-positioning", xPositioning);
-
-            // Add a weak y-positioning force to spread nodes vertically  
-            const yPositioning = d3.forceY(this.canvasCenter.y)
-                .strength(0.03);
-            this.force.force("y-positioning", yPositioning);
-        }
-
         this.force.on("tick", () => {
+            console.log(nodes);
             this.netGraph.controller.eventController.fire("_updateEntityPosition", [nodeIds, true])
         })
         let force = this.force;

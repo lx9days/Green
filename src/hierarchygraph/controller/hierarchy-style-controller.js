@@ -1,4 +1,5 @@
 //import Selection from '../ngss/selection';
+import { style } from "d3";
 import Selector from "../../nges"
 
 export default class HierarchyStyleController{
@@ -52,6 +53,7 @@ export default class HierarchyStyleController{
                  if(selectResult.links.length>0){
                      selectResult.links.forEach((link)=>{
                          link.addStyle(style.style);
+                         console.log(style.style);
                      });
                  }
 
@@ -96,5 +98,8 @@ export default class HierarchyStyleController{
         }
     }
 
+    ///////////////////////////////////////////////////////
+    
+    ////////////////////////////////////////////////////////
     
 }

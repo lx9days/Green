@@ -12,6 +12,7 @@ const ICONDIM = 60;
 export default class CanvasController {
     constructor(props, eventController) {
         this.props = props;
+        console.log(props)
 
         this.boxSelecting = false;
         this.isAllowCanvasMove = false;
@@ -203,6 +204,7 @@ export default class CanvasController {
                 id: 'bubble-layer',
                 data: renderBubble,
                 positionFormat: 'XY',
+                opacity:0.5,
                 getPolygon: d => d.polygon,
                 getFillColor: d => d.color,
                 updateTriggers: {
@@ -295,42 +297,42 @@ export default class CanvasController {
             }
         });
 
-        // const circleEdge = new ScatterplotLayer({
-        //     id: 'circleedge-layer',
-        //     data: renderBackgrounds.filter((v) => v.shapeType === 0),
-        //     coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
-        //     opacity: 1,
-        //     stroked: true,
-        //     filled: true,
-        //     autoHighlight: false,
-        //     getFillColor: (d) => {
-        //         return d.style.backgroundColor || [255, 255, 255, 255];
-        //     },
-        //     getRadius: (d) => {
-        //         return d.style.circleHeight / 2;
-        //     },
-        //     getPosition: (d) => {
-        //         return d.position;
-        //     },
-        //     getLineColor: (d) => {
-        //         if (d.status === 2) {
-        //             return d.style.borderColor
-        //         } else {
-        //             return [255, 255, 255, 0];
-        //         }
-        //     },
-        //     getLineWidth: (d) => {
-        //         return d.style.borderWidth || 4;
-        //     },
-        //     getWidth: (d) => {
-        //         return d.style.width;
-        //     },
-        //     onDrag: this.nodeDragingHandler,
-        //     onClick: this.nodeClickHandler,
-        //     onDragStart: this.nodeDragStartHandler,
-        //     onDragEnd: this.nodeDragEndHandler,
+        const circleEdge = new ScatterplotLayer({
+            id: 'circleedge-layer',
+            data: renderBackgrounds.filter((v) => v.shapeType === 0),
+            coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            opacity: 1,
+            stroked: true,
+            filled: true,
+            autoHighlight: false,
+            getFillColor: (d) => {
+                return d.style.backgroundColor || [255, 255, 255, 255];
+            },
+            getRadius: (d) => {
+                return d.style.circleHeight / 2;
+            },
+            getPosition: (d) => {
+                return d.position;
+            },
+            getLineColor: (d) => {
+                if (d.status === 2) {
+                    return d.style.borderColor
+                } else {
+                    return [255, 255, 255, 0];
+                }
+            },
+            getLineWidth: (d) => {
+                return d.style.borderWidth || 4;
+            },
+            getWidth: (d) => {
+                return d.style.width;
+            },
+            onDrag: this.nodeDragingHandler,
+            onClick: this.nodeClickHandler,
+            onDragStart: this.nodeDragStartHandler,
+            onDragEnd: this.nodeDragEndHandler,
 
-        // });
+        });
         // const roundedEdge = new RoundedRectangleLayer({
         //     id: 'rounded',
         //     data: renderBackgrounds.filter((v) => v.shapeType === 1),
@@ -403,11 +405,11 @@ export default class CanvasController {
             stroked: true,
             positionFormat: 'XY',
             updateTriggers: {
-                getPolygon: positionFlag,
+                //getPolygon: positionFlag,
                 getFillColor: styleFlag,
+                getPolygon: styleFlag + positionFlag,
             }
         });
-
         const textLayer = new TextLayer({
             id: 'text-layer',
             coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
@@ -415,7 +417,7 @@ export default class CanvasController {
             fontFamily: 'Microsoft YaHei',
             sizeScale: 2 ** zoom,
             getPosition: d => {
-                return d.position;
+                return [d.position[0]+5, d.position[1]+15];
             },
             getText: d => d.text,
             getSize: d => d.style.textSize,
@@ -488,7 +490,16 @@ export default class CanvasController {
             autoHighlight: true,
             highlightColor: [markRGB.red, markRGB.green, markRGB.blue, markOpactiy * 255],
             positionFormat: 'XY',
-            getPolygon: d => d.backgroundPolygon,
+            getPolygon: d => {
+                return d.backgroundPolygon
+                return [
+                    [d.backgroundPolygon[0][0],d.backgroundPolygon[0][1]],
+                    [d.backgroundPolygon[1][0]+d.style.borderWidth*2,d.backgroundPolygon[1][1]],
+                    [d.backgroundPolygon[2][0]+d.style.borderWidth * 2,d.backgroundPolygon[2][1]+d.style.borderWidth * 2],
+                    [d.backgroundPolygon[3][0],d.backgroundPolygon[3][1]+d.style.borderWidth * 2]
+            ]
+            // return resolveBorder
+            },
             getFillColor: (d) => {
                 if (d.status === 4) {
                     return d.style.highLightColor;
@@ -523,25 +534,59 @@ export default class CanvasController {
                 getPosition: positionFlag,
             }
         });
+        const nodelabelLayer = new TextLayer({
+            id: 'node-label-layer',
+            coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            data: renderGroupTexts,
+            background: true,
+            backgroundPadding: [5, 2, 5, 2],
+            sizeScale: 2 ** zoom,
+            fontFamily: 'Microsoft YaHei',
+            getPosition: d => {
+                return [d.position[0] + d.style.backgroundWidth/4, d.position[1] - d.style.backgroundHeight];
+            },
+            getText: d => "节点数:10",
+            getSize: d => 15,
+            getAngle: 0,
+            getTextAnchor: d => d.style.textAnchor,
+            getAlignmentBaseline: d => d.style.textAlignmentBaseline,
+            characterSet: ['节','点','数',':','1','0'],
+            getColor: (d) => [50, 65, 137, 255],
+            getBackgroundColor: (d) => {
+                return [255,140,0,255];
+            },
+            updateTriggers: {
+                getPosition: positionFlag,
+                getColor: styleFlag
+            }
+        });
         if (viewStat === null) {
             if (renderBubble.length > 0 && this.animationData.length > 0) {
-                this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
+                this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer,
+                nodelabelLayer] });
             } else if (renderBubble.length > 0) {
-                this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
+                this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, groupTextLayer, textLayer, markLayer,
+                    nodelabelLayer] });
             } else if (this.animationData.length > 0) {
-                this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
+                this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer,
+                    nodelabelLayer] });
             } else {
-                this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
+                this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, groupTextLayer, textLayer, markLayer,
+                    nodelabelLayer] });
             }
         } else {
             if (renderBubble.length > 0 && this.animationData.length > 0) {
-                this.deck.setProps({ viewState: viewStat, width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
+                this.deck.setProps({ viewState: viewStat, width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer,
+                    nodelabelLayer] });
             } else if (renderBubble.length > 0) {
-                this.deck.setProps({ viewState: viewStat, width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
+                this.deck.setProps({ viewState: viewStat, width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, groupTextLayer, textLayer, markLayer,
+                    nodelabelLayer] });
             } else if (this.animationData.length > 0) {
-                this.deck.setProps({ viewState: viewStat, width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
+                this.deck.setProps({ viewState: viewStat, width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer,
+                    nodelabelLayer] });
             } else {
-                this.deck.setProps({ viewState: viewStat, width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
+                this.deck.setProps({ viewState: viewStat, width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, groupTextLayer, textLayer, markLayer,
+                    nodelabelLayer] });
             }
         }
 
@@ -549,7 +594,7 @@ export default class CanvasController {
 
 
 
-        //this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight,viewState:viewState, layers: [lineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+        //this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight,viewState:viewState, layers: [lineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, textLayer, markLayer] });
     }
 
     renderLockNode() {
@@ -728,7 +773,14 @@ export default class CanvasController {
             autoHighlight: true,
             highlightColor: [markRGB.red, markRGB.green, markRGB.blue, markOpactiy * 255],
             positionFormat: 'XY',
-            getPolygon: d => d.backgroundPolygon,
+            getPolygon: d => {
+                return [
+                    [d.backgroundPolygon[0][0],d.backgroundPolygon[0][1]],
+                    [d.backgroundPolygon[1][0]+d.style.borderWidth*2,d.backgroundPolygon[1][1]],
+                    [d.backgroundPolygon[2][0]+d.style.borderWidth * 2,d.backgroundPolygon[2][1]+d.style.borderWidth * 2],
+                    [d.backgroundPolygon[3][0],d.backgroundPolygon[3][1]+d.style.borderWidth * 2]
+            ]
+            },
             getFillColor: (d) => {
                 if (d.status === 4) {
                     return d.style.highLightColor;
@@ -768,7 +820,7 @@ export default class CanvasController {
             }
         })
 
-        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+        this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, textLayer, markLayer] });
     }
     renderGraph() {
 
@@ -776,6 +828,7 @@ export default class CanvasController {
         const zoom = this.props.zoom;
         const invalidIcon = this.invalidIncons;
         const { renderBackgrounds, renderIcons, renderLines, renderText, renderPolygon, charSet, renderMark, renderLabels, renderDashLine, renderBubble, renderGroupTexts, groupTextSet } = this.renderObject;
+        
         const lineHighlightRGB = hexRgb(this.props.lineHighlightColor);
         const lineHighlightOpactiy = this.props.lineHighlightOpacity;
 
@@ -886,43 +939,43 @@ export default class CanvasController {
             onIconError: this.onIconErrorHander,
         });
 
-        // const circleEdge = new ScatterplotLayer({
-        //     id: 'circleedge-layer',
-        //     data: renderBackgrounds.filter((v) => v.shapeType === 0),
-        //     coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
-        //     pickable: true,
-        //     opacity: 1,
-        //     stroked: true,
-        //     filled: true,
-        //     autoHighlight: false,
-        //     getFillColor: (d) => {
-        //         return d.style.backgroundColor || [255, 255, 255, 255];
-        //     },
-        //     getRadius: (d) => {
-        //         return d.style.circleHeight / 2;
-        //     },
-        //     getPosition: (d) => {
-        //         return d.position;
-        //     },
-        //     getLineColor: (d) => {
-        //         if (d.status === 2) {
-        //             return d.style.borderColor
-        //         } else {
-        //             return [255, 255, 255, 0];
-        //         }
-        //     },
-        //     getLineWidth: (d) => {
-        //         return d.style.borderWidth || 4;
-        //     },
-        //     getWidth: (d) => {
-        //         return d.style.backgroundWidth;
-        //     },
-        //     onDrag: this.nodeDragingHandler,
-        //     onClick: this.nodeClickHandler,
-        //     onDragStart: this.nodeDragStartHandler,
-        //     onDragEnd: this.nodeDragEndHandler,
+        const circleEdge = new ScatterplotLayer({
+            id: 'circleedge-layer',
+            data: renderBackgrounds.filter((v) => v.shapeType === 0),
+            coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            pickable: true,
+            opacity: 1,
+            stroked: true,
+            filled: true,
+            autoHighlight: false,
+            getFillColor: (d) => {
+                return d.style.backgroundColor || [255, 255, 255, 255];
+            },
+            getRadius: (d) => {
+                return d.style.circleHeight / 2;
+            },
+            getPosition: (d) => {
+                return d.position;
+            },
+            getLineColor: (d) => {
+                if (d.status === 2) {
+                    return d.style.borderColor
+                } else {
+                    return [255, 255, 255, 0];
+                }
+            },
+            getLineWidth: (d) => {
+                return d.style.borderWidth || 4;
+            },
+            getWidth: (d) => {
+                return d.style.backgroundWidth;
+            },
+            onDrag: this.nodeDragingHandler,
+            onClick: this.nodeClickHandler,
+            onDragStart: this.nodeDragStartHandler,
+            onDragEnd: this.nodeDragEndHandler,
 
-        // });
+        });
 
 
 
@@ -1122,20 +1175,51 @@ export default class CanvasController {
                 console.log(arguments)
             }
         });
+        const nodelabelLayer = new TextLayer({
+            id: 'node-label-layer',
+            coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+            data: renderGroupTexts.filter(() => true),
+            background: true,
+            backgroundPadding: [5, 2, 5, 2],
+            sizeScale: 2 ** zoom,
+            fontFamily: 'Microsoft YaHei',
+            getPosition: d => {
+                return [d.position[0] + d.style.backgroundWidth/4, d.position[1] - d.style.backgroundHeight];
+            },
+            getText: d => "节点数:10",
+            getSize: d => 15,
+            getAngle: 0,
+            getTextAnchor: d => d.style.textAnchor,
+            getAlignmentBaseline: d => d.style.textAlignmentBaseline,
+            characterSet: ['节','点','数',':','1','0'],
+            getColor: (d) => [50, 65, 137, 255],
+            getBackgroundColor: (d) => {
+                return [255,140,0,255];
+            },
+            updateTriggers: {
+                getPosition: positionFlag,
+                getSize: styleFlag,
+                getColor: styleFlag
+            }
+        });
 
         if (renderBubble.length > 0 && this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer,
+                 nodelabelLayer] });
         } else if (renderBubble.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [bubbleLayer, lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, groupTextLayer, textLayer, markLayer, 
+                nodelabelLayer] });
         } else if (this.animationData.length > 0) {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, groupTextLayer, textLayer, animationLayer, markLayer, 
+                nodelabelLayer] });
         } else {
-            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, groupTextLayer, textLayer, markLayer] });
+            this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer, dashLineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, groupTextLayer, textLayer, markLayer, 
+                nodelabelLayer] });
         }
         // if (this.animationData.length > 0) {
-        //     this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
+        //     this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, textLayer, animationLayer, markLayer] });
         // } else {
-        //     this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, labelLayer, iconLayer, textLayer, markLayer] });
+        //     this.deck.setProps({ width: this.props.containerWidth, height: this.props.containerHeight, layers: [lineLayer,dashLineLayer, arrowLayer, rectBackgroundLayer, circleEdge,  labelLayer, iconLayer, textLayer, markLayer] });
         // }
 
 
@@ -1246,17 +1330,28 @@ export default class CanvasController {
             this.updateRenderGraph();
         }
     }
+    /**
+     * 当前画布的缩放级别
+     * @returns number
+     */
     getZoom() {
         return this.props.zoom;
     }
 
+    /**
+     * 控制多个结点同时拖拽
+     * @param {boolean} v 
+     */
     setGroupDrag(v) {
         if (typeof v === 'boolean') {
             this.groupDrag = v;
         }
     }
 
-
+    /**
+     * 更新渲染对象并在画布重新绘制改变的元素
+     * @param {{rederObject,position,style,bubble}} param0 更新的渲染对象和更新的原因
+     */
     updateRenderObject({ renderObject, position, style, bubble }) {
         if (renderObject) {
             this.renderObject = renderObject;
@@ -1266,7 +1361,6 @@ export default class CanvasController {
             if (position) {
                 this.updateFlag.position = Math.random();
             }
-
             if (style) {
                 this.updateFlag.style = Math.random();
             }
@@ -1276,18 +1370,31 @@ export default class CanvasController {
             this.updateRenderGraph();
         }
     }
+    /**
+     * 实时更新动画
+     */
     updateAmination() {
         this.updateRenderGraph();
     }
 
+    /**
+     * 更新锁定的结点
+     * @param {Object} renderObject 渲染对象
+     */
     updateLockNode(renderObject) {
         this.renderObject = renderObject;
         this.renderLockNode();
     }
+    /**
+     * 将ElementController 挂载到CanvasController
+     * @param {ElementController} elementController y
+     */
     mountElementController(elementController) {
         this.elementController = elementController;
     }
-
+    /**
+     * 开启Brush 区域
+     */
     showBrushArea() {
         let brushProps = {
             width: this.props.containerWidth,
@@ -1307,21 +1414,31 @@ export default class CanvasController {
         this.eventController.subscribe('_brushend', this._brushInfoCallBack)
     }
 
+    /**
+     * bush 结果回调
+     * @param {{x:number,y:number,width:number,height:numebr}} brushInfo 
+     */
     _brushInfoCallBack(brushInfo) {
 
 
         let nodeIds = this.pickObject(brushInfo);
         //this.elementController.updateNodeStatus(nodeIds, 2);
-
         this.eventController.fire('brush', [nodeIds]);
         this.eventController.unSubscribeByName('_brushend');
     }
-
+    /**
+     * 将画布导出为Base64
+     * @returns base64
+     */
     exportCanvasAsBase64() {
         this.deck.redraw(true);
         return this.deck.canvas.toDataURL();
     }
 
+    /**
+     * 更新画布的尺寸
+     * @param {{width,height}} param0 Canvas 宽度和高度
+     */
     updateDim({ width, height }) {
         this.props.containerWidth = width;
         this.props.containerHeight = height;
@@ -1351,13 +1468,21 @@ export default class CanvasController {
         this.deck.redraw(true);
 
     }
+    /**
+     * 获取当前画布的宽度和高度
+     * @returns {width,height}
+     */
     getDim() {
         return {
             width: this.props.containerWidth,
             height: this.props.containerHeight,
         }
     }
-
+    /**
+     * 调整画布的聚焦点和缩放层级
+     * @param {{target:Array<number>,zoom:number}} params 视图状态参数
+     * @returns 
+     */
     fitView(params) {
         if(this.isJustDraged){
             return
@@ -1401,6 +1526,10 @@ export default class CanvasController {
 
     }
 
+    /**
+     * 移动canvas的聚焦位置到某一个点
+     * @param {Array<number>} target 移动到的canvas的具体的位置
+     */
     scrollIntoView(target) {
 
         this.props.viewState.target = [target[0], target[1], 0];
@@ -1409,7 +1538,10 @@ export default class CanvasController {
         viewStat.maxZoom = Infinity;
         this.deck.setProps({ viewState: viewStat })
     }
-
+    /**
+     * 更新动画数据
+     * @param {Array} animationData 动画控制数据
+     */
     updateAnimationData(animationData) {
 
         this.animationData = animationData;
@@ -1417,9 +1549,29 @@ export default class CanvasController {
             this.updateRenderGraph();
         }
     }
-
+    /**
+     * 为错误url指定默认url
+     * @param {Object} defaultUrlMap type 到 url 映射
+     */
     replaceDefaultUrlMap(defaultUrlMap) {
         this.props.defaultUrlMap = defaultUrlMap;
+        this.renderGraph();
+    }
+
+
+    updateConstantParams(params){
+        if(params.nodeHighlightColor){
+            this.props.nodeHighlightColor=params.nodeHighlightColor;
+        }
+        if(params.nodeHighlightOpacity){
+            this.props.nodeHighlightOpacity=params.nodeHighlightOpacity;
+        }
+        if(params.lineHighlightColor){
+            this.props.lineHighlightColor=params.lineHighlightColor;
+        }
+        if(params.lineHighlightOpactiy){
+            this.props.lineHighlightOpacity=params.lineHighlightOpacity;
+        }
         this.renderGraph();
     }
 }

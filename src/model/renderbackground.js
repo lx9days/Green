@@ -15,13 +15,13 @@ export default class RenderBackground {
             backgroundHeight: 10,
             backgroundColor: [255, 255, 255, 255],
             backgroundOpacity: 1,
-            borderWidth: 0,
+            borderWidth: 20,
             borderStyle: 'solid',
             borderColor: [255, 255, 255, 255],
             borderOpacity: 1,
             width:8,
             height:8,
-            circleHeight:0,
+            circleHeight:20,
 
         }
         this._generateStyle();
@@ -31,6 +31,12 @@ export default class RenderBackground {
             this._generatePosition();
         }
         
+    }
+    resetElement(element){
+        this.id = element.getId();
+        this.origionElement = element;
+        this.status=element.getStatus();
+        this.rebuild();
     }
     /**
      * 重新挂载样式和计算位置

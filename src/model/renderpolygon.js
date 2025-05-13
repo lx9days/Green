@@ -20,6 +20,13 @@ export default class RenderPolygon {
         this._generatePolygon();
     }
 
+    resetElement(element){
+        this.id = element.getId();
+        this.origionElement = element;
+        this.status=element.getStatus();
+        this.rebuild();
+    }
+
     /**
      * 重构style and position
      */

@@ -8,7 +8,7 @@ import RenderText from '../model/rendertext';
 import RenderMark from '../model/rendermark';
 import RenderLabel from '../model/renderlabel';
 import RenderGroupText from '../model/rendergrouptext';
-import { autoFitView, dashLine,autoFocusNode } from '../helper/util';
+import { autoFitView, dashLine, autoFocusNode } from '../helper/util';
 import Bubble from '../model/bubble';
 import BubbleRegion from '../model/bubbleregion';
 import { v4 as uuidv4 } from 'uuid';
@@ -48,7 +48,7 @@ export default class ElementController {
         }
     }
 
-    _parseParams(flag, nodeIds) {
+    _parseParams(flag) {
         this.controller.eventController.unSubscribeByName("_updateEntityPosition")
         if (flag === 'new') {
             this._init(this.controller)
@@ -59,7 +59,7 @@ export default class ElementController {
         } else if (flag === 'add') {
             const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData(), 'add');
             this.controller.styleController.mountAllStyleToElement(newNodeArray, newLinkArray);
-            this.controller.positionController.layout()(newNodeArray);
+            this.controller.positionController.layout("add")(newNodeArray,"add");
 
             // this.updateLinkPosition(newLinkArray);
             this._parseElements(newNodeArray, newLinkArray, 'part');
@@ -92,23 +92,23 @@ export default class ElementController {
         this.nodeRenderMap = new Map();// node id 映射该node 对应的所有的 renderobj
         this.linkRenderMap = new Map();// link id 映射该link 对应的所有的 renderobj
         this.characterSet = new Set();//保存textlayer的字符
-        this.groupTextSet=new Set();
+        this.groupTextSet = new Set();//保存Group 结点下的文字的字符
 
-        this.idMapRegion = new Map();
+        this.idMapRegion = new Map();//Bubble Set 的Id 到 Bubble的映射
 
         this.renderObject = {
-            renderBackgrounds: new Array(),
-            renderIcons: new Array(),
-            renderLabels: new Array(),
-            renderLines: new Array(),
-            renderText: new Array(),
-            renderGroupTexts:new Array(),
-            renderPolygon: new Array(),
-            renderMark: new Array(),
-            renderBubble: new Array(),
+            renderBackgrounds: new Array(),//矩形背景
+            renderIcons: new Array(),//主图片
+            renderLabels: new Array(),//副图片，主要是锁定后展示的icon
+            renderLines: new Array(),//连线
+            renderText: new Array(),//文本
+            renderGroupTexts: new Array(),//Group 结点的文本
+            renderPolygon: new Array(),//线的端点的箭头
+            renderMark: new Array(),//结点最上层的图层用于高亮结点
+            renderBubble: new Array(),//Bubble Set的三角形
             renderDashLine: new Array(),
             charSet: null,
-            groupTextSet:null,
+            groupTextSet: null,
         }
     }
     _parseElements(nodeArray, linkArray, upateFlag = null) {
@@ -122,20 +122,20 @@ export default class ElementController {
                 renderLabels: new Array(),
                 renderLines: new Array(),
                 renderText: new Array(),
-                renderGroupTexts:new Array(),
+                renderGroupTexts: new Array(),
                 renderPolygon: new Array(),
                 renderMark: new Array(),
                 renderBubble: new Array(),
                 renderDashLine: new Array(),
                 charSet: null,
-                groupTextSet:null,
+                groupTextSet: null,
             }
             nodeArray.forEach((node) => {
                 const nodeRenders = {
                     iconObjs: new Array(),
                     backgroundObjs: new Array(),
                     textObjs: new Array(),
-                    groupTextObjs:new Array(),
+                    groupTextObjs: new Array(),
                     markObjs: new Array(),
                     labelObjs: new Array(),
                 }
@@ -143,11 +143,11 @@ export default class ElementController {
                 nodeRenders.iconObjs.push(new RenderIcon(node));
                 nodeRenders.markObjs.push(new RenderMark(node));
 
-                if(node.data.metaType&&node.data.metaType==='nodeSet'){
-                    const groupRenderText=new RenderGroupText(node);
+                if (node.data.metaType && node.data.metaType === 'nodeSet') {
+                    const groupRenderText = new RenderGroupText(node);
                     this._generateGroupCharSet(groupRenderText.text);
                     nodeRenders.groupTextObjs.push(groupRenderText);
-                }else{
+                } else {
                     const renderText = new RenderText(node);
                     this._generateCharSet(renderText.text);
                     nodeRenders.textObjs.push(renderText);
@@ -155,7 +155,7 @@ export default class ElementController {
                 if (node.isLocked) {
                     nodeRenders.labelObjs.push(new RenderLabel(node))
                 }
-               
+
                 this.nodeRenderMap.set(node.getId(), nodeRenders);
             });
 
@@ -165,7 +165,7 @@ export default class ElementController {
                     iconObjs: new Array(),
                     backgroundObjs: new Array(),
                     textObjs: new Array(),
-                    groupTextObjs:new Array(),
+                    groupTextObjs: new Array(),
                     markObjs: new Array(),
                     labelObjs: new Array(),
                 }
@@ -175,11 +175,11 @@ export default class ElementController {
                 if (node.isLocked) {
                     nodeRenders.labelObjs.push(new RenderLabel(node))
                 }
-                if(node.data.metaType&&node.data.metaType==='nodeSet'){
-                    const groupRenderText=new RenderGroupText(node);
+                if (node.data.metaType && node.data.metaType === 'nodeSet') {
+                    const groupRenderText = new RenderGroupText(node);
                     this._generateGroupCharSet(groupRenderText.text);
                     nodeRenders.groupTextObjs.push(groupRenderText);
-                }else{
+                } else {
                     const renderText = new RenderText(node);
                     this._generateCharSet(renderText.text);
                     nodeRenders.textObjs.push(renderText);
@@ -254,13 +254,13 @@ export default class ElementController {
             renderLabels: new Array(),
             renderLines: new Array(),
             renderText: new Array(),
-            renderGroupTexts:new Array(),
+            renderGroupTexts: new Array(),
             renderPolygon: new Array(),
             renderMark: new Array(),
             renderBubble: cacheBubble,
             renderDashLine: new Array(),
             charSet: null,
-            groupTextSet:null,
+            groupTextSet: null,
         }
         for (const nodeIdKey of this.nodeRenderMap.keys()) {
             const nodeRenders = this.nodeRenderMap.get(nodeIdKey);
@@ -273,7 +273,7 @@ export default class ElementController {
             nodeRenders.textObjs.forEach((textObj) => {
                 this.renderObject.renderText.push(textObj);
             });
-            nodeRenders.groupTextObjs.forEach(groupTextObj=>{
+            nodeRenders.groupTextObjs.forEach(groupTextObj => {
                 this.renderObject.renderGroupTexts.push(groupTextObj);
             })
             nodeRenders.markObjs.forEach(markObj => {
@@ -300,7 +300,7 @@ export default class ElementController {
             });
         }
         this.renderObject.charSet = Array.from(this.characterSet);
-        this.renderObject.groupTextSet=Array.from(this.groupTextSet);
+        this.renderObject.groupTextSet = Array.from(this.groupTextSet);
         this.controller.canvasController.updateRenderObject({ renderObject: this.renderObject });
 
 
@@ -353,7 +353,7 @@ export default class ElementController {
                         targetNode.addTargetLink(linkEntity);
                         linkEntity.targetNode = targetNode
                     } else {
-                       
+
                         throw new Error(`link cannot find soure or target node`);
                     }
                 });
@@ -366,7 +366,7 @@ export default class ElementController {
             this.nodes = [];
             this.links = [];
         }
-       
+
         return {
             newNodeArray: newNodeArray,
             newLinkArray: newLinkArray
@@ -397,7 +397,10 @@ export default class ElementController {
         }
         return null;
     }
-
+    /**
+     * 将用户输入的字符串转换为deck.gl textlayer 可用的字符集
+     * @param {String} str 
+     */
     _generateCharSet(str) {
         if (str) {
             for (const s of str) {
@@ -405,9 +408,14 @@ export default class ElementController {
             }
         }
     }
-    _generateGroupCharSet(str){
-        if(str){
-            for(const s of str){
+    /**
+     * 将用户输入的字符串转换为deck.gl textlayer 可用的字符集 
+     * 主要用来处理GroupNode的字符集
+     * @param {String} str 
+     */
+    _generateGroupCharSet(str) {
+        if (str) {
+            for (const s of str) {
                 this.groupTextSet.add(s);
             }
         }
@@ -422,6 +430,11 @@ export default class ElementController {
         this.updateEntityStyle();
     }
 
+    /**
+     * 为指定的结点添加class 信息
+     * @param {Array<string>} nodeIds 
+     * @param {Array<string>} classes 类名
+     */
     addClassForNode(nodeIds, classes) {
         if (nodeIds && classes) {
             nodeIds.forEach(id => {
@@ -431,11 +444,17 @@ export default class ElementController {
                 }
             })
         }
+        //类信息更新后需要重新挂载样式
         this.controller.styleController.mountAllStyleToElement(this.getNodes(nodeIds), []);
+        //样式重新挂载后更新渲染结点的样式
         this.updateEntityStyle({ node: true, nodeIds })
 
     }
-
+    /**
+     * 从指定的node中删除class 信息
+     * @param {Array<string>} nodeIds 
+     * @param {Array<string>} classes 类名
+     */
     removeClassForNode(nodeIds, classes) {
         if (nodeIds && nodeIds.length > 0 && classes) {
             nodeIds.forEach(id => {
@@ -626,10 +645,10 @@ export default class ElementController {
                         this.renderObject.renderText.splice(index, 1);
                     }
                 });
-                renderNode.groupTextObjs.forEach(text=>{
-                    const index=this.renderObject.renderGroupTexts.indexOf(text);
-                    if(index>=0){
-                        this.renderObject.renderGroupTexts.splice(index,1);
+                renderNode.groupTextObjs.forEach(text => {
+                    const index = this.renderObject.renderGroupTexts.indexOf(text);
+                    if (index >= 0) {
+                        this.renderObject.renderGroupTexts.splice(index, 1);
                     }
                 })
                 renderNode.markObjs.forEach(mark => {
@@ -644,7 +663,6 @@ export default class ElementController {
                         this.renderObject.renderLabels.splice(index, 1);
                     }
                 });
-                
                 this.nodeRenderMap.delete(id);
             });
         }
@@ -691,7 +709,7 @@ export default class ElementController {
             })
         }
     }
-
+    //重新构建DashLine对象
     _reBuildRenderDashLine(ids = null) {
         if (ids) {
             ids.forEach(id => {
@@ -713,6 +731,7 @@ export default class ElementController {
         }
 
     }
+    //重新计算DashLine的位置
     _reLocationRenderDashLine(ids = null) {
         if (ids) {
             ids.forEach(id => {
@@ -829,7 +848,7 @@ export default class ElementController {
                     renderObjects.textObjs.forEach((text) => {
                         text.updateStatus();
                     });
-                    renderObjects.groupTextObjs.forEach(text=>{
+                    renderObjects.groupTextObjs.forEach(text => {
                         text.updateStatus();
                     })
                     renderObjects.backgroundObjs.forEach((border) => {
@@ -910,7 +929,7 @@ export default class ElementController {
                 renderObjects.textObjs.forEach((text) => {
                     text.updateStatus();
                 });
-                renderObjects.groupTextObjs.forEach(text=>{
+                renderObjects.groupTextObjs.forEach(text => {
                     text.updateStatus();
                 })
                 renderObjects.backgroundObjs.forEach((border) => {
@@ -933,7 +952,7 @@ export default class ElementController {
                 renderObjects.textObjs.forEach((text) => {
                     text.updateStatus();
                 });
-                renderObjects.groupTextObjs.forEach(groupText=>{
+                renderObjects.groupTextObjs.forEach(groupText => {
                     groupText.updateStatus();
                 })
                 renderObjects.backgroundObjs.forEach((border) => {
@@ -1040,7 +1059,7 @@ export default class ElementController {
                     if (!this.nodeRenderMap.has(id)) {
                         return;
                     }
-                    const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs,groupTextObjs } = this.nodeRenderMap.get(id);
+                    const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs, groupTextObjs } = this.nodeRenderMap.get(id);
                     iconObjs.forEach((iconObj) => {
                         iconObj.rebuild();
                     });
@@ -1050,7 +1069,7 @@ export default class ElementController {
                     textObjs.forEach((textObj) => {
                         textObj.rebuild();
                     });
-                    groupTextObjs.forEach(groupTextObj=>{
+                    groupTextObjs.forEach(groupTextObj => {
                         groupTextObj.rebuild();
                     })
                     markObjs.forEach(mark => {
@@ -1065,7 +1084,7 @@ export default class ElementController {
         if (params.link) {
             if (params.links && params.links.length > 0) {
                 params.links.forEach(link => {
-                    const id=link.id;
+                    const id = link.id;
                     if (!this.linkRenderMap.has(id)) {
                         return;
                     }
@@ -1114,7 +1133,7 @@ export default class ElementController {
             renderText.forEach((reText) => {
                 reText.rebuild();
             });
-            renderGroupTexts.forEach(groupText=>{
+            renderGroupTexts.forEach(groupText => {
                 groupText.rebuild();
             })
             renderPolygon.forEach((rePolygon) => {
@@ -1175,7 +1194,7 @@ export default class ElementController {
                     if (!this.nodeRenderMap.has(id)) {
                         return;
                     }
-                    const { iconObjs, backgroundObjs, textObjs,groupTextObjs, markObjs, labelObjs } = this.nodeRenderMap.get(id);
+                    const { iconObjs, backgroundObjs, textObjs, groupTextObjs, markObjs, labelObjs } = this.nodeRenderMap.get(id);
                     iconObjs.forEach((iconObj) => {
                         iconObj.rebuild();
                     });
@@ -1185,7 +1204,7 @@ export default class ElementController {
                     textObjs.forEach((textObj) => {
                         textObj.rebuild();
                     });
-                    groupTextObjs.forEach(groupTextObj=>{
+                    groupTextObjs.forEach(groupTextObj => {
                         groupTextObj.rebuild();
                     })
                     markObjs.forEach(mark => {
@@ -1197,7 +1216,7 @@ export default class ElementController {
                 })
             } else {
                 for (const key of this.nodeRenderMap.keys()) {
-                    const { iconObjs, backgroundObjs, textObjs,groupTextObjs, markObjs, labelObjs } = this.nodeRenderMap.get(key);
+                    const { iconObjs, backgroundObjs, textObjs, groupTextObjs, markObjs, labelObjs } = this.nodeRenderMap.get(key);
                     iconObjs.forEach((iconObj) => {
                         iconObj.rebuild();
                     });
@@ -1207,7 +1226,7 @@ export default class ElementController {
                     textObjs.forEach((textObj) => {
                         textObj.rebuild();
                     });
-                    groupTextObjs.forEach(groupTextObj=>{
+                    groupTextObjs.forEach(groupTextObj => {
                         groupTextObj.rebuild();
                     })
                     markObjs.forEach(mark => {
@@ -1228,7 +1247,7 @@ export default class ElementController {
         const viewFitParams = autoFitView(this.getNodes(nodeIds), [viewSize.width, viewSize.height]);
         this.controller.canvasController.fitView(viewFitParams);
     }
-    focusOnNodes(nodeIds){
+    focusOnNodes(nodeIds) {
         const viewSize = this.controller.canvasController.getDim();
         const viewFitParams = autoFocusNode(this.getNodes(nodeIds), [viewSize.width, viewSize.height]);
         this.controller.canvasController.fitView(viewFitParams);
@@ -1251,7 +1270,7 @@ export default class ElementController {
                     throw new Error("cannot find node id:" + id)
                 }
                 const nodeRenders = this.nodeRenderMap.get(id);
-                const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs,groupTextObjs } = nodeRenders;
+                const { iconObjs, backgroundObjs, textObjs, markObjs, labelObjs, groupTextObjs } = nodeRenders;
                 iconObjs.forEach((iconObj) => {
                     iconObj.reLocation();
                 });
@@ -1261,7 +1280,7 @@ export default class ElementController {
                 textObjs.forEach((textObj) => {
                     textObj.reLocation();
                 });
-                groupTextObjs.forEach(groupTextObj=>{
+                groupTextObjs.forEach(groupTextObj => {
                     groupTextObj.reLocation();
                 })
                 markObjs.forEach(mark => {
@@ -1270,7 +1289,7 @@ export default class ElementController {
                 labelObjs.forEach(label => {
                     label.reLocation();
                 });
-                
+
             });
             const needReLocationDashLine = [];
             needUpdateLinks.forEach(link => {
@@ -1315,7 +1334,7 @@ export default class ElementController {
             renderText.forEach((reText) => {
                 reText.reLocation();
             });
-            renderGroupTexts.forEach(groupText=>{
+            renderGroupTexts.forEach(groupText => {
                 groupText.reLocation();
             })
             renderPolygon.forEach((rePolygon) => {
@@ -1347,15 +1366,16 @@ export default class ElementController {
      * @param {{width,height}} newDim 
      */
     updateGrpahAfterDimMidifed(oldDim, newDim) {
-        const xFactor = newDim.width / oldDim.width;
-        const yFactor = newDim.height / oldDim.height;
-        const newNodeArray = this.getNodes();
+        // const xFactor = newDim.width / oldDim.width;
+        // const yFactor = newDim.height / oldDim.height;
+        // const newNodeArray = this.getNodes();
 
-        newNodeArray.forEach(node => {
-            node.x = node.x * xFactor;
-            node.y = node.y * yFactor;
-        });
-        this.updateEntityPosition()
+        // newNodeArray.forEach(node => {
+        //     node.x = node.x * xFactor;
+        //     node.y = node.y * yFactor;
+        // });
+        // this.updateEntityPosition()
+        this.fitView();
     }
 
     lockNodes(nodeIds) {
@@ -1449,6 +1469,8 @@ export default class ElementController {
         }
         if (Array.isArray(ids)) {
             ids.forEach(id => {
+                console.log(this.idMapRegion.has(id));
+                
                 this.idMapRegion.delete(id);
             })
             const renderBubbles = [];
@@ -1456,6 +1478,8 @@ export default class ElementController {
                 renderBubbles.push(...region.getBubbles());
             }
             this.renderObject.renderBubble = renderBubbles;
+            console.log(renderBubbles);
+            
         } else {
             this.idMapRegion = new Map();
             this.renderObject.renderBubble = new Array();
@@ -1490,53 +1514,68 @@ export default class ElementController {
         }
     }
 
-    fusionElements({ deleteNodeId, saveNodeId, deleteLinkIds, addLinkData }) {
-
-        const { iconObjs, backgroundObjs, textObjs,groupTextObjs, markObjs, labelObjs } = this.nodeRenderMap.get(saveNodeId);
-        iconObjs.forEach((iconObj) => {
-            iconObj.rebuild();
-        });
-        backgroundObjs.forEach((borderObj) => {
-            borderObj.rebuild();
-        });
-        textObjs.forEach((textObj) => {
-            textObj.rebuild();
-            this._generateCharSet(textObj.text);
-        });
-        groupTextObjs.forEach(groupTextObj=>{
-            groupTextObj.rebuild();
-            this._generateGroupCharSet(groupTextObj.text);
-        })
-        this.renderObject.charSet = Array.from(this.characterSet);
-        this.renderObject.groupTextSet=Array.from(this.renderObject);
-        markObjs.forEach(mark => {
-            mark.rebuild();
-        });
-        labelObjs.forEach(label => {
-            label.rebuild();
-        });
-        this.removeNodes([deleteNodeId], false);
+    fusionElements({ deleteNodes, saveNodeId, deleteLinkIds, addLinkData, addNodeData }) {
+       const deleteNodeIds=deleteNodes.map(item=>item.id)
+        // debugger
+        // const addNode = this.idMapNode.get(addNodeData.id);
+        // addNode.data=addNodeData;
+        // const { iconObjs, backgroundObjs, textObjs, groupTextObjs, markObjs, labelObjs } = this.nodeRenderMap.get(saveNodeId);
+        // iconObjs.forEach((iconObj) => {
+            
+        //     iconObj.resetElement(addNode);
+        // });
+        // backgroundObjs.forEach((borderObj) => {
+        //     borderObj.resetElement(addNode);
+        // });
+        // textObjs.forEach((textObj) => {
+        //     textObj.resetElement(addNode);
+        //     console.log(textObj)
+        //     this._generateCharSet(textObj.text);
+        // });
+        // groupTextObjs.forEach(groupTextObj => {
+        //     groupTextObj.resetElement(addNode);
+        //     this._generateGroupCharSet(groupTextObj.text);
+        // })
+        // this.renderObject.charSet = Array.from(this.characterSet);
+        // this.renderObject.groupTextSet = Array.from(this.renderObject);
+        // markObjs.forEach(mark => {
+        //     mark.resetElement(addNode);
+        // });
+        // labelObjs.forEach(label => {
+        //     label.resetElement(addNode);
+        // });
+        const deleteNode=this.idMapNode.get(deleteNodeIds[0]);
+        if(!deleteNode){
+            throw new Error("cannot get a history node id:",deleteLinkIds[0]);
+        }
+        this.removeNodes(deleteNodeIds, false);
         if (Array.isArray(deleteLinkIds) && deleteLinkIds.length > 0) {
             this.removeLinks(deleteLinkIds, false);
         }
-        if (Array.isArray(addLinkData) && addLinkData.length > 0) {
-            this.controller.dataController.addData({ links: addLinkData });
-            const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData(), 'add');
-            this.controller.styleController.mountAllStyleToElement(newNodeArray, newLinkArray);
-            this._parseElements(newNodeArray, newLinkArray, 'part');
-        }
+        //if (Array.isArray(addLinkData) && addLinkData.length > 0) {
+       
+        this.controller.dataController.addData({ links: addLinkData,nodes:[addNodeData] });
+        const { newNodeArray, newLinkArray } = this._generateInternalEntity(this.controller.dataController.getNewData(), 'add');
+      
+        newNodeArray.forEach(newNode=>{
+            newNode.x=deleteNode.x;
+            newNode.y=deleteNode.y;
+        })
+        this.controller.styleController.mountAllStyleToElement(newNodeArray, newLinkArray);
+        this._parseElements(newNodeArray, newLinkArray,"part");
+       //}
     }
 
     updateNodeCustomStyle(nodes, style) {
         nodes.forEach(node => {
             node.updateCustomStyle(style);
         });
-        this.updateEntityCustomStyle({node:true,nodes});
+        this.updateEntityCustomStyle({ node: true, nodes });
     }
-    updateLinkCustomStyle(links,style){
-        links.forEach(link=>{
+    updateLinkCustomStyle(links, style) {
+        links.forEach(link => {
             link.updateCustomStyle(style);
         });
-        this.updateEntityCustomStyle({link:true,links});
+        this.updateEntityCustomStyle({ link: true, links });
     }
 }

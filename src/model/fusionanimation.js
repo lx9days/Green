@@ -31,10 +31,11 @@ export default class FusionAnimation {
                 }
             });
             const fusionParams={
-                deleteNodeId:this.deleteNodes[0].id === this.saveNode.id ? this.deleteNodes[1].id : this.deleteNodes[0].id,
+                deleteNodes:this.deleteNodes,
                 saveNodeId:this.saveNode.id,
                 deleteLinkIds:this.deleteLinkIds,
                 addLinkData:this.addLinkData,
+                addNodeData:this.saveNode
             }
             controller.fusionElements(fusionParams);
         }

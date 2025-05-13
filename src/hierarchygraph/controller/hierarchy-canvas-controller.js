@@ -175,14 +175,15 @@ export default class HierarchyCanvasController {
             autoHighlight: false,
             highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
             pickable: false,
-            getWidth: d => 2,//d.style.lineWidth,
+            getWidth: d => d.style.width,//d.style.lineWidth,
             getSourcePosition: d => [d.source.x, d.source.y],//d => d.sourcePosition,
             getTargetPosition: d => [d.target.x, d.target.y],//d => d.targetPosition,
-            getColor: "#ff0000",//d => d.style.lineColor,
+            getColor: d => d.style["line-color"],
             updateTriggers: {
                 getSourcePosition: positionFlag,
                 getTargetPosition: positionFlag,
                 getColor: styleFlag,
+                getWidth: styleFlag,
             },
             onClick: this.lineClickHandler,
         });
@@ -253,7 +254,8 @@ export default class HierarchyCanvasController {
             updateTriggers: {
                 getFillColor: styleFlag,
                 getPolygon: positionFlag,
-                getLineColor: styleFlag
+                getLineColor: styleFlag,
+                getLineWidth: styleFlag,
             }
         });
 
@@ -286,6 +288,7 @@ export default class HierarchyCanvasController {
         }
     }
 
+    
 
     renderGraph() {
 
@@ -309,10 +312,10 @@ export default class HierarchyCanvasController {
             autoHighlight: false,
             highlightColor: [lineHighlightRGB.red, lineHighlightRGB.green, lineHighlightRGB.blue, lineHighlightOpactiy * 255],
             pickable: false,
-            getWidth: d => 2,//d.style.lineWidth,
+            getWidth: d => d.style.width,//d.style.lineWidth,
             getSourcePosition: d => [d.source.x, d.source.y],//d => d.sourcePosition,
             getTargetPosition: d => [d.target.x, d.target.y],//d => d.targetPosition,
-            getColor: "#ff0000",//d => d.style.lineColor,
+            getColor: d => d.style["line-color"],//d => d.style.lineColor,
             updateTriggers: {
                 getSourcePosition: positionFlag,
                 getTargetPosition: positionFlag,
@@ -533,6 +536,7 @@ export default class HierarchyCanvasController {
 
         }
     }
+    
 
     mountElementController(elementController) {
         this.elementController = elementController;

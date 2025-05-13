@@ -15,7 +15,7 @@ dataset.nodes.forEach(function (d) {
 //创造一个假根结点，所有原数据中的根节点都是它的孩子，用于树形布局
 let fakeRoot = { children: roots };
 let h = d3.hierarchy(fakeRoot);
-var tree = d3.tree()
+var tree = d3.tree() 
     .size([deckWidth, deckHeight])
     .separation(function (a, b) { return (a.parent == b.parent ? 1 : 2); });
 let nodes2 = tree(h);
